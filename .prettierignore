@@ -1,0 +1,5 @@
+# Add files here to ignore them from prettier formatting
+dist
+
+# Prettier isn't too good with .ejs templates.
+*.ejs
