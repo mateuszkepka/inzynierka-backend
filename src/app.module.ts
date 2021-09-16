@@ -1,10 +1,36 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module, ValidationPipe } from '@nestjs/common';
+
+import { APP_PIPE } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env`,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          type: `postgres`,
+          database: config.get<string>(`DB_NAME`),
+          username: config.get<string>(`DB_USER`),
+          password: config.get<string>(`DB_PASSWORD`),
+          synchronize: true,
+        }
+      }
+    })
+  ],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+      })
+    }
+  ],
 })
 export class AppModule {}
