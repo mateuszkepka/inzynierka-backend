@@ -1,16 +1,26 @@
+import * as Joi from 'joi';
 import * as entities from './entities';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 
 import { APP_PIPE } from '@nestjs/core';
+import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env`,
+      validationSchema: Joi.object({
+        DB_NAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_USER: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.string().required()
+      })
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -45,7 +55,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           ]
         }
       }
-    })
+    }),
+    UsersModule,
+    AuthModule
   ],
   controllers: [],
   providers: [

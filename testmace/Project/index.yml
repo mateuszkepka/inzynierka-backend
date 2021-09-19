@@ -1,0 +1,23 @@
+projectUId: 05b158e0-198b-11ec-9db0-d3eb82b3c996
+type: Project
+name: Project
+environments:
+  environments: {}
+children:
+  - requests-auth
+cookies:
+  - >-
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTYzMjA4NTgzMSwiZXhwIjoxNjMyMTIxODMxfQ.WLWnIj5z2TR05RMawhTLNSmj0xz34rE3S8mrfKtRfTo;
+    Expires=Infinity; Domain=localhost; Path=/auth; HttpOnly;
+variablesArray: []
+authData:
+  type: inherit
+settings:
+  proxy:
+    enable: false
+enabled: true
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: 'No'
+  followRedirect: 'Yes'

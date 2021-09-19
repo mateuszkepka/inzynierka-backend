@@ -10,22 +10,22 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number;
 
-    @Column()
+    @Column({ default: `user_name` })
     username: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
     
     @Column()
     password: string;
     
-    @Column()
+    @Column({ default: `pl` })
     country: string;
     
-    @Column()
+    @Column({default: `PJATK` })
     university: string;
     
-    @Column()
+    @Column({ default: `s1234` })
     studentId: string;
 
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)

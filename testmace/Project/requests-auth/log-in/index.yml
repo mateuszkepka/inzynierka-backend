@@ -1,0 +1,34 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: 'http://localhost:3000/auth/log-in'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "email": "abc@abc.com",
+        "password": "password",
+        "userId": 4,
+        "username": "user_name",
+        "country": "pl",
+        "university": "PJATK",
+        "studentId": "s1234"
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: log-in
