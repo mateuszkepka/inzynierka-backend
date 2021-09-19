@@ -15,7 +15,4 @@ export class Game {
 
     @ManyToOne(() => Tournament, (tournament) => tournament.games)
     tournament: Tournament;
-
-    // TODO: Many to many with player
-
 }

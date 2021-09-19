@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-import { Ladder } from "./ladder-entity";
+import { Ladder } from "./ladder.entity";
 import { Roster } from "./roster.entity";
 
 @Entity()

@@ -1,6 +1,9 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 import { ActiveRoster } from "./active-roster.entity";
+import { Game } from ".";
+import { Performance } from "./performance.entity";
+import { Team } from "./team.entity";
 import { User } from "./user.entity";
 
 @Entity()
@@ -26,6 +29,18 @@ export class Player {
     @OneToMany(() => ActiveRoster, (activeRoster) => activeRoster.player)
     activeRosters: ActiveRoster[]
 
-    // TODO: many to many relation with game
-    // TODO: many to many relation with team
+    @OneToMany(() => Performance, (performance) => performance.player)
+    performances: Performance[];
+
+    
+    @OneToMany(() => Team, (team) => team.captain)
+    ownedTeams: Team[]
+    
+    @ManyToMany(() => Game)
+    @JoinTable()
+    games: Game[];
+    
+    @ManyToMany(() => Team)
+    @JoinTable()
+    teams: Team[];
 }

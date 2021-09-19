@@ -1,3 +1,5 @@
+import * as entities from './entities';
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 
@@ -19,6 +21,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           username: config.get<string>(`DB_USER`),
           password: config.get<string>(`DB_PASSWORD`),
           synchronize: true,
+          entities: [
+            entities.ActiveRoster,
+            entities.Game,
+            entities.Group,
+            entities.GroupRule,
+            entities.GroupStanding,
+            entities.Ladder,
+            entities.LadderStanding,
+            entities.Map,
+            entities.Match,
+            entities.Performance,
+            entities.Player,
+            entities.Preset,
+            entities.Prize,
+            entities.Roster,
+            entities.Suspension,
+            entities.Team,
+            entities.TiebrakerRule,
+            entities.Tournament,
+            entities.TournamentAdmin,
+            entities.User,
+          ]
         }
       }
     })
