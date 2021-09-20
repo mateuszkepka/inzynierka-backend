@@ -1,6 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Tournament } from "./tournament.entity";
+import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Preset {

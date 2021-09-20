@@ -1,7 +1,7 @@
-import { Entity, ManyToOne } from "typeorm";
+import { Entity, ManyToOne } from 'typeorm';
 
-import { Player } from "./player.entity";
-import { Roster } from "./roster.entity";
+import { Player } from './player.entity';
+import { Roster } from './roster.entity';
 
 @Entity()
 export class ActiveRoster {

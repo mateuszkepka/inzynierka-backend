@@ -1,7 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Player } from "./player.entity";
-import { Roster } from "./roster.entity";
+import { Player } from './player.entity';
+import { Roster } from './roster.entity';
 
 @Entity()
 export class Team {

@@ -1,10 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Tournament } from "./tournament.entity";
+import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Prize {
-    @PrimaryGeneratedColumn() 
+    @PrimaryGeneratedColumn()
     prizeId: number;
 
     @Column()

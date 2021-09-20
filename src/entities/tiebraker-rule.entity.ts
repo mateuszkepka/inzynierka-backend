@@ -1,6 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { GroupRule } from "./group-rule.entity";
+import { GroupRule } from './group-rule.entity';
 
 @Entity()
 export class TiebrakerRule {
@@ -11,5 +11,5 @@ export class TiebrakerRule {
     rule: string;
 
     @OneToMany(() => GroupRule, (groupRule) => groupRule.tiebrakerRule)
-    groupRules: GroupRule[]; 
+    groupRules: GroupRule[];
 }

@@ -1,7 +1,7 @@
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { LadderStanding } from "./ladder-standing.entity";
-import { Tournament } from "./tournament.entity";
+import { LadderStanding } from './ladder-standing.entity';
+import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Ladder {
@@ -13,5 +13,4 @@ export class Ladder {
 
     @ManyToOne(() => Tournament, (tournament) => tournament.ladders)
     tournament: Tournament;
-    
 }

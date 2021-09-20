@@ -1,12 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Match } from "./match.entity";
-import { Performance } from "./performance.entity";
+import { Match } from './match.entity';
+import { Performance } from './performance.entity';
 
 @Entity()
 export class Map {
     @PrimaryGeneratedColumn()
-    mapId: number
+    mapId: number;
 
     @Column()
     mapResult: string;

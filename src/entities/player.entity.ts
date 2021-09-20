@@ -1,10 +1,18 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
-import { ActiveRoster } from "./active-roster.entity";
-import { Game } from ".";
-import { Performance } from "./performance.entity";
-import { Team } from "./team.entity";
-import { User } from "./user.entity";
+import { ActiveRoster } from './active-roster.entity';
+import { Game } from '.';
+import { Performance } from './performance.entity';
+import { Team } from './team.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Player {
@@ -16,7 +24,7 @@ export class Player {
 
     @Column()
     accountId: string;
-    
+
     @Column()
     summonerId: string;
 
@@ -27,19 +35,18 @@ export class Player {
     user: User;
 
     @OneToMany(() => ActiveRoster, (activeRoster) => activeRoster.player)
-    activeRosters: ActiveRoster[]
+    activeRosters: ActiveRoster[];
 
     @OneToMany(() => Performance, (performance) => performance.player)
     performances: Performance[];
 
-    
     @OneToMany(() => Team, (team) => team.captain)
-    ownedTeams: Team[]
-    
+    ownedTeams: Team[];
+
     @ManyToMany(() => Game)
     @JoinTable()
     games: Game[];
-    
+
     @ManyToMany(() => Team)
     @JoinTable()
     teams: Team[];

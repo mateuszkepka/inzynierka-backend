@@ -7,7 +7,7 @@ children:
   - requests-auth
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTYzMjA4NTgzMSwiZXhwIjoxNjMyMTIxODMxfQ.WLWnIj5z2TR05RMawhTLNSmj0xz34rE3S8mrfKtRfTo;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTYzMjE2MDE3NiwiZXhwIjoxNjMyMTk2MTc2fQ.VZ6CVVAZ4MX0s_owLcXe0csLwM-tkY7N9AQrAlBWhWc;
     Expires=Infinity; Domain=localhost; Path=/auth; HttpOnly;
 variablesArray: []
 authData:

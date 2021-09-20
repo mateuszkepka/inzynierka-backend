@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Ladder } from "./ladder.entity";
-import { Roster } from "./roster.entity";
+import { Ladder } from './ladder.entity';
+import { Roster } from './roster.entity';
 
 @Entity()
 export class LadderStanding {

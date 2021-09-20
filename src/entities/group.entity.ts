@@ -1,8 +1,8 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { GroupRule } from "./group-rule.entity";
-import { GroupStanding } from "./group-standing.entity";
-import { Tournament } from "./tournament.entity";
+import { GroupRule } from './group-rule.entity';
+import { GroupStanding } from './group-standing.entity';
+import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Group {
@@ -16,7 +16,7 @@ export class Group {
     numberOfQualifying: number;
 
     @OneToMany(() => GroupRule, (groupRule) => groupRule.group)
-    groupRules: GroupRule[]; 
+    groupRules: GroupRule[];
 
     @OneToMany(() => GroupStanding, (groupStanding) => groupStanding.group)
     groupStandings: GroupStanding[];

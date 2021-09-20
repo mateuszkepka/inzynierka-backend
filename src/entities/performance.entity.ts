@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Map } from "./map.entity";
-import { Player } from "./player.entity";
+import { Map } from './map.entity';
+import { Player } from './player.entity';
 
 @Entity()
 export class Performance {
@@ -10,13 +10,13 @@ export class Performance {
 
     @Column()
     kills: number;
-    
+
     @Column()
     deaths: number;
-    
+
     @Column()
     assists: number;
-    
+
     @ManyToOne(() => Player, (player) => player.performances)
     player: Player;
 

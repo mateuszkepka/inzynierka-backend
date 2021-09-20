@@ -1,31 +1,38 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Player } from "./player.entity";
-import { Suspension } from "./suspension.entity";
-import { Tournament } from "./tournament.entity";
-import { TournamentAdmin } from "./tournament-admin.entity";
+import { Expose } from 'class-transformer';
+import { Player } from './player.entity';
+import { Suspension } from './suspension.entity';
+import { Tournament } from './tournament.entity';
+import { TournamentAdmin } from './tournament-admin.entity';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
+    @Expose()
     userId: number;
 
-    @Column({ default: `user_name` })
+    @Column()
+    @Expose()
     username: string;
 
     @Column({ unique: true })
+    @Expose()
     email: string;
-    
+
     @Column()
     password: string;
-    
-    @Column({ default: `pl` })
+
+    @Column()
+    @Expose()
     country: string;
-    
-    @Column({default: `PJATK` })
+
+    @Column()
+    @Expose()
     university: string;
-    
-    @Column({ default: `s1234` })
+
+    @Column()
+    @Expose()
     studentId: string;
 
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
@@ -36,7 +43,7 @@ export class User {
 
     @OneToMany(() => Player, (player) => player.user)
     players: Player[];
-    
+
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
     tournamentAdmins: TournamentAdmin[];
 }

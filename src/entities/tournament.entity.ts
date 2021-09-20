@@ -1,13 +1,13 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Game } from "./game.entity";
-import { Group } from "./group.entity";
-import { Ladder } from "./ladder.entity";
-import { Match } from "./match.entity";
-import { Preset } from "./preset.entity";
-import { Prize } from "./prize.entity";
-import { TournamentAdmin } from "./tournament-admin.entity";
-import { User } from "./user.entity";
+import { Game } from './game.entity';
+import { Group } from './group.entity';
+import { Ladder } from './ladder.entity';
+import { Match } from './match.entity';
+import { Preset } from './preset.entity';
+import { Prize } from './prize.entity';
+import { TournamentAdmin } from './tournament-admin.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Tournament {
@@ -25,13 +25,13 @@ export class Tournament {
 
     @Column()
     registerStartDate: Date;
-    
+
     @Column()
     registerEndDate: Date;
-    
+
     @Column()
     tournamentStartDate: Date;
-    
+
     @Column()
     tournamentEndDate: Date;
 

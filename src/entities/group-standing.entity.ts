@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Group } from "./group.entity";
-import { Roster } from "./roster.entity";
+import { Group } from './group.entity';
+import { Roster } from './roster.entity';
 
 @Entity()
 export class GroupStanding {

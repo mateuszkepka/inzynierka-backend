@@ -1,26 +1,17 @@
-import * as Joi from 'joi';
-import * as entities from './entities';
+import * as entities from '../../entities';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Module, ValidationPipe } from '@nestjs/common';
 
-import { APP_PIPE } from '@nestjs/core';
-import { AuthModule } from './modules/auth/auth.module';
+import { Module } from '@nestjs/common';
+import { Seeder } from './seeder';
+import { SeedersModule } from './seeders.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './modules/users/users.module';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: `.env`,
-            validationSchema: Joi.object({
-                DB_NAME: Joi.string().required(),
-                DB_PASSWORD: Joi.string().required(),
-                DB_USER: Joi.string().required(),
-                JWT_SECRET: Joi.string().required(),
-                JWT_EXPIRATION_TIME: Joi.string().required(),
-            }),
         }),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
@@ -56,17 +47,8 @@ import { UsersModule } from './modules/users/users.module';
                 };
             },
         }),
-        UsersModule,
-        AuthModule,
+        SeedersModule,
     ],
-    controllers: [],
-    providers: [
-        {
-            provide: APP_PIPE,
-            useValue: new ValidationPipe({
-                whitelist: true,
-            }),
-        },
-    ],
+    providers: [Seeder],
 })
-export class AppModule {}
+export class SeederModule {}

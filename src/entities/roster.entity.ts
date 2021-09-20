@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ActiveRoster } from "./active-roster.entity";
-import { GroupStanding } from "./group-standing.entity";
-import { LadderStanding } from "./ladder-standing.entity";
-import { Match } from "./match.entity";
-import { Team } from "./team.entity";
+import { ActiveRoster } from './active-roster.entity';
+import { GroupStanding } from './group-standing.entity';
+import { LadderStanding } from './ladder-standing.entity';
+import { Match } from './match.entity';
+import { Team } from './team.entity';
 
 @Entity()
 export class Roster {

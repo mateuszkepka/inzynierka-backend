@@ -1,8 +1,8 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Map } from "./map.entity";
-import { Roster } from "./roster.entity";
-import { Tournament } from "./tournament.entity";
+import { Map } from './map.entity';
+import { Roster } from './roster.entity';
+import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Match {
@@ -31,5 +31,5 @@ export class Match {
     secondRoster: Roster;
 
     @OneToMany(() => Map, (map) => map.match)
-    maps: Map[]
+    maps: Map[];
 }
