@@ -1,12 +1,16 @@
 enabled: true
 children: []
-variablesArray: []
+variablesArray:
+  - key: user
+    value: >-
+      {userId :  18, username :  "username," email :  "abc@abc.com", country : 
+      "Poland", university :  "University", studentId :  "s1234"}
 type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: 'http://localhost:3000/auth/log-in'
+    method: GET
+    url: 'http://localhost:3000/auth/refresh'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -17,9 +21,9 @@ requestData:
         "email": "abc@abc.com",
         "password": "password",
         "userId": 18,
-        "username": "user_name",
-        "country": "pl",
-        "university": "PJATK",
+        "username": "username",
+        "country": "Poland",
+        "university": "University",
         "studentId": "s1234"
       }
     xmlBody: ''
@@ -31,4 +35,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in
+name: refresh-token

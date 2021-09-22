@@ -4,6 +4,7 @@ children:
   - log-in
   - register
   - log-out
+  - refresh-token
 variablesArray: []
 type: Folder
 authData:

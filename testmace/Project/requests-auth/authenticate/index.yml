@@ -7,9 +7,15 @@ requestData:
   request:
     method: GET
     url: 'http://localhost:3000/auth'
-  headers: []
+  headers:
+    - isChecked: false
+      name: User-Agent
+      value: ''
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - isChecked: false
+      name: user
+      value: ''
   body:
     type: Json
     jsonBody: ''

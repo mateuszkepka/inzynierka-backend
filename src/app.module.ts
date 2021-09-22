@@ -20,6 +20,8 @@ import { UsersModule } from './modules/users/users.module';
                 DB_USER: Joi.string().required(),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRATION_TIME: Joi.string().required(),
+                JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+                JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
             }),
         }),
         TypeOrmModule.forRootAsync({

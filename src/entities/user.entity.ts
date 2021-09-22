@@ -35,6 +35,11 @@ export class User {
     @Expose()
     studentId: string;
 
+    @Column({
+        nullable: true,
+    })
+    currentRefreshToken?: string;
+
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
     organizedTournaments: Tournament[];
 

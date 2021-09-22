@@ -7,8 +7,11 @@ children:
   - requests-auth
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTYzMjE2MDE3NiwiZXhwIjoxNjMyMTk2MTc2fQ.VZ6CVVAZ4MX0s_owLcXe0csLwM-tkY7N9AQrAlBWhWc;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzIzNDIxNDMsImV4cCI6MTYzMjM0MjE3OX0.3y1-eovr6iEfjaInPYdusvOmrDhBSt3ANc_StRjAuoE;
     Expires=Infinity; Domain=localhost; Path=/auth; HttpOnly;
+  - >-
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzIzNDIxMzksImV4cCI6MTYzMjQ0MjEzOX0.X_OSF8a28ZpFlpgI881QcsgYtS4BBsIQwfYVDGKY55o;
+    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
 variablesArray: []
 authData:
   type: inherit
