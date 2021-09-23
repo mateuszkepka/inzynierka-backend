@@ -5,14 +5,17 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: GET
-    url: '${$env.url}/auth'
+    method: PUT
+    url: '${$env.url}/users/9'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "email": "aaa@gmail.com"
+      }
     xmlBody: ''
     textBody: ''
     formData: []
@@ -22,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: authenticate
+name: patch

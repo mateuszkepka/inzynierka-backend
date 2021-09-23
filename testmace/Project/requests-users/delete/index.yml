@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: GET
-    url: '${$env.url}/auth'
+    method: DELETE
+    url: '${$env.url}/users/10'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: authenticate
+name: delete

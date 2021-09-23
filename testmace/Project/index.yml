@@ -5,12 +5,14 @@ environments:
   environments: {}
 children:
   - requests-auth
+  - requests-users
+  - requests-suspensions
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzIzNDIxNDMsImV4cCI6MTYzMjM0MjE3OX0.3y1-eovr6iEfjaInPYdusvOmrDhBSt3ANc_StRjAuoE;
-    Expires=Infinity; Domain=localhost; Path=/auth; HttpOnly;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzI0MjkzMTcsImV4cCI6MTYzMjQyOTM1M30.y_uQzi5p8KwP9hwXVFBkFonOTIvgOASGGHNyMufCYYs;
+    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzIzNDIxMzksImV4cCI6MTYzMjQ0MjEzOX0.X_OSF8a28ZpFlpgI881QcsgYtS4BBsIQwfYVDGKY55o;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzI0MjkzMTcsImV4cCI6MTYzMjUyOTMxN30.EIbqz-NMj2cFUnTXYtotlPVUDW89tOo1DlTZC-Qw57Q;
     Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
 variablesArray: []
 authData:

@@ -6,6 +6,7 @@ import {
     PlayersSeeder,
     PresetsSeeder,
     PrizesSeeder,
+    SuspensionsSeeder,
     TeamsSeeder,
     TournamentsSeeder,
     UsersSeeder,
@@ -26,6 +27,7 @@ export class Seeder {
         private readonly prizesSeeder: PrizesSeeder,
         private readonly teamsSeeder: TeamsSeeder,
         private readonly tournamentsSeeder: TournamentsSeeder,
+        private readonly suspensionsSeeder: SuspensionsSeeder,
     ) {}
 
     async seed() {
@@ -39,5 +41,6 @@ export class Seeder {
         await this.prizesSeeder.seed(10);
         await this.teamsSeeder.seed(10);
         await this.tournamentsSeeder.seed(10);
+        await this.suspensionsSeeder.seed(10);
     }
 }

@@ -14,7 +14,7 @@ export class UsersService {
         if (user) {
             return user;
         }
-        throw new NotFoundException(`User with this email does not exist`);
+        throw new NotFoundException(`User with this id does not exist`);
     }
 
     async getByEmail(email: string) {
@@ -29,6 +29,24 @@ export class UsersService {
         const newUser = await this.usersRepository.create(user);
         await this.usersRepository.save(newUser);
         return newUser;
+    }
+
+    async update(id: number, attributes: Partial<User>) {
+        const user = await this.getById(id);
+        if (!user) {
+            throw new NotFoundException(`User not found`);
+        }
+
+        Object.assign(user, attributes);
+        return this.usersRepository.save(user);
+    }
+
+    async remove(id: number) {
+        const user = await this.getById(id);
+        if (!user) {
+            throw new NotFoundException(`User not found`);
+        }
+        return this.usersRepository.remove(user);
     }
 
     /* -------------------------------------------------------------------------- */

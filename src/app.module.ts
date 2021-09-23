@@ -6,6 +6,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 
 import { APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
+import { SuspensionsModule } from './modules/suspensions/suspensions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 
@@ -58,10 +59,10 @@ import { UsersModule } from './modules/users/users.module';
                 };
             },
         }),
-        UsersModule,
         AuthModule,
+        UsersModule,
+        SuspensionsModule,
     ],
-    controllers: [],
     providers: [
         {
             provide: APP_PIPE,

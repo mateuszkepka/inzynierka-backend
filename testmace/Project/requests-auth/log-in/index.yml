@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: 'http://localhost:3000/auth/log-in'
+    url: '${$env.url}/auth/log-in'
   headers: []
   disabledInheritedHeaders: []
   params: []
