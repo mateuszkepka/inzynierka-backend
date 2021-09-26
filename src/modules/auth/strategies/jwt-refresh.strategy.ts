@@ -20,11 +20,13 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, `jwt-ref
             ]),
             secretOrKey: configService.get<string>(`JWT_REFRESH_TOKEN_SECRET`),
             passReqToCallback: true,
+            ignoreExpiration: false,
         });
     }
 
     async validate(request: Request, payload: TokenPayload) {
         const refreshToken = request.cookies?.Refresh;
+
         return this.usersService.getUserIfRefreshTokenMatches(refreshToken, payload.userId);
     }
 }

@@ -10,6 +10,7 @@ export class UsersService {
     constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
 
     async getById(userId: number) {
+        console.log(`############`, userId);
         const user = await this.usersRepository.findOne({ userId });
         if (user) {
             return user;
@@ -63,7 +64,9 @@ export class UsersService {
     async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
         const user = await this.getById(userId);
 
-        const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken);
+        const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken, {
+            type: argon2.argon2id,
+        });
 
         if (isRefreshTokenMatching) {
             return user;
