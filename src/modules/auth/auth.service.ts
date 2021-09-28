@@ -52,7 +52,8 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_EXPIRATION_TIME`),
         });
-        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
+        // TODO: HttpOnly should be true on prod and false on dev environment
+        return `Authentication=${token}; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_EXPIRATION_TIME`,
         )}`;
     }
@@ -65,7 +66,8 @@ export class AuthService {
             expiresIn: this.configService.get<string>(`JWT_REFRESH_TOKEN_EXPIRATION_TIME`),
         });
 
-        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
+        // TODO: HttpOnly should be true on prod and false on dev environment
+        const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_REFRESH_TOKEN_EXPIRATION_TIME`,
         )}`;
 

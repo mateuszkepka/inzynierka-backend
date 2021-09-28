@@ -15,12 +15,7 @@ requestData:
     jsonBody: |-
       {
         "email": "abc@abc.com",
-        "password": "password",
-        "userId": 18,
-        "username": "user_name",
-        "country": "pl",
-        "university": "PJATK",
-        "studentId": "s1234"
+        "password": "password"
       }
     xmlBody: ''
     textBody: ''
