@@ -9,11 +9,11 @@ children:
   - requests-suspensions
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzI4NTI2NjIsImV4cCI6MTYzMjg1MjY3N30.1no7ib7CjPFnnmr0lOuuwOlYLAuSjCt1YNBgpWwf1x4;
-    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzMyMDYxMjEsImV4cCI6MTYzMzIwNjEzNn0.Pm-mPKpB2_2ukFaIjQRiKeP0hImGnWLvK6fw6JtfLNQ;
+    Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzI4NTI2NjIsImV4cCI6MTYzMjk1MjY2Mn0.Y3tKGD7UhLLcMR-jKv2e2zHXIKbbnYTbixu3NmIVGXw;
-    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzMyMDYwNDQsImV4cCI6MTYzMzMwNjA0NH0.DEFgDXRM5m5bfBTTKxLE5CswGKGogw-slaaNmZ3HTUw;
+    Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:
   type: inherit

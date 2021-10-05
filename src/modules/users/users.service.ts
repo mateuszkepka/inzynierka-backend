@@ -10,7 +10,6 @@ export class UsersService {
     constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
 
     async getById(userId: number) {
-        console.log(`############`, userId);
         const user = await this.usersRepository.findOne({ userId });
         if (user) {
             return user;
