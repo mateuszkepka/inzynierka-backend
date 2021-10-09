@@ -18,6 +18,7 @@ export class UsersSeeder {
         }
 
         console.log(`Seeding "Users" table...`);
+        const createdUsers = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const user: Partial<User> = {
@@ -29,7 +30,9 @@ export class UsersSeeder {
                 studentId: faker.datatype.uuid(),
             };
             const newUser = await this.usersRepository.create(user);
+            createdUsers.push(newUser);
             await this.usersRepository.save(newUser);
         }
+        return createdUsers;
     }
 }

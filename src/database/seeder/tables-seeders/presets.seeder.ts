@@ -19,6 +19,8 @@ export class PresetsSeeder {
 
         console.log(`Seeding "Preset" table...`);
 
+        const createdPresets = [];
+
         for (let i = 0; i < numberOfRows; ++i) {
             const preset: Partial<Preset> = {
                 mapName: faker.name.findName(),
@@ -26,7 +28,10 @@ export class PresetsSeeder {
                 spectatorRules: faker.lorem.sentences(5),
             };
             const newPreset = await this.presetsRepository.create(preset);
+            createdPresets.push(newPreset);
             await this.presetsRepository.save(newPreset);
         }
+
+        return createdPresets;
     }
 }

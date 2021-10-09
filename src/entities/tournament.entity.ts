@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -39,6 +47,7 @@ export class Tournament {
     description: string;
 
     @OneToOne(() => Prize, (prize) => prize.tournament)
+    @JoinColumn()
     prize: Prize;
 
     @OneToMany(() => Game, (game) => game.tournament)
