@@ -7,12 +7,13 @@ children:
   - requests-auth
   - requests-users
   - requests-suspensions
+  - requests-tournaments
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzMyMDYxMjEsImV4cCI6MTYzMzIwNjEzNn0.Pm-mPKpB2_2ukFaIjQRiKeP0hImGnWLvK6fw6JtfLNQ;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzM3OTgyODYsImV4cCI6MTYzMzg5ODI4Nn0.eae2UIS-Qj3rf4-TldidQyGFihJe7D671sDvwUKcUSA;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2MzMyMDYwNDQsImV4cCI6MTYzMzMwNjA0NH0.DEFgDXRM5m5bfBTTKxLE5CswGKGogw-slaaNmZ3HTUw;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzM3OTgyODYsImV4cCI6MTYzNDc5ODI4Nn0.TcF0dZvGQ_MkQEWjq6XyVBTsp_sj4gWcdnNVapvoM-M;
     Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:

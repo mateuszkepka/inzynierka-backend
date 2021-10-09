@@ -1,0 +1,14 @@
+enabled: true
+children:
+  - create-tournament
+  - get-by-id
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-tournaments

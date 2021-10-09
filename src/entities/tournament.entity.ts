@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Game } from './game.entity';
@@ -15,27 +16,35 @@ export class Tournament {
     tournamentId: number;
 
     @Column()
+    @Expose()
     name: string;
 
     @Column()
+    @Expose()
     numberOfPlayers: number;
 
     @Column()
+    @Expose()
     numberOfTeams: number;
 
     @Column()
+    @Expose()
     registerStartDate: Date;
 
     @Column()
+    @Expose()
     registerEndDate: Date;
 
     @Column()
+    @Expose()
     tournamentStartDate: Date;
 
     @Column()
+    @Expose()
     tournamentEndDate: Date;
 
     @Column()
+    @Expose()
     description: string;
 
     @OneToOne(() => Prize, (prize) => prize.tournament)
@@ -60,5 +69,6 @@ export class Tournament {
     preset: Preset;
 
     @ManyToOne(() => User, (user) => user.organizedTournaments)
+    @Expose()
     organizer: User;
 }
