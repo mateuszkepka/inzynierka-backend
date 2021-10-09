@@ -21,6 +21,7 @@ export class TeamsSeeder {
         }
 
         console.log(`Seeding "Team" table...`);
+        const createdTeams = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const team: Partial<Team> = {
@@ -28,7 +29,9 @@ export class TeamsSeeder {
                 creationDate: faker.datatype.datetime(),
             };
             const newTeam = await this.teamsRepository.create(team);
+            createdTeams.push(newTeam);
             await this.teamsRepository.save(newTeam);
         }
+        return createdTeams;
     }
 }

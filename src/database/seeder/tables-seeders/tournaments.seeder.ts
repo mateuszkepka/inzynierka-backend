@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament } from 'src/entities';
+import { Preset, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -11,7 +11,7 @@ export class TournamentsSeeder {
         private readonly tournamentsRepository: Repository<Tournament>,
     ) {}
 
-    async seed(numberOfRows: number) {
+    async seed(numberOfRows: number, presets: Preset[], users: User[]) {
         const isSeeded = await this.tournamentsRepository.findOne();
 
         if (isSeeded) {
@@ -21,6 +21,7 @@ export class TournamentsSeeder {
         }
 
         console.log(`Seeding "Tournament" table...`);
+        const createdTournaments = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const tournament: Partial<Tournament> = {
@@ -32,9 +33,14 @@ export class TournamentsSeeder {
                 tournamentStartDate: faker.datatype.datetime(),
                 tournamentEndDate: faker.datatype.datetime(),
                 description: faker.lorem.sentences(5),
+                preset: presets[i],
+                organizer: users[i],
             };
             const newTournament = await this.tournamentsRepository.create(tournament);
+            createdTournaments.push(newTournament);
             await this.tournamentsRepository.save(newTournament);
         }
+
+        return createdTournaments;
     }
 }

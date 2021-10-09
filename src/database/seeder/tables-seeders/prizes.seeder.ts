@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Prize } from 'src/entities';
+import { Prize, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -8,7 +8,7 @@ import * as faker from 'faker';
 export class PrizesSeeder {
     constructor(@InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>) {}
 
-    async seed(numberOfRows: number) {
+    async seed(numberOfRows: number, tournaments: Tournament[]) {
         const isSeeded = await this.prizesRepository.findOne();
 
         if (isSeeded) {
@@ -18,14 +18,18 @@ export class PrizesSeeder {
         }
 
         console.log(`Seeding "Prize" table...`);
+        const createdPrizes = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const prize: Partial<Prize> = {
                 currency: faker.finance.currencyCode(),
                 distribution: faker.lorem.word(1),
+                tournament: tournaments[i],
             };
             const newPrize = await this.prizesRepository.create(prize);
+            createdPrizes.push(newPrize);
             await this.prizesRepository.save(newPrize);
         }
+        return createdPrizes;
     }
 }
