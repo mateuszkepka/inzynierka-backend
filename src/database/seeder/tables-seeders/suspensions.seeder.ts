@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Suspension } from 'src/entities';
+import { Suspension, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -11,7 +11,7 @@ export class SuspensionsSeeder {
         private readonly suspensionsRepository: Repository<Suspension>,
     ) {}
 
-    async seed(numberOfRows: number) {
+    async seed(numberOfRows: number, users: User[]) {
         const isSeeded = await this.suspensionsRepository.findOne();
 
         if (isSeeded) {
@@ -21,15 +21,19 @@ export class SuspensionsSeeder {
         }
 
         console.log(`Seeding "Suspension" table...`);
+        const createdSuspensions = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const suspension: Partial<Suspension> = {
                 suspensionStartDate: faker.datatype.datetime(),
                 suspensionEndDate: faker.datatype.datetime(),
                 reason: faker.lorem.sentences(5),
+                user: users[i],
             };
             const newSuspension = await this.suspensionsRepository.create(suspension);
+            createdSuspensions.push(newSuspension);
             await this.suspensionsRepository.save(newSuspension);
         }
+        return createdSuspensions;
     }
 }

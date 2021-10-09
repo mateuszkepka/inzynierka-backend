@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { Performance } from 'src/entities';
+import { Map, Performance, Player } from 'src/entities';
 
 @Injectable()
 export class PerformancesSeeder {
@@ -11,7 +11,7 @@ export class PerformancesSeeder {
         private readonly performancesRepository: Repository<Performance>,
     ) {}
 
-    async seed(numberOfRows: number) {
+    async seed(numberOfRows: number, players: Player[], maps: Map[]) {
         const isSeeded = await this.performancesRepository.findOne();
 
         if (isSeeded) {
@@ -21,15 +21,20 @@ export class PerformancesSeeder {
         }
 
         console.log(`Seeding "Performance" table...`);
+        const createdPerformances = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
             const performance: Partial<Performance> = {
                 kills: faker.datatype.number(),
                 deaths: faker.datatype.number(),
                 assists: faker.datatype.number(),
+                player: players[i],
+                map: maps[i],
             };
             const newPerformance = await this.performancesRepository.create(performance);
+            createdPerformances.push(newPerformance);
             await this.performancesRepository.save(newPerformance);
         }
+        return createdPerformances;
     }
 }
