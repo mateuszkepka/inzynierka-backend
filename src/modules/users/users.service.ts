@@ -10,7 +10,10 @@ export class UsersService {
     constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
 
     async getById(userId: number) {
-        const user = await this.usersRepository.findOne({ userId });
+        const user = await this.usersRepository.findOne(
+            { userId },
+            { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
+        );
         if (user) {
             return user;
         }
