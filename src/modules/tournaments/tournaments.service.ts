@@ -49,6 +49,14 @@ export class TournamentsService {
         return this.tournamentsRepository.remove(tournament);
     }
 
+    async getAllTournaments() {
+        const tournament = await this.tournamentsRepository.findAndCount({});
+        if (tournament) {
+            return tournament;
+        }
+        throw new NotFoundException(`Tournament with such name does not exist`);
+    }
+
     async update(id: number, attributes: Partial<Tournament>) {
         const tournament = await this.getById(id);
         if (!tournament) {
