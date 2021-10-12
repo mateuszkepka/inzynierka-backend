@@ -50,11 +50,12 @@ export class TournamentsService {
     }
 
     async getAllTournaments() {
-        const tournament = await this.tournamentsRepository.findAndCount({});
-        if (tournament) {
-            return tournament;
+        const tournament = await this.tournamentsRepository.find();
+        const tournaments = JSON.stringify(tournament);
+        if (tournaments == null) {
+            throw new NotFoundException(`Not even single tournament exists in the system`);
         }
-        throw new NotFoundException(`Tournament with such name does not exist`);
+        return tournaments;
     }
 
     async update(id: number, attributes: Partial<Tournament>) {

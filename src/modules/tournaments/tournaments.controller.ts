@@ -5,11 +5,13 @@ import {
     Get,
     NotFoundException,
     Param,
+    Post,
     Put,
     SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
@@ -31,6 +33,20 @@ export class TournamentsController {
         return torunament;
     }
 
+    @Get()
+    async find() {
+        const torunament = await this.tournamentsService.getAllTournaments();
+
+        if (!torunament) {
+            throw new NotFoundException(`Tournaments not found`);
+        }
+
+        return torunament;
+    }
+    @Post(`create`)
+    async create(@Body() tournamentdata: CreateTournamentDto) {
+        return this.tournamentsService.create(tournamentdata);
+    }
     @Delete(`/:id`)
     removeTournament(@Param(`id`) id: string) {
         return this.tournamentsService.remove(Number(id));

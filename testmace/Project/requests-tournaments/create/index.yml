@@ -1,0 +1,35 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/tournaments/create'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "name": "Fanny.Stark62",
+        "numberOfPlayers": 1,
+        "numberOfTeams": 200,
+        "registerStartDate": "2005-12-16",
+        "registerEndDate": "2005-12-16",
+        "tournamentStartDate": "2005-12-16",
+        "tournamentEndDate": "2005-12-16",
+        "description": "Quibusdam magni ipsaet ui. Voluptates par"
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: create
