@@ -41,14 +41,18 @@ export class User {
     currentRefreshToken?: string;
 
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
+    @Expose()
     organizedTournaments: Tournament[];
 
     @OneToMany(() => Suspension, (suspension) => suspension.user)
+    @Expose()
     suspensions: Suspension[];
 
     @OneToMany(() => Player, (player) => player.user)
+    @Expose()
     players: Player[];
 
-    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
+    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
+    @Expose()
     tournamentAdmins: TournamentAdmin[];
 }
