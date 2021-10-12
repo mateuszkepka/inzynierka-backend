@@ -2,27 +2,37 @@ projectUId: 05b158e0-198b-11ec-9db0-d3eb82b3c996
 type: Project
 name: Project
 environments:
-  environments: {}
+    environments: {}
 children:
-  - requests-auth
-  - requests-users
-  - requests-suspensions
+    - requests-auth
+    - requests-users
+    - requests-suspensions
+    - requests-tournaments
 cookies:
+<<<<<<< HEAD
+    - >-
+        Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzM3OTgyODYsImV4cCI6MTYzMzg5ODI4Nn0.eae2UIS-Qj3rf4-TldidQyGFihJe7D671sDvwUKcUSA;
+        Expires=Infinity; Domain=localhost; Path=/;
+    - >-
+        Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzM3OTgyODYsImV4cCI6MTYzNDc5ODI4Nn0.TcF0dZvGQ_MkQEWjq6XyVBTsp_sj4gWcdnNVapvoM-M;
+        Expires=Infinity; Domain=localhost; Path=/;
+=======
   - >-
     Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJpYXQiOjE2MzM5NzI4NTYsImV4cCI6MTYzMzk3Mjg3MX0.9JONvyyr5Ihlzr_wkQ1aWYTDuRfmeGJo3iyitdBM8wM;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
     Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJpYXQiOjE2MzM5NzI4NTYsImV4cCI6MTYzNDA3Mjg1Nn0.ZX-VN3aE79XilrfMB3MtDz_c6oNoikFUHu8sYLOVd38;
     Expires=Infinity; Domain=localhost; Path=/;
+>>>>>>> 16fff1bcf3cc76fe8e099137abf38cab021cb4d4
 variablesArray: []
 authData:
-  type: inherit
+    type: inherit
 settings:
-  proxy:
-    enable: false
+    proxy:
+        enable: false
 enabled: true
 requestData:
-  headers: []
-  disabledInheritedHeaders: []
-  strictSSL: 'No'
-  followRedirect: 'Yes'
+    headers: []
+    disabledInheritedHeaders: []
+    strictSSL: 'No'
+    followRedirect: 'Yes'
