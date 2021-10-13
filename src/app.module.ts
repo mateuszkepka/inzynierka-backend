@@ -10,6 +10,7 @@ import { SuspensionsModule } from './modules/suspensions/suspensions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
+import { TeamsModule } from './modules/teams/teams.module';
 
 @Module({
     imports: [
@@ -64,6 +65,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
         UsersModule,
         SuspensionsModule,
         TournamentsModule,
+        TeamsModule,
     ],
     providers: [
         {

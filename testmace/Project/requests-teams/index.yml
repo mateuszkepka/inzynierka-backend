@@ -1,8 +1,7 @@
 enabled: true
 children:
-  - getall
   - get-by-id
-  - create
+  - getall
 variablesArray: []
 type: Folder
 authData:
@@ -12,4 +11,4 @@ requestData:
   disabledInheritedHeaders: []
   strictSSL: Inherit
   followRedirect: Inherit
-name: requests-tournaments
+name: requests-teams
