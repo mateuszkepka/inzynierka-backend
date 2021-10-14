@@ -12,7 +12,7 @@ import { ActiveRoster } from './active-roster.entity';
 import { Game } from '.';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
-import { User } from './user.entity';
+import { User } from '../modules/users/user.entity';
 
 @Entity()
 export class Player {
@@ -31,7 +31,7 @@ export class Player {
     @Column()
     region: string;
 
-    @ManyToOne(() => User, (user) => user.players)
+    @ManyToOne(() => User, (user) => user.accounts)
     user: User;
 
     @OneToMany(() => ActiveRoster, (activeRoster) => activeRoster.player)

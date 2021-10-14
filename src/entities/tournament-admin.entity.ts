@@ -1,7 +1,7 @@
 import { Entity, ManyToOne } from 'typeorm';
 
 import { Tournament } from './tournament.entity';
-import { User } from './user.entity';
+import { User } from '../modules/users/user.entity';
 
 @Entity()
 export class TournamentAdmin {

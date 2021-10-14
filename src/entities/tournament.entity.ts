@@ -15,7 +15,7 @@ import { Match } from './match.entity';
 import { Preset } from './preset.entity';
 import { Prize } from './prize.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { User } from './user.entity';
+import { User } from '../modules/users/user.entity';
 
 @Entity()
 export class Tournament {

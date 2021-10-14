@@ -2,17 +2,19 @@ projectUId: 05b158e0-198b-11ec-9db0-d3eb82b3c996
 type: Project
 name: Project
 environments:
-  environments: {}
+  environments:
+    dev:
+      url: 'localhost:3000'
 children:
   - requests-auth
   - requests-users
   - requests-suspensions
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJpYXQiOjE2MzM5NzI4NTYsImV4cCI6MTYzMzk3Mjg3MX0.9JONvyyr5Ihlzr_wkQ1aWYTDuRfmeGJo3iyitdBM8wM;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzQxNjU0NTgsImV4cCI6MTYzNDE3NTQ1OH0.vUwLTiIVHHE4RjxNXm1TnAvb9e5vHcIFMKVXwMtRRYc;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJpYXQiOjE2MzM5NzI4NTYsImV4cCI6MTYzNDA3Mjg1Nn0.ZX-VN3aE79XilrfMB3MtDz_c6oNoikFUHu8sYLOVd38;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2MzQxNjU0NTgsImV4cCI6MTYzNDI2NTQ1OH0.RjF_a1Rypr4-sl_McOORUTt5eWvT9i-cBuzdsDdL64k;
     Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:

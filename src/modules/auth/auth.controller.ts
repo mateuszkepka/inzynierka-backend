@@ -15,11 +15,15 @@ import RequestWithUser from './interfaces/request-with-user.interface';
 import JwtAuthGuard from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { User } from 'src/entities';
+import { DefaultUserDto } from '../users/dto/default-user.dto';
 
 @Controller(`auth`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+// @SerializeOptions({
+//     strategy: `excludeAll`,
+// })
+@Serialize(DefaultUserDto)
 export class AuthController {
     constructor(
         private readonly authService: AuthService,

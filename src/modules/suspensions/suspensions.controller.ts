@@ -6,6 +6,7 @@ import {
     Get,
     NotFoundException,
     Param,
+    Post,
     Put,
     Req,
     SerializeOptions,

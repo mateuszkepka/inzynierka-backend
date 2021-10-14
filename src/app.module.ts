@@ -2,13 +2,14 @@ import * as Joi from 'joi';
 import * as entities from './entities';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Module, ValidationPipe } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 
 import { APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { SuspensionsModule } from './modules/suspensions/suspensions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
+import { CurrentUserMiddleware } from './modules/users/middlewares/current-user.middleware';
 
 @Module({
     imports: [
@@ -72,4 +73,8 @@ import { UsersModule } from './modules/users/users.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(CurrentUserMiddleware).forRoutes('users');
+    }
+}
