@@ -1,10 +1,9 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
-import { TournamentAdmin } from './tournament-admin.entity';
 
 @Entity()
 export class User {
@@ -52,7 +51,8 @@ export class User {
     @Expose()
     players: Player[];
 
-    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
+    @ManyToMany(() => Tournament)
+    @JoinTable()
     @Expose()
-    tournamentAdmins: TournamentAdmin[];
+    tournamentAdmins: Tournament[];
 }
