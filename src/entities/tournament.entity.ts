@@ -21,6 +21,7 @@ import { User } from './user.entity';
 @Entity()
 export class Tournament {
     @PrimaryGeneratedColumn()
+    @Expose()
     tournamentId: number;
 
     @Column()
