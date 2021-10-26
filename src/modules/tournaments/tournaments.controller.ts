@@ -44,8 +44,8 @@ export class TournamentsController {
         return torunament;
     }
     @Post(`create`)
-    async create(@Body() tournamentdata: CreateTournamentDto) {
-        return this.tournamentsService.create(tournamentdata);
+    async create(@Body() tournamentData: CreateTournamentDto) {
+        return this.tournamentsService.create(tournamentData);
     }
     @Delete(`/:id`)
     removeTournament(@Param(`id`) id: string) {

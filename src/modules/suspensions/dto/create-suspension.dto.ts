@@ -1,12 +1,12 @@
-import { IsDate, IsString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 import { User } from 'src/entities';
 
 export class CreateSuspensionDto {
-    @IsDate()
+    @IsDateString()
     suspensionStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     suspensionEndDate: Date;
 
     @IsString()

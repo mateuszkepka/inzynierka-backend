@@ -44,8 +44,8 @@ export class TeamsController {
         return torunament;
     }
     @Post(`create`)
-    async create(@Body() teamdata: CreateTeamDto) {
-        return this.teamsService.create(teamdata);
+    async create(@Body() teamData: CreateTeamDto) {
+        return this.teamsService.create(teamData);
     }
     @Delete(`/:id`)
     removeTeam(@Param(`id`) id: string) {

@@ -1,24 +1,25 @@
-import { IsString, IsNumber, IsDate } from 'class-validator';
+import { IsDateString, IsNumber, IsString } from 'class-validator';
+
 export class CreateTournamentDto {
     @IsString()
     name: string;
 
     @IsNumber()
-    numberofPlayers: number;
+    numberOfPlayers: number;
 
     @IsNumber()
-    numberofTeams: number;
+    numberOfTeams: number;
 
-    @IsDate()
+    @IsDateString()
     registerStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     registerEndDate: Date;
 
-    @IsDate()
+    @IsDateString()
     tournamentStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     tournamentEndDate: Date;
 
     @IsString()

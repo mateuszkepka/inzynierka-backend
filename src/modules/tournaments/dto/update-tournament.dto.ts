@@ -1,4 +1,5 @@
-import { IsString, IsNumber, IsDate, IsOptional } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
+
 export class UpdateTournamentDto {
     @IsString()
     @IsOptional()
@@ -6,25 +7,25 @@ export class UpdateTournamentDto {
 
     @IsNumber()
     @IsOptional()
-    numberofPlayers: number;
+    numberOfPlayers: number;
 
     @IsNumber()
     @IsOptional()
-    numberofTeams: number;
+    numberOfTeams: number;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     registerStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     registerEndDate: Date;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     tournamentStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     tournamentEndDate: Date;
 
