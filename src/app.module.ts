@@ -2,14 +2,14 @@ import * as Joi from 'joi';
 import * as entities from './entities';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 
-import { APP_PIPE } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { SuspensionsModule } from './modules/suspensions/suspensions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
-import { CurrentUserMiddleware } from './modules/users/middlewares/current-user.middleware';
+import { AssignUserInterceptor } from './interceptors/assign-user.interceptor';
 
 @Module({
     imports: [
@@ -62,19 +62,19 @@ import { CurrentUserMiddleware } from './modules/users/middlewares/current-user.
         }),
         AuthModule,
         UsersModule,
-        SuspensionsModule,
+        SuspensionsModule
     ],
     providers: [
         {
             provide: APP_PIPE,
             useValue: new ValidationPipe({
                 whitelist: true,
-            }),
+            }),            
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: AssignUserInterceptor,
         },
     ],
 })
-export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(CurrentUserMiddleware).forRoutes('users');
-    }
-}
+export class AppModule { }

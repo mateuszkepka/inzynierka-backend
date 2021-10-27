@@ -3,6 +3,7 @@ children:
   - delete
   - get-by-id
   - patch
+  - who-am-i
 variablesArray: []
 type: Folder
 authData:

@@ -7,13 +7,14 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
+    constructor(@InjectRepository(User)
+    private readonly usersRepository: Repository<User>) { }
 
-    findById(userId: number) {
+    async findById(userId: number) {
         if (!userId) {
             return null;
         }
-        const user = this.usersRepository.findOne(
+        const user = await this.usersRepository.findOne(
             { userId },
             { relations: ['suspensions', 'accounts', `organizedTournaments`, `tournamentAdmins`] },
         );

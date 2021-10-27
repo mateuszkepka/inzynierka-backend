@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { CreateSuspensionDto } from './dto/create-suspension.dto';
 import { UpdateSuspensionDto } from './dto/update-suspension.dto';
 
 import { SuspensionsService } from './suspensions.service';
@@ -23,14 +24,23 @@ import { SuspensionsService } from './suspensions.service';
     strategy: `excludeAll`,
 })
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) {}
+    constructor(private readonly suspensionsService: SuspensionsService) { }
+
+    @Post('/:id')
+    suspend(@Body() body: CreateSuspensionDto) {
+        const { player } = body;
+        if (!player) {
+            throw new BadRequestException(`Such player doesn't exist`);
+        }
+        return this.suspensionsService.suspend(body);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get(`/usersSuspensions`)
     async findByUser(@Req() request: RequestWithUser) {
         const { user } = request;
         if (!user) {
-            throw new BadRequestException(`No user given`);
+            throw new BadRequestException(`Such player doesn't exist`);
         }
 
         return await this.suspensionsService.getByUser(user);
@@ -39,11 +49,9 @@ export class SuspensionsController {
     @Get(`/:id`)
     async findById(@Param(`id`) id: string) {
         const suspension = await this.suspensionsService.getById(Number(id));
-
         if (!suspension) {
             throw new NotFoundException(`Suspension not found`);
         }
-
         return suspension;
     }
 

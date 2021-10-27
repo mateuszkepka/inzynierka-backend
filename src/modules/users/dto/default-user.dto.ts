@@ -10,7 +10,6 @@ export class DefaultUserDto {
     @Expose()
     email: string;
 
-    @Expose()
     password: string;
 
     @Expose()

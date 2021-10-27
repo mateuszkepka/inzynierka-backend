@@ -12,6 +12,7 @@ import {
 import { User } from 'src/entities';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from './decorators/current-user.decorator';
 import { DefaultUserDto } from './dto/default-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -23,6 +24,11 @@ import { UsersService } from './users.service';
 @Serialize(DefaultUserDto)
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
+
+    @Get('/whoami')
+    whoAmI(@CurrentUser() user: User) {
+        return user;
+    }
 
     @Get('/:id')
     @UseGuards(JwtAuthGuard)
