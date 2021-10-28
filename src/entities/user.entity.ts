@@ -1,37 +1,37 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Expose } from 'class-transformer';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
+import { TournamentAdmin } from './tournament-admin.entity';
+import { Expose } from 'class-transformer';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    @Expose()
     userId: number;
 
-    @Column()
     @Expose()
+    @Column()
     username: string;
 
-    @Column({ unique: true })
     @Expose()
+    @Column({ unique: true })
     email: string;
 
+    @Expose()
     @Column()
     password: string;
 
-    @Column()
     @Expose()
+    @Column()
     country: string;
 
-    @Column()
     @Expose()
+    @Column()
     university: string;
 
-    @Column()
     @Expose()
+    @Column()
     studentId: string;
 
     @Column({
@@ -39,20 +39,21 @@ export class User {
     })
     currentRefreshToken?: string;
 
+    @Expose()
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
     @Expose()
     organizedTournaments: Tournament[];
 
+    @Expose()
     @OneToMany(() => Suspension, (suspension) => suspension.user)
     @Expose()
     suspensions: Suspension[];
 
+    @Expose()
     @OneToMany(() => Player, (player) => player.user)
-    @Expose()
-    players: Player[];
+    accounts: Player[];
 
-    @ManyToMany(() => Tournament)
-    @JoinTable()
     @Expose()
-    tournamentAdmins: Tournament[];
+    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
+    tournamentAdmins: TournamentAdmin[];
 }

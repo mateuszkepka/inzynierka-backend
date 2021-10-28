@@ -1,5 +1,6 @@
 enabled: true
 children:
+  - suspend-player
   - get-by-user
   - get-by-id
 variablesArray: []

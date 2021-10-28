@@ -23,7 +23,7 @@ export class SuspensionsService {
         return await this.suspensionsRepository.find({ user });
     }
 
-    async create(suspension: CreateSuspensionDto) {
+    async suspend(suspension: CreateSuspensionDto) {
         const newSuspension = await this.suspensionsRepository.create(suspension);
         await this.suspensionsRepository.save(newSuspension);
         return newSuspension;

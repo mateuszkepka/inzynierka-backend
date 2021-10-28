@@ -31,7 +31,7 @@ export class Player {
     @Column()
     region: string;
 
-    @ManyToOne(() => User, (user) => user.players)
+    @ManyToOne(() => User, (user) => user.accounts)
     user: User;
 
     @OneToMany(() => ActiveRoster, (activeRoster) => activeRoster.player)

@@ -4,11 +4,12 @@ import * as entities from './entities';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 
-import { APP_PIPE } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { SuspensionsModule } from './modules/suspensions/suspensions.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
+import { AssignUserInterceptor } from './interceptors/assign-user.interceptor';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { TeamsModule } from './modules/teams/teams.module';
 
@@ -72,8 +73,12 @@ import { TeamsModule } from './modules/teams/teams.module';
             provide: APP_PIPE,
             useValue: new ValidationPipe({
                 whitelist: true,
-            }),
+            }),            
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: AssignUserInterceptor,
         },
     ],
 })
-export class AppModule {}
+export class AppModule { }

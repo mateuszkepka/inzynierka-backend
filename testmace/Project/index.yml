@@ -2,7 +2,9 @@ projectUId: 05b158e0-198b-11ec-9db0-d3eb82b3c996
 type: Project
 name: Project
 environments:
-  environments: {}
+  environments:
+    dev:
+      url: 'localhost:3000'
 children:
   - requests-auth
   - requests-users
