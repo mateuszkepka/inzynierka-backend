@@ -41,10 +41,12 @@ export class User {
 
     @Expose()
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
+    @Expose()
     organizedTournaments: Tournament[];
 
     @Expose()
     @OneToMany(() => Suspension, (suspension) => suspension.user)
+    @Expose()
     suspensions: Suspension[];
 
     @Expose()

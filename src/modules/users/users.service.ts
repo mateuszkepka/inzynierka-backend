@@ -10,30 +10,22 @@ export class UsersService {
     constructor(@InjectRepository(User)
     private readonly usersRepository: Repository<User>) { }
 
-    async findById(userId: number) {
-        if (!userId) {
-            return null;
-        }
+    async getById(userId: number) {
         const user = await this.usersRepository.findOne(
             { userId },
-            { relations: ['suspensions', 'accounts', `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
         );
-        return this.usersRepository.findOne(userId);
+        if (user) {
+            return user;
+        }
+        throw new NotFoundException('User with this id does not exist');
     }
 
-    // async getById(userId: number) {
-    //     const user = await this.usersRepository.findOne(
-    //         { userId },
-    //         { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
-    //     );
-    //     if (user) {
-    //         return user;
-    //     }
-    //     throw new NotFoundException(`User with this id does not exist`);
-    // }
-
-    getByEmail(email: string) {
-        const user = this.usersRepository.findOne({ email });
+    async getByEmail(email: string) {
+        const user = await this.usersRepository.findOne(
+            { email },
+            { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
+        );
         if (user) {
             return user;
         }

@@ -1,13 +1,13 @@
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 import { User } from 'src/entities';
 
 export class UpdateSuspensionDto {
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     suspensionStartDate: Date;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     suspensionEndDate: Date;
 
