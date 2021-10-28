@@ -33,7 +33,7 @@ export class UsersController {
     @Get('/:id')
     @UseGuards(JwtAuthGuard)
     findUser(@Param('id') id: string) {
-        const user = this.usersService.findById(parseInt(id));
+        const user = this.usersService.getById(parseInt(id));
         if (!user) {
             throw new NotFoundException('User not found');
         }

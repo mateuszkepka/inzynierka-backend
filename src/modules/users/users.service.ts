@@ -39,7 +39,7 @@ export class UsersService {
     }
 
     async update(id: number, attributes: Partial<User>) {
-        const user = await this.findById(id);
+        const user = await this.getById(id);
         if (!user) {
             throw new NotFoundException('User not found');
         }
@@ -49,7 +49,7 @@ export class UsersService {
     }
 
     async remove(id: number) {
-        const user = await this.findById(id);
+        const user = await this.getById(id);
         if (!user) {
             throw new NotFoundException('User not found');
         }
@@ -68,7 +68,7 @@ export class UsersService {
     }
 
     async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
-        const user = await this.findById(userId);
+        const user = await this.getById(userId);
 
         const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken, {
             type: argon2.argon2id,
