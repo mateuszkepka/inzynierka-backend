@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Player } from '../../entities/player.entity';
-import { Suspension } from '../../entities/suspension.entity';
-import { Tournament } from '../../entities/tournament.entity';
-import { TournamentAdmin } from '../../entities/tournament-admin.entity';
+import { Player } from './player.entity';
+import { Suspension } from './suspension.entity';
+import { Tournament } from './tournament.entity';
+import { TournamentAdmin } from './tournament-admin.entity';
 import { Expose } from 'class-transformer';
 
 @Entity()

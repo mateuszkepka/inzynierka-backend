@@ -2,6 +2,7 @@ import {
     NestInterceptor,
     ExecutionContext,
     CallHandler,
+    Injectable,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
@@ -13,6 +14,7 @@ interface DecodedToken {
     exp: number
 }
 
+@Injectable()
 export class AssignUserInterceptor implements NestInterceptor {
     constructor(private usersService: UsersService) { }
 
@@ -23,10 +25,9 @@ export class AssignUserInterceptor implements NestInterceptor {
         const decoded: DecodedToken = jwt.decode(token) as DecodedToken;
         const { userId } = decoded || {};
 
-        if (userId) {
-            //TODO getting user throws an error
-            //const user = await this.usersService.findById(userId);
-            request.currentUser = 'test';
+        if (userId) { 
+            const user = await this.usersService.getById(userId);
+            request.currentUser = user;
         }
 
         return handler.handle();

@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
-import { User } from '../modules/users/user.entity';
+import { User } from './user.entity';
 import { ValidateIf } from 'class-validator';
 
 @Entity()

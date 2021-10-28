@@ -12,7 +12,7 @@ import { ActiveRoster } from './active-roster.entity';
 import { Game } from '.';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
-import { User } from '../modules/users/user.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Player {
