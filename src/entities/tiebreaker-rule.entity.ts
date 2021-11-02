@@ -3,9 +3,9 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GroupRule } from './group-rule.entity';
 
 @Entity()
-export class TiebrakerRule {
+export class TiebreakerRule {
     @PrimaryGeneratedColumn()
-    tiebrakerRuleId: number;
+    tiebreakerRuleId: number;
 
     @Column()
     rule: string;

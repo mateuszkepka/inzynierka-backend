@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
@@ -10,28 +10,28 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number;
 
-    @Expose()
     @Column()
+    @Expose()
     username: string;
 
-    @Expose()
     @Column({ unique: true })
+    @Expose()
     email: string;
 
-    @Expose()
     @Column()
+    @Expose()
     password: string;
 
-    @Expose()
     @Column()
+    @Expose()
     country: string;
 
-    @Expose()
     @Column()
+    @Expose()
     university: string;
 
-    @Expose()
     @Column()
+    @Expose()
     studentId: string;
 
     @Column({
@@ -39,21 +39,17 @@ export class User {
     })
     currentRefreshToken?: string;
 
-    @Expose()
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
-    @Expose()
     organizedTournaments: Tournament[];
 
-    @Expose()
     @OneToMany(() => Suspension, (suspension) => suspension.user)
     @Expose()
     suspensions: Suspension[];
 
-    @Expose()
     @OneToMany(() => Player, (player) => player.user)
+    @Expose()
     accounts: Player[];
 
-    @Expose()
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
     tournamentAdmins: TournamentAdmin[];
 }

@@ -8,7 +8,7 @@ import * as faker from 'faker';
 export class PrizesSeeder {
     constructor(@InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>) {}
 
-    async seed(numberOfRows: number, tournaments: Tournament[]) {
+    async seed(numberOfRows: number) {
         const isSeeded = await this.prizesRepository.findOne();
 
         if (isSeeded) {
@@ -24,7 +24,6 @@ export class PrizesSeeder {
             const prize: Partial<Prize> = {
                 currency: faker.finance.currencyCode(),
                 distribution: faker.lorem.word(1),
-                tournament: tournaments[i],
             };
             const newPrize = await this.prizesRepository.create(prize);
             createdPrizes.push(newPrize);

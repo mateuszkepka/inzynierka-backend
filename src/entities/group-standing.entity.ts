@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Group } from './group.entity';
-import { Roster } from './roster.entity';
+import { Team } from './team.entity';
 
 @Entity()
 export class GroupStanding {
@@ -14,9 +14,11 @@ export class GroupStanding {
     @Column()
     points: number;
 
-    @ManyToOne(() => Group, (group) => group.groupStandings)
+    @OneToMany(() => Group, (group) => group.groupStandings)
+    @JoinColumn({ name: "groupId"})
     group: Group;
 
-    @ManyToOne(() => Roster, (roster) => roster.groupStandings)
-    roster: Roster;
+    @ManyToOne(() => Team)
+    @JoinColumn({ name: "teamId"})
+    team: Team;
 }

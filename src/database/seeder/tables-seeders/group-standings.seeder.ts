@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Group, GroupStanding, Roster } from 'src/entities';
+import { Group, GroupStanding, Team } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -11,7 +11,7 @@ export class GroupStandingSeeder {
         private readonly groupStandingRepository: Repository<GroupStanding>,
     ) {}
 
-    async seed(numberOfRows: number, rosters: Roster[], groups: Group[]) {
+    async seed(numberOfRows: number, teams: Team[], groups: Group[]) {
         const isSeeded = await this.groupStandingRepository.findOne();
 
         if (isSeeded) {
@@ -28,7 +28,7 @@ export class GroupStandingSeeder {
                 place: 1,
                 points: faker.datatype.number(),
                 group: groups[i],
-                roster: rosters[i],
+                team: teams[i],
             };
             const newGroupStanding = await this.groupStandingRepository.create(groupStanding);
             createdGroupStandings.push(newGroupStanding);

@@ -13,7 +13,7 @@ export class UsersService {
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
             { userId },
-            { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
         );
         if (user) {
             return user;
@@ -24,7 +24,7 @@ export class UsersService {
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne(
             { email },
-            { relations: [`suspensions`, `players`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
         );
         if (user) {
             return user;

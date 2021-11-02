@@ -12,7 +12,4 @@ export class Prize {
 
     @Column()
     distribution: string;
-
-    @OneToOne(() => Tournament, (tournament) => tournament.prize)
-    tournament: Tournament;
 }

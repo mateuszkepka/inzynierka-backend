@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Match } from './match.entity';
 import { Performance } from './performance.entity';
@@ -15,5 +15,6 @@ export class Map {
     performances: Performance[];
 
     @ManyToOne(() => Match, (match) => match.maps)
+    @JoinColumn({name : "matchId"})
     match: Match;
 }

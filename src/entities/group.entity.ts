@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { GroupRule } from './group-rule.entity';
 import { GroupStanding } from './group-standing.entity';
@@ -22,5 +22,6 @@ export class Group {
     groupStandings: GroupStanding[];
 
     @ManyToOne(() => Tournament, (tournament) => tournament.groups)
+    @JoinColumn({ name: "tournamentId" })
     tournament: Tournament;
 }

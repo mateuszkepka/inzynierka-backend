@@ -8,7 +8,7 @@ import { Game, Tournament } from 'src/entities';
 export class GamesSeeder {
     constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
 
-    async seed(numberOfRows: number, tournaments: Tournament[]) {
+    async seed(numberOfRows: number) {
         const isSeeded = await this.gamesRepository.findOne();
 
         if (isSeeded) {
@@ -24,7 +24,6 @@ export class GamesSeeder {
             const game: Partial<Game> = {
                 name: faker.name.findName(),
                 genre: faker.music.genre(),
-                tournament: tournaments[i],
             };
             const newGame = await this.gamesRepository.create(game);
             createdGames.push(newGame);

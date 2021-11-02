@@ -56,12 +56,13 @@ export class Tournament {
     @Expose()
     description: string;
 
-    @OneToOne(() => Prize, (prize) => prize.tournament)
-    @JoinColumn()
+    @OneToOne(() => Prize)
+    @JoinColumn({ name: "prizeId" })
     prize: Prize;
 
-    @OneToMany(() => Game, (game) => game.tournament)
-    games: Game[];
+    @ManyToOne(() => Game)
+    @JoinColumn({ name: "gameId" })
+    game: Game;
 
     @OneToMany(() => Group, (group) => group.tournament)
     groups: Group[];
@@ -75,10 +76,12 @@ export class Tournament {
     @ManyToMany(() => User)
     tournamentAdmins: User[];
 
-    @ManyToOne(() => Preset, (preset) => preset.tournaments)
+    @OneToOne(() => Preset)
+    @JoinColumn({ name: "presetId" })
     preset: Preset;
 
     @ManyToOne(() => User, (user) => user.organizedTournaments)
+    @JoinColumn({ name: "organizerId" })
     @Expose()
     organizer: User;
 }

@@ -15,7 +15,4 @@ export class Preset {
 
     @Column()
     spectatorRules: string;
-
-    @OneToMany(() => Tournament, (tournament) => tournament.preset)
-    tournaments: Tournament[];
 }

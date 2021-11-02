@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Map } from './map.entity';
-import { Roster } from './roster.entity';
+import { ParticipatingTeam } from './participating-team.entity';
 import { Tournament } from './tournament.entity';
 
 @Entity()
@@ -22,13 +22,16 @@ export class Match {
     matchResult: string;
 
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
+    @JoinColumn({ name: "tournamentId" })
     tournament: Tournament;
 
-    @ManyToOne(() => Roster, (roster) => roster.matches)
-    firstRoster: Roster;
+    @ManyToOne(() => ParticipatingTeam)
+    @JoinColumn({ name: "firstRosterId" })
+    firstRoster: ParticipatingTeam;
 
-    @ManyToOne(() => Roster, (roster) => roster.matches)
-    secondRoster: Roster;
+    @ManyToOne(() => ParticipatingTeam)
+    @JoinColumn({ name: "secondRosterId" })
+    secondRoster: ParticipatingTeam;
 
     @OneToMany(() => Map, (map) => map.match)
     maps: Map[];
