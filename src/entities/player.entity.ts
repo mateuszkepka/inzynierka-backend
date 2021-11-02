@@ -43,7 +43,7 @@ export class Player {
     ownedTeams: Team[];
 
     @OneToOne(() => Game)
-    @JoinTable()
+    @JoinColumn({ name: "gameId" })
     game: Game;
 
     @ManyToMany(() => Team)

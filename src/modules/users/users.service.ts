@@ -32,7 +32,7 @@ export class UsersService {
         throw new NotFoundException('User with this email does not exist');
     }
 
-    create(user: CreateUserDto) {
+    async create(user: CreateUserDto) {
         const newUser = this.usersRepository.create(user);
         this.usersRepository.save(newUser);
         return newUser;

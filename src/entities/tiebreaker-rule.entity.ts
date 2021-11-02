@@ -10,6 +10,6 @@ export class TiebreakerRule {
     @Column()
     rule: string;
 
-    @OneToMany(() => GroupRule, (groupRule) => groupRule.tiebrakerRule)
+    @OneToMany(() => GroupRule, (groupRule) => groupRule.tiebreakerRule)
     groupRules: GroupRule[];
 }

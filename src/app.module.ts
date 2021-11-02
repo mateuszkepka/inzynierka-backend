@@ -53,6 +53,7 @@ import { TeamsModule } from './modules/teams/teams.module';
                         entities.Prize,
                         entities.Suspension,
                         entities.Team,
+                        entities.PlayerTeam,
                         entities.TiebreakerRule,
                         entities.Tournament,
                         entities.TournamentAdmin,

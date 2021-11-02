@@ -16,7 +16,6 @@ import JwtAuthGuard from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { User } from 'src/entities';
 import { DefaultUserDto } from '../users/dto/default-user.dto';
 
 @Controller(`auth`)

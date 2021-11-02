@@ -26,7 +26,7 @@ export class GroupRuleSeeder {
             const groupRule: Partial<GroupRule> = {
                 rulePriority: rand,
                 group: groups[i],
-                tiebrakerRule: tiebreakerRules[i],
+                tiebreakerRule: tiebreakerRules[i],
             };
             const newGroupRule = await this.groupRuleRepository.create(groupRule);
             createdGroupRules.push(newGroupRule);

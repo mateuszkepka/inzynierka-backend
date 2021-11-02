@@ -8,30 +8,30 @@ import * as faker from 'faker';
 export class TiebreakerRuleSeeder {
     constructor(
         @InjectRepository(TiebreakerRule)
-        private readonly tiebrakerRuleRepository: Repository<TiebreakerRule>,
+        private readonly tiebreakerRuleRepository: Repository<TiebreakerRule>,
     ) {}
 
     async seed(numberOfRows: number) {
-        const isSeeded = await this.tiebrakerRuleRepository.findOne();
+        const isSeeded = await this.tiebreakerRuleRepository.findOne();
 
         if (isSeeded) {
             // TODO: add logger
-            console.log(`"TiebrakerRule" table seems to be seeded...`);
+            console.log(`"TiebreakerRule" table seems to be seeded...`);
             return;
         }
 
-        console.log(`Seeding "TiebrakerRule" table...`);
-        const createdTiebrakerRules = [];
+        console.log(`Seeding "TiebreakerRule" table...`);
+        const createdTiebreakerRules = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const tiebrakerRule: Partial<TiebreakerRule> = {
+            const tiebreakerRule: Partial<TiebreakerRule> = {
                 rule: faker.lorem.word(10),
             };
-            const newTiebrakerRule = await this.tiebrakerRuleRepository.create(tiebrakerRule);
-            createdTiebrakerRules.push(newTiebrakerRule);
-            await this.tiebrakerRuleRepository.save(newTiebrakerRule);
+            const newTiebreakerRule = await this.tiebreakerRuleRepository.create(tiebreakerRule);
+            createdTiebreakerRules.push(newTiebreakerRule);
+            await this.tiebreakerRuleRepository.save(newTiebreakerRule);
         }
 
-        return createdTiebrakerRules;
+        return createdTiebreakerRules;
     }
 }

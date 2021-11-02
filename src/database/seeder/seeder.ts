@@ -43,7 +43,7 @@ export class Seeder {
         private readonly groupStandingSeeder: GroupStandingSeeder,
         private readonly ladderStandingSeeder: LadderStandingSeeder,
         private readonly ladderSeeder: LadderSeeder,
-        private readonly tiebrakerRuleSeeder: TiebreakerRuleSeeder,
+        private readonly tiebreakerRuleSeeder: TiebreakerRuleSeeder,
         private readonly rosterSeeder: ParticipatingTeamSeeder,
         private readonly playerTeamsSeeder: PlayerTeamSeeder,
     ) { }
@@ -72,7 +72,7 @@ export class Seeder {
         );
         const createdMaps = await this.mapSeeder.seed(10, createdMatches);
         const createdGroups = await this.groupsSeeder.seed(10, createdTournaments);
-        const createdTiebrakerRules = await this.tiebrakerRuleSeeder.seed(10);
+        const createdTiebreakerRules = await this.tiebreakerRuleSeeder.seed(10);
         const createdPlayers = await this.playersSeeder.seed(10, createdUsers);
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
 
@@ -81,7 +81,7 @@ export class Seeder {
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);
         await this.suspensionsSeeder.seed(10, createdUsers);
         await this.groupStandingSeeder.seed(10, createdTeams, createdGroups);
-        await this.groupRuleSeeder.seed(10, createdGroups, createdTiebrakerRules);
+        await this.groupRuleSeeder.seed(10, createdGroups, createdTiebreakerRules);
         await this.ladderStandingSeeder.seed(10, createdTeams, createdLadders);
     }
 }

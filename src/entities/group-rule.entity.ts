@@ -11,7 +11,7 @@ export class GroupRule {
 
     @ManyToOne(() => TiebreakerRule, (tiebreakerRule) => tiebreakerRule.groupRules, { primary: true })
     @JoinColumn({name : "ruleId"})
-    tiebrakerRule: TiebreakerRule;
+    tiebreakerRule: TiebreakerRule;
 
     @Column()
     rulePriority: number;
