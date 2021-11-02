@@ -26,6 +26,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get('/whoami')
+    @UseGuards(JwtAuthGuard)
     whoAmI(@CurrentUser() user: User) {
         return user;
     }

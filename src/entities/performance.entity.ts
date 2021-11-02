@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Map } from './map.entity';
 import { Player } from './player.entity';
@@ -18,6 +18,7 @@ export class Performance {
     assists: number;
 
     @ManyToOne(() => Player, (player) => player.performances)
+    @JoinColumn({ name: "playerId" })
     player: Player;
 
     @ManyToOne(() => Map, (map) => map.performances)

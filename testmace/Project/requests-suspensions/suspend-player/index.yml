@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "startDate": "abc@abc.com",
-        "endDate": "password",
+        "startDate": "",
+        "endDate": "",
         "reason": "",
         "player": "",
       }

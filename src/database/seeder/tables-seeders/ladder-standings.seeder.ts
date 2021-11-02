@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Ladder, LadderStanding, Roster } from 'src/entities';
+import { Ladder, LadderStanding, Team } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -11,7 +11,7 @@ export class LadderStandingSeeder {
         private readonly ladderStandingRepository: Repository<LadderStanding>,
     ) {}
 
-    async seed(numberOfRows: number, rosters: Roster[], ladders: Ladder[]) {
+    async seed(numberOfRows: number, teams: Team[], ladders: Ladder[]) {
         const isSeeded = await this.ladderStandingRepository.findOne();
 
         if (isSeeded) {
@@ -26,7 +26,7 @@ export class LadderStandingSeeder {
         for (let i = 0; i < numberOfRows; ++i) {
             const ladderStanding: Partial<LadderStanding> = {
                 stage: faker.lorem.word(1),
-                roster: rosters[i],
+                team: teams[i],
                 ladder: ladders[i],
             };
             const newLadderStanding = await this.ladderStandingRepository.create(ladderStanding);

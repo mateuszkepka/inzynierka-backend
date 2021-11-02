@@ -1,15 +1,17 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { Group } from './group.entity';
-import { TiebrakerRule } from './tiebraker-rule.entity';
+import { TiebreakerRule } from './tiebreaker-rule.entity';
 
 @Entity()
 export class GroupRule {
     @ManyToOne(() => Group, (group) => group.groupRules, { primary: true })
+    @JoinColumn({name : "groupId"})
     group: Group;
 
-    @ManyToOne(() => TiebrakerRule, (tiebrakerRule) => tiebrakerRule.groupRules, { primary: true })
-    tiebrakerRule: TiebrakerRule;
+    @ManyToOne(() => TiebreakerRule, (tiebreakerRule) => tiebreakerRule.groupRules, { primary: true })
+    @JoinColumn({name : "ruleId"})
+    tiebrakerRule: TiebreakerRule;
 
     @Column()
     rulePriority: number;

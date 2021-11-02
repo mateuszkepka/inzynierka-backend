@@ -1,14 +1,15 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { ActiveRoster } from './active-roster.entity';
 import { Game } from '.';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
@@ -32,10 +33,8 @@ export class Player {
     region: string;
 
     @ManyToOne(() => User, (user) => user.accounts)
+    @JoinColumn({ name: "userId" })
     user: User;
-
-    @OneToMany(() => ActiveRoster, (activeRoster) => activeRoster.player)
-    activeRosters: ActiveRoster[];
 
     @OneToMany(() => Performance, (performance) => performance.player)
     performances: Performance[];
@@ -43,11 +42,10 @@ export class Player {
     @OneToMany(() => Team, (team) => team.captain)
     ownedTeams: Team[];
 
-    @ManyToMany(() => Game)
+    @OneToOne(() => Game)
     @JoinTable()
-    games: Game[];
+    game: Game;
 
     @ManyToMany(() => Team)
-    @JoinTable()
-    teams: Team[];
+    playerTeams: Team[];
 }

@@ -1,13 +1,13 @@
 import { Expose } from 'class-transformer';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Player } from './player.entity';
-import { Roster } from './roster.entity';
+import { ParticipatingTeam } from './participating-team.entity';
+import { PlayerTeam } from './player-team.entity';
 
 @Entity()
 export class Team {
     @PrimaryGeneratedColumn()
-    @Expose()
     teamId: number;
 
     @Column()
@@ -18,9 +18,14 @@ export class Team {
     @Expose()
     creationDate: Date;
 
-    @OneToMany(() => Player, (player) => player.ownedTeams)
+    @OneToOne(() => Player, (player) => player.ownedTeams)
+    @JoinColumn({ name: "captainId" })
+    @Expose()
     captain: Player;
 
-    @OneToMany(() => Roster, (roster) => roster.team)
-    rosters: Roster[];
+    @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
+    rosters: ParticipatingTeam[];
+
+    @OneToMany(() => PlayerTeam, (playerTeams) => playerTeams.team)
+    playerTeams: PlayerTeam[]
 }

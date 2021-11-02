@@ -1,5 +1,4 @@
 import {
-    ActiveRosterSeeder,
     GamesSeeder,
     GroupRuleSeeder,
     GroupStandingSeeder,
@@ -8,20 +7,21 @@ import {
     LadderStandingSeeder,
     MapSeeder,
     MatchesSeeder,
+    ParticipatingTeamSeeder,
     PerformancesSeeder,
     PlayersSeeder,
     PresetsSeeder,
     PrizesSeeder,
     SuspensionsSeeder,
     TeamsSeeder,
-    TiebrakerRuleSeeder,
+    TiebreakerRuleSeeder,
     TournamentsSeeder,
     UsersSeeder,
+    TournamentAdminSeeder,
+    PlayerTeamSeeder
 } from './tables-seeders';
 
 import { Injectable } from '@nestjs/common';
-import { RosterSeeder } from './tables-seeders/roster.seeder';
-import { TournamentAdminSeeder } from './tables-seeders/tournament-admin.seeder';
 
 @Injectable()
 export class Seeder {
@@ -38,27 +38,33 @@ export class Seeder {
         private readonly tournamentsSeeder: TournamentsSeeder,
         private readonly suspensionsSeeder: SuspensionsSeeder,
         private readonly tournamentAdminSeeder: TournamentAdminSeeder,
-        private readonly rosterSeeder: RosterSeeder,
         private readonly mapSeeder: MapSeeder,
-        private readonly activeRosterSeeder: ActiveRosterSeeder,
         private readonly groupRuleSeeder: GroupRuleSeeder,
         private readonly groupStandingSeeder: GroupStandingSeeder,
         private readonly ladderStandingSeeder: LadderStandingSeeder,
         private readonly ladderSeeder: LadderSeeder,
-        private readonly tiebrakerRuleSeeder: TiebrakerRuleSeeder,
-    ) {}
+        private readonly tiebrakerRuleSeeder: TiebreakerRuleSeeder,
+        private readonly rosterSeeder: ParticipatingTeamSeeder,
+        private readonly playerTeamsSeeder: PlayerTeamSeeder,
+    ) { }
 
     async seed() {
         const createdTeams = await this.teamsSeeder.seed(10);
-        const createdRosters = await this.rosterSeeder.seed(10, createdTeams);
-
+        const createdGames = await this.gamesSeeder.seed(10);
         const createdUsers = await this.usersSeeder.seed(10);
         const createdPresets = await this.presetsSeeder.seed(10);
+        const createdPrizes = await this.prizesSeeder.seed(10);
         const createdTournaments = await this.tournamentsSeeder.seed(
             10,
+            createdPrizes,
             createdPresets,
             createdUsers,
+            createdGames,
         );
+        const createdRosters = await this.rosterSeeder.seed(
+            10,
+            createdTournaments,
+            createdTeams);
         const createdMatches = await this.matchesSeeder.seed(
             10,
             createdRosters,
@@ -70,20 +76,12 @@ export class Seeder {
         const createdPlayers = await this.playersSeeder.seed(10, createdUsers);
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
 
+        await this.playerTeamsSeeder.seed(10, createdPlayers, createdTeams);
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);
-
-        await this.gamesSeeder.seed(10, createdTournaments);
-        await this.prizesSeeder.seed(10, createdTournaments);
-
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);
         await this.suspensionsSeeder.seed(10, createdUsers);
-
-        await this.activeRosterSeeder.seed(10, createdPlayers, createdRosters);
-
-        await this.groupStandingSeeder.seed(10, createdRosters, createdGroups);
-
+        await this.groupStandingSeeder.seed(10, createdTeams, createdGroups);
         await this.groupRuleSeeder.seed(10, createdGroups, createdTiebrakerRules);
-
-        await this.ladderStandingSeeder.seed(10, createdRosters, createdLadders);
+        await this.ladderStandingSeeder.seed(10, createdTeams, createdLadders);
     }
 }

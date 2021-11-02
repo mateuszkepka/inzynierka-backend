@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TiebrakerRule } from 'src/entities';
+import { TiebreakerRule } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
 @Injectable()
-export class TiebrakerRuleSeeder {
+export class TiebreakerRuleSeeder {
     constructor(
-        @InjectRepository(TiebrakerRule)
-        private readonly tiebrakerRuleRepository: Repository<TiebrakerRule>,
+        @InjectRepository(TiebreakerRule)
+        private readonly tiebrakerRuleRepository: Repository<TiebreakerRule>,
     ) {}
 
     async seed(numberOfRows: number) {
@@ -24,7 +24,7 @@ export class TiebrakerRuleSeeder {
         const createdTiebrakerRules = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const tiebrakerRule: Partial<TiebrakerRule> = {
+            const tiebrakerRule: Partial<TiebreakerRule> = {
                 rule: faker.lorem.word(10),
             };
             const newTiebrakerRule = await this.tiebrakerRuleRepository.create(tiebrakerRule);

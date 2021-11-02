@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { User } from './user.entity';
@@ -23,5 +23,6 @@ export class Suspension {
     reason: string;
 
     @ManyToOne(() => User, (user) => user.suspensions)
+    @JoinColumn({ name: "userId" })
     user: User;
 }

@@ -6,8 +6,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class TournamentAdminSeeder {
     constructor(
-        @InjectRepository(TournamentAdmin)
-        private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+        @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
     ) {}
 
     async seed(numberOfRows: number, tournaments: Tournament[], users: User[]) {
@@ -15,11 +14,11 @@ export class TournamentAdminSeeder {
 
         if (isSeeded) {
             // TODO: add logger
-            console.log(`"TorunamentAdmin" table seems to be seeded...`);
+            console.log(`"TournamentAdmin" table seems to be seeded...`);
             return;
         }
 
-        console.log(`Seeding "TorunamentAdmin" table...`);
+        console.log(`Seeding "TournamentAdmin" table...`);
         const createdTournamentAdmins = [];
 
         for (let i = 0; i < numberOfRows; ++i) {

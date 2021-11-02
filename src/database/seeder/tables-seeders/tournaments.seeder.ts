@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Preset, Tournament, User } from 'src/entities';
+import { Game, Preset, Prize, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -11,7 +11,7 @@ export class TournamentsSeeder {
         private readonly tournamentsRepository: Repository<Tournament>,
     ) {}
 
-    async seed(numberOfRows: number, presets: Preset[], users: User[]) {
+    async seed(numberOfRows: number, prizes: Prize[], presets: Preset[], users: User[], games: Game[]) {
         const isSeeded = await this.tournamentsRepository.findOne();
 
         if (isSeeded) {
@@ -24,17 +24,21 @@ export class TournamentsSeeder {
         const createdTournaments = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
+            const registerStartDate = faker.datatype.datetime();
+            const tournamentStartDate = faker.datatype.datetime();
             const tournament: Partial<Tournament> = {
                 name: faker.internet.userName(),
                 numberOfPlayers: faker.datatype.number(),
                 numberOfTeams: faker.datatype.number(),
-                registerStartDate: faker.datatype.datetime(),
-                registerEndDate: faker.datatype.datetime(),
-                tournamentStartDate: faker.datatype.datetime(),
-                tournamentEndDate: faker.datatype.datetime(),
+                registerStartDate: registerStartDate,
+                registerEndDate: faker.date.future(0, registerStartDate),
+                tournamentStartDate: tournamentStartDate,
+                tournamentEndDate: faker.date.future(0, tournamentStartDate),
                 description: faker.lorem.sentences(5),
+                prize: prizes[i],
                 preset: presets[i],
                 organizer: users[i],
+                game: games[i],
             };
             const newTournament = await this.tournamentsRepository.create(tournament);
             createdTournaments.push(newTournament);

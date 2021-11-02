@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Group, GroupRule, TiebrakerRule } from 'src/entities';
+import { Group, GroupRule, TiebreakerRule } from 'src/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class GroupRuleSeeder {
         @InjectRepository(GroupRule) private readonly groupRuleRepository: Repository<GroupRule>,
     ) {}
 
-    async seed(numberOfRows: number, groups: Group[], tiebrakerRules: TiebrakerRule[]) {
+    async seed(numberOfRows: number, groups: Group[], tiebreakerRules: TiebreakerRule[]) {
         const isSeeded = await this.groupRuleRepository.findOne();
 
         if (isSeeded) {
@@ -22,10 +22,11 @@ export class GroupRuleSeeder {
         const createdGroupRules = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
+            const rand = Math.floor(Math.random() * (3) + 1)
             const groupRule: Partial<GroupRule> = {
-                rulePriority: 1,
+                rulePriority: rand,
                 group: groups[i],
-                tiebrakerRule: tiebrakerRules[i],
+                tiebrakerRule: tiebreakerRules[i],
             };
             const newGroupRule = await this.groupRuleRepository.create(groupRule);
             createdGroupRules.push(newGroupRule);

@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Ladder } from './ladder.entity';
-import { Roster } from './roster.entity';
+import { Team } from './team.entity';
 
 @Entity()
 export class LadderStanding {
@@ -11,9 +11,11 @@ export class LadderStanding {
     @Column()
     stage: string;
 
-    @ManyToOne(() => Roster, (roster) => roster.ladderStandings)
-    roster: Roster;
-
     @ManyToOne(() => Ladder, (ladder) => ladder.ladderStandings)
+    @JoinColumn({ name: "ladderId"})
     ladder: Ladder;
+
+    @ManyToOne(() => Team)
+    @JoinColumn({ name: "teamId"})
+    team: Team;
 }
