@@ -73,7 +73,11 @@ export class Seeder {
         const createdMaps = await this.mapSeeder.seed(10, createdMatches);
         const createdGroups = await this.groupsSeeder.seed(10, createdTournaments);
         const createdTiebreakerRules = await this.tiebreakerRuleSeeder.seed(10);
-        const createdPlayers = await this.playersSeeder.seed(10, createdUsers);
+        const createdPlayers = await this.playersSeeder.seed(
+            10,
+            createdUsers,
+            createdGames
+        );
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
 
         await this.playerTeamsSeeder.seed(10, createdPlayers, createdTeams);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, User } from 'src/entities';
+import { Game, Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -8,7 +8,7 @@ import * as faker from 'faker';
 export class PlayersSeeder {
     constructor(@InjectRepository(Player) private readonly usersRepository: Repository<Player>) {}
 
-    async seed(numberOfRows: number, users: User[]) {
+    async seed(numberOfRows: number, users: User[], games: Game[]) {
         const isSeeded = await this.usersRepository.findOne();
 
         if (isSeeded) {
@@ -27,6 +27,7 @@ export class PlayersSeeder {
                 summonerId: faker.datatype.number(),
                 region: faker.address.country(),
                 user: users[i],
+                game: games[i],
             };
             const newPlayer = await this.usersRepository.create(player);
             createdPlayers.push(newPlayer);
