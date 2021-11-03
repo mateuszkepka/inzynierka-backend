@@ -23,6 +23,6 @@ export class Suspension {
     reason: string;
 
     @ManyToOne(() => User, (user) => user.suspensions)
-    @JoinColumn({ name: "userId" })
+    @JoinColumn({ name: `userId` })
     user: User;
 }

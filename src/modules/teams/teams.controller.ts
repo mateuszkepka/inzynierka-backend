@@ -14,6 +14,7 @@ import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
 @Controller(`teams`)
 @SerializeOptions({
     strategy: `excludeAll`,
@@ -42,6 +43,10 @@ export class TeamsController {
         }
 
         return torunament;
+    }
+    @Post(`create-invitation`)
+    async createInvitaion(@Body() playerTeamData: CreatePlayerTeam) {
+        return this.teamsService.createInvitaion(playerTeamData);
     }
     @Post(`create`)
     async create(@Body() teamData: CreateTeamDto) {

@@ -3,6 +3,7 @@ children:
   - getall
   - get-by-id
   - create
+  - addTeam
 variablesArray: []
 type: Folder
 authData:

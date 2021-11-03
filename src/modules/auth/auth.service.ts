@@ -14,7 +14,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) { }
+    ) {}
 
     async register(registrationData: RegisterDto) {
         const hashedPassword = await argon2.hash(registrationData.password, {

@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament } from 'src/entities';
+import { Tournament, ParticipatingTeam, Team } from 'src/entities';
 import { Repository } from 'typeorm';
+import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 
 @Injectable()
@@ -9,6 +10,10 @@ export class TournamentsService {
     constructor(
         @InjectRepository(Tournament)
         private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Team)
+        private readonly teamsRepository: Repository<Team>,
+        @InjectRepository(ParticipatingTeam)
+        private readonly participatingTeamsRepository: Repository<ParticipatingTeam>,
     ) {}
 
     async getById(tournamentId: number) {
@@ -26,6 +31,41 @@ export class TournamentsService {
         }
         throw new NotFoundException(`User with this id does not exist`);
     } */
+
+    async addTeam(participatingTeamData: CreateParticipatingTeamDto) {
+        const tempDate = new Date();
+        const tournamentId = participatingTeamData.tournamentId;
+        const teamId = participatingTeamData.teamId;
+        const tournament = await this.tournamentsRepository.findOne({ tournamentId });
+        const team = await this.teamsRepository.findOne({ teamId });
+        const test = await this.participatingTeamsRepository
+            .createQueryBuilder(`participating_team`)
+            .innerJoinAndSelect(`participating_team.team`, `team`)
+            .innerJoinAndSelect(`participating_team.tournament`, `tournament`)
+            .where(`team.teamId = :id and tournament.tournamentId = :id2`, {
+                id: teamId,
+                id2: tournamentId,
+            })
+            .getOne();
+        console.log(test);
+        if (test) {
+            throw new NotFoundException(`This team is already signed up for this tournament`);
+        } else if (!tournament) {
+            throw new NotFoundException(`Tournament with this id does not exist`);
+        } else if (!team) {
+            throw new NotFoundException(`Team with this id does not exist`);
+        } else if (tournament.registerEndDate.getTime() >= tempDate.getTime()) {
+            const tempTeam = new ParticipatingTeam();
+            tempTeam.tournament = tournament;
+            tempTeam.team = team;
+            const datenow = new Date();
+            tempTeam.signDate = datenow;
+            tempTeam.isApproved = false;
+            const participatingTeam = await this.participatingTeamsRepository.create(tempTeam);
+            await this.participatingTeamsRepository.save(participatingTeam);
+            return participatingTeam;
+        } else throw new NotFoundException(`Register window for this tournament already passed`);
+    }
 
     async getByName(name: string) {
         const tournament = await this.tournamentsRepository.findOne({ name });
@@ -52,7 +92,7 @@ export class TournamentsService {
     async getAllTournaments() {
         const tournament = await this.tournamentsRepository.find();
         const tournaments = JSON.stringify(tournament);
-        if (tournaments == null) {
+        if (!tournaments) {
             throw new NotFoundException(`Not even single tournament exists in the system`);
         }
         return tournaments;

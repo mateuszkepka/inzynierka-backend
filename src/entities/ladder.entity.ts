@@ -12,6 +12,6 @@ export class Ladder {
     ladderStandings: LadderStanding[];
 
     @ManyToOne(() => Tournament, (tournament) => tournament.ladders)
-    @JoinColumn({name : "tournamentId"})
+    @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 }

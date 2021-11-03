@@ -22,6 +22,6 @@ export class Group {
     groupStandings: GroupStanding[];
 
     @ManyToOne(() => Tournament, (tournament) => tournament.groups)
-    @JoinColumn({ name: "tournamentId" })
+    @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 }

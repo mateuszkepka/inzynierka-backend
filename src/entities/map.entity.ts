@@ -15,6 +15,6 @@ export class Map {
     performances: Performance[];
 
     @ManyToOne(() => Match, (match) => match.maps)
-    @JoinColumn({name : "matchId"})
+    @JoinColumn({ name: `matchId` })
     match: Match;
 }

@@ -3,7 +3,7 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn
 
 import { Player } from './player.entity';
 import { ParticipatingTeam } from './participating-team.entity';
-import { PlayerTeam } from './player-team.entity';
+import { PlayerTeam } from '.';
 
 @Entity()
 export class Team {
@@ -19,13 +19,13 @@ export class Team {
     creationDate: Date;
 
     @OneToOne(() => Player, (player) => player.ownedTeams)
-    @JoinColumn({ name: "captainId" })
+    @JoinColumn({ name: `captainId` })
     @Expose()
     captain: Player;
 
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
-    @OneToMany(() => PlayerTeam, (playerTeams) => playerTeams.team)
-    playerTeams: PlayerTeam[]
+    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
+    playerTeams: PlayerTeam[];
 }

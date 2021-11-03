@@ -6,7 +6,10 @@ import * as faker from 'faker';
 
 @Injectable()
 export class ParticipatingTeamSeeder {
-    constructor(@InjectRepository(ParticipatingTeam) private readonly rosterRepository: Repository<ParticipatingTeam>) {}
+    constructor(
+        @InjectRepository(ParticipatingTeam)
+        private readonly rosterRepository: Repository<ParticipatingTeam>,
+    ) {}
 
     async seed(numberOfRows: number, tournaments: Tournament[], teams: Team[]) {
         const isSeeded = await this.rosterRepository.findOne();
@@ -21,13 +24,13 @@ export class ParticipatingTeamSeeder {
         const createdRosters = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const json = '{"roster" : [{"nickname": "example${i + 1}"},{"nickname": "example${i + 2}"},{"nickname": "example${i + 3}"}],"subs" : [{"nickname": "example${i + 4}"},{"nickname": "example${i + 5}"}]}'
+            //   const json = '{"roster" : [{"nickname": "example${i + 1}"},{"nickname": "example${i + 2}"},{"nickname": "example${i + 3}"}],"subs" : [{"nickname": "example${i + 4}"},{"nickname": "example${i + 5}"}]}'
             const roster: Partial<ParticipatingTeam> = {
                 tournament: tournaments[i],
                 team: teams[i],
                 signDate: faker.datatype.datetime(),
                 isApproved: true,
-                roster: JSON.parse(json),
+                //roster: JSON.parse(json),
             };
             const newRoster = await this.rosterRepository.create(roster);
             createdRosters.push(newRoster);

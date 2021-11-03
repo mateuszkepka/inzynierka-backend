@@ -12,10 +12,10 @@ export class LadderStanding {
     stage: string;
 
     @ManyToOne(() => Ladder, (ladder) => ladder.ladderStandings)
-    @JoinColumn({ name: "ladderId"})
+    @JoinColumn({ name: `ladderId` })
     ladder: Ladder;
 
     @ManyToOne(() => Team)
-    @JoinColumn({ name: "teamId"})
+    @JoinColumn({ name: `teamId` })
     team: Team;
 }

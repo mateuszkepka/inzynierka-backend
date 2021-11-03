@@ -6,7 +6,7 @@ export * from './ladder.entity';
 export * from './ladder-standing.entity';
 export * from './map.entity';
 export * from './match.entity';
-export * from './participating-team.entity'
+export * from './participating-team.entity';
 export * from './performance.entity';
 export * from './player.entity';
 export * from './preset.entity';
@@ -17,4 +17,4 @@ export * from './tiebreaker-rule.entity';
 export * from './tournament-admin.entity';
 export * from './tournament.entity';
 export * from './user.entity';
-export * from './player-team.entity'
+export * from './player-team.entity';

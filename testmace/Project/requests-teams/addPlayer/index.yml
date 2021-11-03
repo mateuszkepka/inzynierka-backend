@@ -1,0 +1,29 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/teams/create-invitation'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "playerId": 2,
+        "teamId": 5
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: addPlayer

@@ -1,12 +1,6 @@
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsDateString, IsJSON } from 'class-validator';
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { IsBoolean, IsDateString } from 'class-validator';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team, Tournament } from '.';
 
 @Entity()
@@ -16,21 +10,23 @@ export class ParticipatingTeam {
     participatingTeamId: number;
 
     @ManyToOne(() => Tournament)
-    @JoinColumn({ name: "tournamentId" })
+    @JoinColumn({ name: `tournamentId` })
     @Expose()
     tournament: Tournament;
 
     @ManyToOne(() => Team)
-    @JoinColumn({ name: "teamId" })
+    @JoinColumn({ name: `teamId` })
     @Expose()
     team: Team;
 
+    @Column()
     @IsDateString()
     signDate: Date;
 
+    @Column()
     @IsBoolean()
     isApproved: boolean;
 
-    @IsJSON()
-    roster: JSON;
+    //@Column({ type: `json` })
+    //roster: JSON;
 }
