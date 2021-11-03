@@ -72,8 +72,8 @@ import { TeamsModule } from './modules/teams/teams.module';
             provide: APP_PIPE,
             useValue: new ValidationPipe({
                 whitelist: true,
-            }),            
+            }),
         },
     ],
 })
-export class AppModule { }
+export class AppModule {}

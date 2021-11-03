@@ -15,10 +15,10 @@ export class GroupStanding {
     points: number;
 
     @OneToMany(() => Group, (group) => group.groupStandings)
-    @JoinColumn({ name: "groupId"})
+    @JoinColumn({ name: `groupId` })
     group: Group;
 
     @ManyToOne(() => Team)
-    @JoinColumn({ name: "teamId"})
+    @JoinColumn({ name: `teamId` })
     team: Team;
 }

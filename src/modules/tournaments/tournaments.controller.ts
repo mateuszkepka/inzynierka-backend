@@ -11,6 +11,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
@@ -42,6 +43,10 @@ export class TournamentsController {
         }
 
         return torunament;
+    }
+    @Post(`add-team`)
+    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
+        return this.tournamentsService.addTeam(participatingTeamData);
     }
     @Post(`create`)
     async create(@Body() tournamentData: CreateTournamentDto) {

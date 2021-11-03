@@ -17,6 +17,7 @@ import { Match } from './match.entity';
 import { Preset } from './preset.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
+import { ParticipatingTeam } from '.';
 
 @Entity()
 export class Tournament {
@@ -57,11 +58,11 @@ export class Tournament {
     description: string;
 
     @OneToOne(() => Prize)
-    @JoinColumn({ name: "prizeId" })
+    @JoinColumn({ name: `prizeId` })
     prize: Prize;
 
     @ManyToOne(() => Game)
-    @JoinColumn({ name: "gameId" })
+    @JoinColumn({ name: `gameId` })
     game: Game;
 
     @OneToMany(() => Group, (group) => group.tournament)
@@ -77,11 +78,14 @@ export class Tournament {
     tournamentAdmins: User[];
 
     @OneToOne(() => Preset)
-    @JoinColumn({ name: "presetId" })
+    @JoinColumn({ name: `presetId` })
     preset: Preset;
 
     @ManyToOne(() => User, (user) => user.organizedTournaments)
-    @JoinColumn({ name: "organizerId" })
+    @JoinColumn({ name: `organizerId` })
     @Expose()
     organizer: User;
+
+    @OneToMany(() => ParticipatingTeam, (roster) => roster.tournament)
+    rosters: ParticipatingTeam[];
 }

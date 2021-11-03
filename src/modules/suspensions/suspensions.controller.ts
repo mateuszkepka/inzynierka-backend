@@ -24,9 +24,9 @@ import { SuspensionsService } from './suspensions.service';
     strategy: `excludeAll`,
 })
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) { }
+    constructor(private readonly suspensionsService: SuspensionsService) {}
 
-    @Post('/:id')
+    @Post(`/:id`)
     suspend(@Body() body: CreateSuspensionDto) {
         const { player } = body;
         if (!player) {

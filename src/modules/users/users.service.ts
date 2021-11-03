@@ -7,8 +7,10 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User)
-    private readonly usersRepository: Repository<User>) { }
+    constructor(
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
+    ) {}
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
@@ -18,7 +20,7 @@ export class UsersService {
         if (user) {
             return user;
         }
-        throw new NotFoundException('User with this id does not exist');
+        throw new NotFoundException(`User with this id does not exist`);
     }
 
     async getByEmail(email: string) {
@@ -29,7 +31,7 @@ export class UsersService {
         if (user) {
             return user;
         }
-        throw new NotFoundException('User with this email does not exist');
+        throw new NotFoundException(`User with this email does not exist`);
     }
 
     async create(user: CreateUserDto) {
@@ -41,7 +43,7 @@ export class UsersService {
     async update(id: number, attributes: Partial<User>) {
         const user = await this.getById(id);
         if (!user) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(`User not found`);
         }
 
         Object.assign(user, attributes);
@@ -51,7 +53,7 @@ export class UsersService {
     async remove(id: number) {
         const user = await this.getById(id);
         if (!user) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(`User not found`);
         }
         return this.usersRepository.remove(user);
     }

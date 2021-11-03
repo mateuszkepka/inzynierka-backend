@@ -2,6 +2,7 @@ enabled: true
 children:
   - get-by-id
   - getall
+  - addPlayer
 variablesArray: []
 type: Folder
 authData:

@@ -22,15 +22,15 @@ export class Match {
     matchResult: string;
 
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
-    @JoinColumn({ name: "tournamentId" })
+    @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
     @ManyToOne(() => ParticipatingTeam)
-    @JoinColumn({ name: "firstRosterId" })
+    @JoinColumn({ name: `firstRosterId` })
     firstRoster: ParticipatingTeam;
 
     @ManyToOne(() => ParticipatingTeam)
-    @JoinColumn({ name: "secondRosterId" })
+    @JoinColumn({ name: `secondRosterId` })
     secondRoster: ParticipatingTeam;
 
     @OneToMany(() => Map, (map) => map.match)

@@ -18,7 +18,7 @@ export class Performance {
     assists: number;
 
     @ManyToOne(() => Player, (player) => player.performances)
-    @JoinColumn({ name: "playerId" })
+    @JoinColumn({ name: `playerId` })
     player: Player;
 
     @ManyToOne(() => Map, (map) => map.performances)
