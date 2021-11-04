@@ -1,9 +1,11 @@
 import { Expose, Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
-import { Player, Suspension } from 'src/entities';
-
+import { Player, Suspension, Tournament } from 'src/entities';
 
 export class DefaultUserDto {
+    @Expose()
+    userId: number;
+
     @Expose()
     username: string;
 
@@ -32,4 +34,10 @@ export class DefaultUserDto {
     @Type(() => Player)
     @ValidateNested({ each: true })
     accounts: Player[];
+
+    @Expose()
+    @IsArray()
+    @Type(() => Tournament)
+    @ValidateNested({ each: true })
+    organizedTournaments: Tournament[];
 }
