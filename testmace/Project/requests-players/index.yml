@@ -1,10 +1,8 @@
 enabled: true
 children:
-  - get-by-id
   - getall
-  - addPlayer
-  - createTeam
-  - test
+  - get-by-id
+  - create
 variablesArray: []
 type: Folder
 authData:
@@ -14,4 +12,4 @@ requestData:
   disabledInheritedHeaders: []
   strictSSL: Inherit
   followRedirect: Inherit
-name: requests-teams
+name: requests-players

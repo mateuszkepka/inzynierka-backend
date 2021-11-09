@@ -7,6 +7,7 @@ import {
     Param,
     Post,
     Put,
+    Req,
     SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 @Controller(`teams`)
 @SerializeOptions({
     strategy: `excludeAll`,
@@ -48,6 +50,8 @@ export class TeamsController {
     async createInvitaion(@Body() playerTeamData: CreatePlayerTeam) {
         return this.teamsService.createInvitaion(playerTeamData);
     }
+
+    @UseGuards(JwtAuthGuard)
     @Post(`create`)
     async create(@Body() teamData: CreateTeamDto) {
         return this.teamsService.create(teamData);
@@ -56,7 +60,12 @@ export class TeamsController {
     removeTeam(@Param(`id`) id: string) {
         return this.teamsService.remove(Number(id));
     }
-
+    @UseGuards(JwtAuthGuard)
+    @Get(`/cos`)
+    authenticate(@Req() request: RequestWithUser) {
+        const { user } = request;
+        return user;
+    }
     @Put(`/:id`)
     updateTeam(@Param(`id`) id: string, @Body() body: UpdateTeamDto) {
         return this.teamsService.update(Number(id), body);

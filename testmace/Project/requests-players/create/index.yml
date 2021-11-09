@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/create'
+    url: '${$env.url}/players/create'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,14 +14,10 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "name": "Fanny.Stark6222",
-        "numberOfPlayers": 1,
-        "numberOfTeams": 200,
-        "registerStartDate": "2005-12-16",
-        "registerEndDate": "2005-12-16",
-        "tournamentStartDate": "2005-12-16",
-        "tournamentEndDate": "2005-12-16",
-        "description": "Quibusdam magni ipsaet ui. Voluptates par"
+        "PUUID": "2342345",
+        "accountId": "128731829323",
+        "summonerId": "21312321",
+        "region": "bajo jajo"
       }
     xmlBody: ''
     textBody: ''
