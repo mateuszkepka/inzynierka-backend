@@ -65,7 +65,14 @@ export class TeamsService {
     }
 
     async create(team: CreateTeamDto) {
-        const newTeam = await this.teamsRepository.create(team);
+        const player = await this.playersRepository.findOne(team.playerId);
+        if (!player) {
+            throw new NotFoundException(`You cant create a team without player account`);
+        }
+        const newTeam = new Team();
+        newTeam.name = team.name;
+        newTeam.creationDate = new Date();
+        newTeam.captain = player;
         await this.teamsRepository.save(newTeam);
         return newTeam;
     }

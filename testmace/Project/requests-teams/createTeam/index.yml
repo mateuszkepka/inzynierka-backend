@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/create'
+    url: '${$env.url}/teams/create'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -15,13 +15,7 @@ requestData:
     jsonBody: |-
       {
         "name": "Fanny.Stark6222",
-        "numberOfPlayers": 1,
-        "numberOfTeams": 200,
-        "registerStartDate": "2005-12-16",
-        "registerEndDate": "2005-12-16",
-        "tournamentStartDate": "2005-12-16",
-        "tournamentEndDate": "2005-12-16",
-        "description": "Quibusdam magni ipsaet ui. Voluptates par"
+        "playerId": 5
       }
     xmlBody: ''
     textBody: ''
@@ -32,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: create
+name: createTeam

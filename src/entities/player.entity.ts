@@ -35,9 +35,9 @@ export class Player {
     @Expose()
     @Column()
     region: string;
-
     @ManyToOne(() => User, (user) => user.accounts)
     @JoinColumn({ name: `userId` })
+    @Expose()
     user: User;
 
     @OneToMany(() => Performance, (performance) => performance.player)

@@ -1,0 +1,65 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Player, User } from 'src/entities';
+import { Repository } from 'typeorm';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { CreatePlayerDto } from './dto/create-player.dto';
+
+@Injectable()
+export class PlayersService {
+    constructor(
+        @InjectRepository(Player)
+        private readonly playersRepository: Repository<Player>,
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
+    ) {}
+
+    async getById(playerId: number) {
+        const player = await this.playersRepository.findOne({ playerId });
+        if (player) {
+            return player;
+        }
+        throw new NotFoundException(`Player with this id does not exist`);
+    }
+    //here we will need to add player field verification
+    async create(player: CreatePlayerDto, request: RequestWithUser) {
+        const { user } = request;
+        console.log(user);
+        const tmpPlayer = new Player();
+        tmpPlayer.PUUID = player.PUUID;
+        tmpPlayer.accountId = player.accountId;
+        tmpPlayer.summonerId = player.summonerId;
+        tmpPlayer.region = player.region;
+        tmpPlayer.user = user;
+        const newPlayer = await this.playersRepository.create(tmpPlayer);
+        await this.playersRepository.save(newPlayer);
+        return newPlayer;
+    }
+
+    async remove(id: number) {
+        const player = await this.getById(id);
+        if (!player) {
+            throw new NotFoundException(`Player not found`);
+        }
+        return this.playersRepository.remove(player);
+    }
+
+    async getAllPlayers() {
+        const player = await this.playersRepository.find();
+        const players = JSON.stringify(player);
+        if (!players) {
+            throw new NotFoundException(`Not even single player exists in the system`);
+        }
+        return players;
+    }
+
+    async update(id: number, attributes: Partial<Player>) {
+        const player = await this.getById(id);
+        if (!player) {
+            throw new NotFoundException(`Player not found`);
+        }
+
+        Object.assign(player, attributes);
+        return this.playersRepository.save(player);
+    }
+}
