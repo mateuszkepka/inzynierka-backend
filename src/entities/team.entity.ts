@@ -1,8 +1,8 @@
-import { Expose } from 'class-transformer';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Player } from './player.entity';
+import { Expose } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
+import { Player } from './player.entity';
 import { PlayerTeam } from '.';
 
 @Entity()

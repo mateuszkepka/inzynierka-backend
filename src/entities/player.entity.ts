@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer';
 import {
     Column,
     Entity,
@@ -8,8 +7,9 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-
 import { Game, PlayerTeam } from '.';
+
+import { Expose } from 'class-transformer';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
@@ -35,6 +35,7 @@ export class Player {
     @Expose()
     @Column()
     region: string;
+
     @ManyToOne(() => User, (user) => user.accounts)
     @JoinColumn({ name: `userId` })
     @Expose()
@@ -44,6 +45,7 @@ export class Player {
     performances: Performance[];
 
     @OneToMany(() => Team, (team) => team.captain)
+    @Expose()
     ownedTeams: Team[];
 
     @OneToOne(() => Game)

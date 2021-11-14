@@ -47,7 +47,6 @@ export class TournamentsService {
                 id2: tournamentId,
             })
             .getOne();
-        console.log(test);
         if (test) {
             throw new NotFoundException(`This team is already signed up for this tournament`);
         } else if (!tournament) {

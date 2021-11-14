@@ -60,7 +60,6 @@ export class TeamsService {
         tempPlayerTeam.isAccepted = false;
         const playerTeam = await this.playersTeamsRepository.create(tempPlayerTeam);
         await this.playersTeamsRepository.save(playerTeam);
-        console.log(playerTeam);
         return playerTeam;
     }
 
@@ -86,7 +85,7 @@ export class TeamsService {
     }
 
     async getAllTeams() {
-        const team = await this.teamsRepository.find();
+        const team = await this.teamsRepository.find({ relations: [`captain`] });
         const teams = JSON.stringify(team);
         if (!teams) {
             throw new NotFoundException(`Not even single team exists in the system`);

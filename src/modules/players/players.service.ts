@@ -15,7 +15,10 @@ export class PlayersService {
     ) {}
 
     async getById(playerId: number) {
-        const player = await this.playersRepository.findOne({ playerId });
+        const player = await this.playersRepository.findOne(
+            { playerId },
+            { relations: [`ownedTeams`] },
+        );
         if (player) {
             return player;
         }
@@ -24,7 +27,6 @@ export class PlayersService {
     //here we will need to add player field verification
     async create(player: CreatePlayerDto, request: RequestWithUser) {
         const { user } = request;
-        console.log(user);
         const tmpPlayer = new Player();
         tmpPlayer.PUUID = player.PUUID;
         tmpPlayer.accountId = player.accountId;
