@@ -2,7 +2,6 @@ import {
     Column,
     Entity,
     JoinColumn,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     OneToOne,
@@ -17,7 +16,7 @@ import { Match } from './match.entity';
 import { Preset } from './preset.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
-import { ParticipatingTeam } from '.';
+import { ParticipatingTeam, TournamentAdmin } from '.';
 
 @Entity()
 export class Tournament {
@@ -57,7 +56,9 @@ export class Tournament {
     @Expose()
     description: string;
 
-    @OneToOne(() => Prize)
+    @OneToOne(() => Prize, {
+        onDelete: `CASCADE`,
+    })
     @JoinColumn({ name: `prizeId` })
     prize: Prize;
 
@@ -74,8 +75,8 @@ export class Tournament {
     @OneToMany(() => Match, (match) => match.tournament)
     matches: Match[];
 
-    @ManyToMany(() => User)
-    tournamentAdmins: User[];
+    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
+    tournamentAdmins: TournamentAdmin[];
 
     @OneToOne(() => Preset)
     @JoinColumn({ name: `presetId` })

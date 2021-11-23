@@ -1,14 +1,25 @@
-import { Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Expose } from 'class-transformer';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Tournament } from './tournament.entity';
 import { User } from './user.entity';
 
 @Entity()
 export class TournamentAdmin {
-    @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins, { primary: true })
+    @PrimaryGeneratedColumn()
+    @Expose()
+    tournamentAdminId: number;
+
+    @Expose()
+    @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
-    @ManyToOne(() => User, (user) => user.tournamentAdmins, { primary: true })
+    @Expose()
+    @ManyToOne(() => User, (user) => user.tournamentAdmins)
     @JoinColumn({ name: `userId` })
     user: User;
+
+    @Expose()
+    @Column()
+    isAccepted: boolean;
 }

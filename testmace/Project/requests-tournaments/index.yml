@@ -4,6 +4,11 @@ children:
   - get-by-id
   - create
   - addTeam
+  - get-managned-tournaments
+  - addPrize
+  - pending-teams-list
+  - add-admin
+  - accept-team
 variablesArray: []
 type: Folder
 authData:

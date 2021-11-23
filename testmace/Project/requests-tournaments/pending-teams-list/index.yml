@@ -5,18 +5,14 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/auth/log-in'
+    method: GET
+    url: '${$env.url}/tournaments/pending-teams/6'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "email": "abc234234@abc.com",
-        "password": "pas234234sword"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -26,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in
+name: pending-teams-list
