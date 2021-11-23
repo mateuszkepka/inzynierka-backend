@@ -8,6 +8,7 @@ import {
     Post,
     Put,
     Req,
+    SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
@@ -20,9 +21,9 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
-// @SerializeOptions({
-//     strategy: `excludeAll`,
-// })
+@SerializeOptions({
+    strategy: `excludeAll`,
+})
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) {}
 

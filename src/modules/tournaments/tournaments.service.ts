@@ -27,7 +27,10 @@ export class TournamentsService {
     ) {}
 
     async getById(tournamentId: number) {
-        const tournament = await this.tournamentsRepository.findOne({ tournamentId });
+        const tournament = await this.tournamentsRepository.findOne(
+            { tournamentId },
+            { relations: [`prize`] },
+        );
         if (tournament) {
             return tournament;
         }
@@ -203,6 +206,7 @@ export class TournamentsService {
             },
             relations: [`prize`],
         });
+        tournament.prize = newprize;
         // console.log(tournament);
         // const oldprize = tournament.prize;
         // console.log(oldprize);

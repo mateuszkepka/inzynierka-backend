@@ -60,6 +60,7 @@ export class Tournament {
         onDelete: `CASCADE`,
     })
     @JoinColumn({ name: `prizeId` })
+    @Expose()
     prize: Prize;
 
     @ManyToOne(() => Game)
