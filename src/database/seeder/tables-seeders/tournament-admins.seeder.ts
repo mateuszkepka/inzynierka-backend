@@ -6,7 +6,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class TournamentAdminSeeder {
     constructor(
-        @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+        @InjectRepository(TournamentAdmin)
+        private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
     ) {}
 
     async seed(numberOfRows: number, tournaments: Tournament[], users: User[]) {
@@ -25,6 +26,7 @@ export class TournamentAdminSeeder {
             const tournamentAdmin: Partial<TournamentAdmin> = {
                 tournament: tournaments[i],
                 user: users[i],
+                isAccepted: true,
             };
 
             const newTournamentAdmin = await this.tournamentAdminRepository.create(tournamentAdmin);

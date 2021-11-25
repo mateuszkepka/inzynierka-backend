@@ -8,6 +8,7 @@ import { PlayerTeam } from '.';
 @Entity()
 export class Team {
     @PrimaryGeneratedColumn()
+    @Expose()
     teamId: number;
 
     @Column()

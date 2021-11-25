@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/log-in'
+    url: '${$env.url}/tournaments/add-admin'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "abc234234@abc.com",
-        "password": "pas234234sword"
+        "userId": 11,
+        "tournamentId": 5
       }
     xmlBody: ''
     textBody: ''
@@ -26,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in
+name: add-admin

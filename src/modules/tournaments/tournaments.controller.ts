@@ -7,11 +7,16 @@ import {
     Param,
     Post,
     Put,
+    Req,
     SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { AcceptTeamDto } from './dto/accept-team-dto';
+import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
+import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
@@ -22,8 +27,29 @@ import { TournamentsService } from './tournaments.service';
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) {}
 
-    @Get(`/:id`)
+    @Get(`pending-teams/:id`)
     @UseGuards(JwtAuthGuard)
+    async getPendingTeamsList(@Param(`id`) id: number, @Req() request: RequestWithUser) {
+        const teamslist = await this.tournamentsService.getPendingTeamsList(id, request);
+
+        if (!teamslist) {
+            throw new NotFoundException(`No pending teams found!`);
+        }
+
+        return teamslist;
+    }
+    @Get(`managed-tournaments`)
+    @UseGuards(JwtAuthGuard)
+    async getManagedTournaments(@Req() request: RequestWithUser) {
+        const torunamentlist = await this.tournamentsService.getManagedTournaments(request);
+
+        if (!torunamentlist) {
+            throw new NotFoundException(`Tournaments not found`);
+        }
+
+        return torunamentlist;
+    }
+    @Get(`/:id`)
     async findById(@Param(`id`) id: string) {
         const torunament = await this.tournamentsService.getById(Number(id));
 
@@ -44,6 +70,24 @@ export class TournamentsController {
 
         return torunament;
     }
+
+    @Post(`accept-team`)
+    @UseGuards(JwtAuthGuard)
+    async acceptTeam(@Body() acceptdata: AcceptTeamDto, @Req() request: RequestWithUser) {
+        return this.tournamentsService.acceptTeam(acceptdata, request);
+    }
+
+    @Post(`add-admin`)
+    @UseGuards(JwtAuthGuard)
+    async addAdmin(@Body() admindata: CreateAdminDto, @Req() request: RequestWithUser) {
+        return this.tournamentsService.addAdmin(admindata, request);
+    }
+
+    @Post(`add-prize`)
+    async addPrize(@Body() prizedata: CreatePrizeDto) {
+        return this.tournamentsService.addPrize(prizedata);
+    }
+
     @Post(`add-team`)
     async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
         return this.tournamentsService.addTeam(participatingTeamData);
