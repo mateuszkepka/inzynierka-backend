@@ -16,7 +16,7 @@ requestData:
       {
         "currency": "bubu",
         "distribution": "costam",
-        "tournamentId": 7
+        "tournamentId": 15
       }
     xmlBody: ''
     textBody: ''

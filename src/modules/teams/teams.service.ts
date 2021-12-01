@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, PlayerTeam, Team } from 'src/entities';
 import { Repository } from 'typeorm';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 
@@ -74,6 +76,79 @@ export class TeamsService {
         newTeam.captain = player;
         await this.teamsRepository.save(newTeam);
         return newTeam;
+    }
+
+    async acceptPlayerInvitation(acceptData: AcceptPlayerInvitationDto, request: RequestWithUser) {
+        const { user } = request;
+        const playerList = await this.playersRepository
+            .createQueryBuilder(`player_team`)
+            .innerJoinAndSelect(`player_team.user`, `user`)
+            .where(`user.userId= :id`, {
+                id: user.userId,
+            })
+            .getMany();
+        if (!playerList) {
+            throw new NotFoundException(`You cant create a team without player account`);
+        }
+        const playerInvitaion = await this.playersTeamsRepository.findOne({
+            where: { playerTeamId: acceptData.playerTeamId },
+            relations: [`player`],
+        });
+        if (!playerInvitaion) {
+            throw new NotFoundException(`Invitation with this id was to found`);
+        }
+        let check = false;
+        for (const player of playerList) {
+            if (player.playerId === playerInvitaion.player.playerId) {
+                check = true;
+            }
+        }
+        if (!check) {
+            throw new NotFoundException(`You dont have permission to accept this invitation`);
+        }
+        if (playerInvitaion.isAccepted) {
+            throw new NotFoundException(`This invitation is already accepted`);
+        }
+        playerInvitaion.isAccepted = true;
+        this.playersTeamsRepository.save(playerInvitaion);
+        return playerInvitaion;
+    }
+
+    async getPendingInvitations(request: RequestWithUser) {
+        const { user } = request;
+        const playerList = await this.playersRepository
+            .createQueryBuilder(`player_team`)
+            .innerJoinAndSelect(`player_team.user`, `user`)
+            .where(`user.userId= :id`, {
+                id: user.userId,
+            })
+            .getMany();
+        if (!playerList) {
+            throw new NotFoundException(`You cant browse invitations without player account`);
+        }
+        const invitaionList = [];
+        for (const player of playerList) {
+            const tmplist = await this.playersTeamsRepository
+                .createQueryBuilder(`player_team`)
+                .innerJoinAndSelect(`player_team.player`, `player`)
+                .where(`player.playerId= :id and player_team.isAccepted = false`, {
+                    id: player.playerId,
+                })
+                .getMany();
+            invitaionList.push(tmplist);
+        }
+        let nullcheck = false;
+        for (const entry of invitaionList) {
+            if (!entry.playerTeamId) {
+                break;
+            } else nullcheck = true;
+        }
+        if (nullcheck) {
+            throw new NotFoundException(`You have no pending invitations`);
+        }
+
+        const invList = JSON.stringify(invitaionList);
+        return invList;
     }
 
     async remove(id: number) {

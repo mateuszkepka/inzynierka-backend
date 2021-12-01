@@ -17,6 +17,7 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 @Controller(`teams`)
 @SerializeOptions({
     strategy: `excludeAll`,
@@ -24,6 +25,17 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) {}
 
+    @Get(`pending-invitations`)
+    @UseGuards(JwtAuthGuard)
+    async getManagedTournaments(@Req() request: RequestWithUser) {
+        const invitaionList = await this.teamsService.getPendingInvitations(request);
+
+        if (!invitaionList) {
+            throw new NotFoundException(`Tournaments not found`);
+        }
+
+        return invitaionList;
+    }
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
     async findById(@Param(`id`) id: string) {
@@ -50,7 +62,14 @@ export class TeamsController {
     async createInvitaion(@Body() playerTeamData: CreatePlayerTeam) {
         return this.teamsService.createInvitaion(playerTeamData);
     }
-
+    @UseGuards(JwtAuthGuard)
+    @Post(`accept-invitation`)
+    async acceptPlayerInvitation(
+        @Body() acceptData: AcceptPlayerInvitationDto,
+        @Req() request: RequestWithUser,
+    ) {
+        return this.teamsService.acceptPlayerInvitation(acceptData, request);
+    }
     @UseGuards(JwtAuthGuard)
     @Post(`create`)
     async create(@Body() teamData: CreateTeamDto) {

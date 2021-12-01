@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
+import { Tournament } from '.';
 
 @Entity()
 export class Prize {
@@ -15,4 +16,7 @@ export class Prize {
     @Column()
     @Expose()
     distribution: string;
+
+    @OneToOne(() => Tournament, (tournament) => tournament.prize, { onDelete: `CASCADE` })
+    tournament: Tournament;
 }

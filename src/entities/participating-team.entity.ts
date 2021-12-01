@@ -20,10 +20,12 @@ export class ParticipatingTeam {
     team: Team;
 
     @Column()
+    @Expose()
     @IsDateString()
     signDate: Date;
 
     @Column()
+    @Expose()
     @IsBoolean()
     isApproved: boolean;
 

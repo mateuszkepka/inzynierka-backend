@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/add-team'
+    url: '${$env.url}/teams/accept-invitation'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "tournamentId": 18,
-        "teamId": 2
+        "playerTeamId": 16
       }
     xmlBody: ''
     textBody: ''
@@ -26,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: addTeam
+name: accept-player-invitation

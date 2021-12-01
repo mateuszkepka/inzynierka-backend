@@ -11,7 +11,13 @@ export class TournamentsSeeder {
         private readonly tournamentsRepository: Repository<Tournament>,
     ) {}
 
-    async seed(numberOfRows: number, prizes: Prize[], presets: Preset[], users: User[], games: Game[]) {
+    async seed(
+        numberOfRows: number,
+        prizes: Prize[],
+        presets: Preset[],
+        users: User[],
+        games: Game[],
+    ) {
         const isSeeded = await this.tournamentsRepository.findOne();
 
         if (isSeeded) {
