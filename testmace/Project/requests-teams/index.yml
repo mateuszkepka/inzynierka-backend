@@ -5,6 +5,8 @@ children:
   - addPlayer
   - createTeam
   - test
+  - get-pending-invitations
+  - accept-player-invitation
 variablesArray: []
 type: Folder
 authData:

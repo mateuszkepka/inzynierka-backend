@@ -84,8 +84,9 @@ export class TournamentsController {
     }
 
     @Post(`add-prize`)
-    async addPrize(@Body() prizedata: CreatePrizeDto) {
-        return this.tournamentsService.addPrize(prizedata);
+    @UseGuards(JwtAuthGuard)
+    async addPrize(@Body() prizedata: CreatePrizeDto, @Req() request: RequestWithUser) {
+        return this.tournamentsService.addPrize(prizedata, request);
     }
 
     @Post(`add-team`)
@@ -93,8 +94,9 @@ export class TournamentsController {
         return this.tournamentsService.addTeam(participatingTeamData);
     }
     @Post(`create`)
-    async create(@Body() tournamentData: CreateTournamentDto) {
-        return this.tournamentsService.create(tournamentData);
+    @UseGuards(JwtAuthGuard)
+    async create(@Body() tournamentData: CreateTournamentDto, @Req() request: RequestWithUser) {
+        return this.tournamentsService.create(tournamentData, request);
     }
     @Delete(`/:id`)
     removeTournament(@Param(`id`) id: string) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Prize, Tournament } from 'src/entities';
+import { Prize } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 

@@ -56,7 +56,8 @@ export class Tournament {
     @Expose()
     description: string;
 
-    @OneToOne(() => Prize, {
+    @OneToOne(() => Prize, (prize) => prize.tournament, {
+        eager: true,
         onDelete: `CASCADE`,
     })
     @JoinColumn({ name: `prizeId` })
