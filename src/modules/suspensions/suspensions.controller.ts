@@ -16,7 +16,6 @@ import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
 import { UpdateSuspensionDto } from './dto/update-suspension.dto';
-
 import { SuspensionsService } from './suspensions.service';
 
 @Controller(`suspensions`)

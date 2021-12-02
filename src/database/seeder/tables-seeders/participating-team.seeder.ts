@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ParticipatingTeam, Team, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
+import { Roster } from 'src/modules/teams/interfaces/roster';
 
 @Injectable()
 export class ParticipatingTeamSeeder {
     constructor(
         @InjectRepository(ParticipatingTeam)
         private readonly rosterRepository: Repository<ParticipatingTeam>,
-    ) {}
+    ) { }
 
     async seed(numberOfRows: number, tournaments: Tournament[], teams: Team[]) {
         const isSeeded = await this.rosterRepository.findOne();
@@ -24,13 +25,21 @@ export class ParticipatingTeamSeeder {
         const createdRosters = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            //   const json = '{"roster" : [{"nickname": "example${i + 1}"},{"nickname": "example${i + 2}"},{"nickname": "example${i + 3}"}],"subs" : [{"nickname": "example${i + 4}"},{"nickname": "example${i + 5}"}]}'
+            const json: Roster = {
+                "roster":
+                    [{ "username": `example${i + 1}`, "summonerName": `Broulyy` },
+                    { "username": `example${i + 2}`, "summonerName": `Nizashi` },
+                    { "username": `example${i + 3}`, "summonerName": `Bogul` }],
+                "subs":
+                    [{ "username": `example${i + 4}`, "summonerName": `Brzyzu v2` },
+                    { "username": `example${i + 5}`, "summonerName": `KreyVex` }]
+            };
             const roster: Partial<ParticipatingTeam> = {
                 tournament: tournaments[i],
                 team: teams[i],
                 signDate: faker.datatype.datetime(),
                 isApproved: true,
-                //roster: JSON.parse(json),
+                roster: json,
             };
             const newRoster = await this.rosterRepository.create(roster);
             createdRosters.push(newRoster);

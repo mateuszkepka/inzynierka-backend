@@ -6,7 +6,7 @@ export class Game {
     gameId: number;
 
     @Column()
-    name: string;
+    title: string;
 
     @Column()
     genre: string;

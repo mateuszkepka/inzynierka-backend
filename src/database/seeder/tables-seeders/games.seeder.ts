@@ -22,7 +22,7 @@ export class GamesSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const game: Partial<Game> = {
-                name: faker.name.findName(),
+                title: faker.name.findName(),
                 genre: faker.music.genre(),
             };
             const newGame = await this.gamesRepository.create(game);

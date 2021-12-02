@@ -7,6 +7,7 @@ import { Expose } from 'class-transformer';
 
 @Entity()
 export class User {
+    @Expose()
     @PrimaryGeneratedColumn()
     userId: number;
 
@@ -19,7 +20,6 @@ export class User {
     email: string;
 
     @Column()
-    @Expose()
     password: string;
 
     @Column()

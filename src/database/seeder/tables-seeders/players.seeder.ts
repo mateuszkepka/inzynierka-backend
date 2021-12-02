@@ -23,6 +23,7 @@ export class PlayersSeeder {
         for (let i = 0; i < numberOfRows; ++i) {
             const player: Partial<Player> = {
                 PUUID: faker.datatype.uuid(),
+                summonerName: faker.name.lastName(),
                 accountId: faker.datatype.number(),
                 summonerId: faker.datatype.number(),
                 region: faker.address.country(),

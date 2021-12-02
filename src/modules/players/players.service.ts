@@ -12,7 +12,7 @@ export class PlayersService {
         private readonly playersRepository: Repository<Player>,
         @InjectRepository(User)
         private readonly usersRepository: Repository<User>,
-    ) {}
+    ) { }
 
     async getById(playerId: number) {
         const player = await this.playersRepository.findOne(
@@ -46,11 +46,16 @@ export class PlayersService {
         return this.playersRepository.remove(player);
     }
 
-    async getAllPlayers() {
-        const player = await this.playersRepository.find();
-        const players = JSON.stringify(player);
+    async getAll() {
+        const players = await this.playersRepository
+            .createQueryBuilder('player')
+            .innerJoin('player.user', 'user')
+            .leftJoin('player.game', 'game')
+            .select(['player.summonerName', 'player.region',
+                'user.userId', 'user.username', 'user.country', 'game.title'])
+            .getMany();
         if (!players) {
-            throw new NotFoundException(`Not even single player exists in the system`);
+            throw new NotFoundException('No players found');
         }
         return players;
     }

@@ -22,6 +22,10 @@ export class Player {
 
     @Expose()
     @Column()
+    summonerName: string;
+
+    @Expose()
+    @Column()
     PUUID: string;
 
     @Expose()
@@ -36,18 +40,19 @@ export class Player {
     @Column()
     region: string;
 
+    @Expose()
     @ManyToOne(() => User, (user) => user.accounts)
     @JoinColumn({ name: `userId` })
-    @Expose()
     user: User;
 
     @OneToMany(() => Performance, (performance) => performance.player)
     performances: Performance[];
 
-    @OneToMany(() => Team, (team) => team.captain)
     @Expose()
+    @OneToMany(() => Team, (team) => team.captain)
     ownedTeams: Team[];
 
+    @Expose()
     @OneToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;

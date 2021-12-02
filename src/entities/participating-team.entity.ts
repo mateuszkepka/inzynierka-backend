@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsDateString } from 'class-validator';
+import { Roster } from 'src/modules/teams/interfaces/roster';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team, Tournament } from '.';
 
@@ -27,6 +28,10 @@ export class ParticipatingTeam {
     @IsBoolean()
     isApproved: boolean;
 
-    //@Column({ type: `json` })
-    //roster: JSON;
+    @Column({ nullable: true })
+    @IsDateString()
+    approvalDate: Date;
+
+    @Column({ type: `json` })
+    roster: Roster;
 }

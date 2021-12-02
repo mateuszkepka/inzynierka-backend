@@ -20,6 +20,7 @@ import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
+
 @Controller(`tournaments`)
 @SerializeOptions({
     strategy: `excludeAll`,
@@ -38,6 +39,7 @@ export class TournamentsController {
 
         return teamslist;
     }
+
     @Get(`managed-tournaments`)
     @UseGuards(JwtAuthGuard)
     async getManagedTournaments(@Req() request: RequestWithUser) {
@@ -49,6 +51,7 @@ export class TournamentsController {
 
         return torunamentlist;
     }
+
     @Get(`/:id`)
     async findById(@Param(`id`) id: string) {
         const torunament = await this.tournamentsService.getById(Number(id));

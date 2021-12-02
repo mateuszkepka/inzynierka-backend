@@ -1,9 +1,9 @@
 enabled: true
 children:
   - get-by-id
-  - getall
-  - addPlayer
-  - createTeam
+  - get-all
+  - add-player
+  - create-team
   - test
 variablesArray: []
 type: Folder

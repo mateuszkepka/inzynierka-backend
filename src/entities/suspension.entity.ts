@@ -25,4 +25,8 @@ export class Suspension {
     @ManyToOne(() => User, (user) => user.suspensions)
     @JoinColumn({ name: `userId` })
     user: User;
+
+    @ManyToOne(() => User, (user) => user.suspensions)
+    @JoinColumn({ name: 'adminId' })
+    admin: User;
 }

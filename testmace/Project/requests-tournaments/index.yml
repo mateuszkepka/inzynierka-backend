@@ -3,9 +3,9 @@ children:
   - getall
   - get-by-id
   - create
-  - addTeam
+  - add-team
   - get-managned-tournaments
-  - addPrize
+  - add-prize
   - pending-teams-list
   - add-admin
   - accept-team
