@@ -22,9 +22,9 @@ export class PlayerTeam {
 
     @Expose()
     @Column({
-        type: 'enum',
+        type: `enum`,
         enum: InvitationStatus,
-        default: InvitationStatus.PENDING
+        default: InvitationStatus.PENDING,
     })
     invitationStatus: InvitationStatus;
 }

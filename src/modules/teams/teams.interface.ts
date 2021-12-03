@@ -1,4 +1,4 @@
-import { PlayerInRoster } from "../players/player.interface";
+import { PlayerInRoster } from '../players/player.interface';
 
 export interface Roster {
     roster: PlayerInRoster[];
@@ -8,5 +8,5 @@ export interface Roster {
 export enum InvitationStatus {
     PENDING,
     REFUSED,
-    ACCEPTED
+    ACCEPTED,
 }

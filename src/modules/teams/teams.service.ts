@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, PlayerTeam, Team } from 'src/entities';
+import { Player, PlayerTeam, Team, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
@@ -13,11 +13,14 @@ export class TeamsService {
     constructor(
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
-        @InjectRepository(PlayerTeam) private readonly playersTeamsRepository: Repository<PlayerTeam>,
-    ) { }
+        @InjectRepository(PlayerTeam)
+        private readonly playersTeamsRepository: Repository<PlayerTeam>,
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
+    ) {}
 
     async getById(teamId: number) {
-        const team = await this.teamsRepository.findOne({ teamId });
+        const team = await this.teamsRepository.findOne({ teamId }, { relations: [`capitan`] });
         if (team) {
             return team;
         }

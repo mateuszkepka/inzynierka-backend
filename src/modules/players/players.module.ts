@@ -11,4 +11,4 @@ import { PlayersService } from './players.service';
     exports: [PlayersService],
     controllers: [PlayersController],
 })
-export class PlayersModule { }
+export class PlayersModule {}

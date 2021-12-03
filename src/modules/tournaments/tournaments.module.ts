@@ -19,4 +19,4 @@ import { TournamentsService } from './tournaments.service';
     exports: [TournamentsService],
     controllers: [TournamentsController],
 })
-export class TournamentsModule { }
+export class TournamentsModule {}

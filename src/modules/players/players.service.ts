@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { GamesService } from '../games/games.service';
 import { RegionsLoL } from '../games/regions';
+import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
 
 @Injectable()
@@ -12,8 +13,8 @@ export class PlayersService {
     constructor(
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
-        private readonly gamesService: GamesService
-    ) { }
+        private readonly gamesService: GamesService,
+    ) {}
 
     async getById(playerId: number) {
         const player = await this.playersRepository.findOne(
@@ -25,13 +26,20 @@ export class PlayersService {
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
+    async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
+        const players = await this.playersRepository.find({
+            where: {},
+            relations: [`playerTeams`],
+        });
+        return players;
+    }
 
     async create(playerDto: AddPlayerAccountDto, request: RequestWithUser) {
         const { user } = request;
         const { summonerName, gameId, region } = playerDto;
         const game = await this.gamesService.getById(gameId);
         if (!Object.values(RegionsLoL).includes(region)) {
-            throw new NotFoundException(`Wrong region provided`)
+            throw new NotFoundException(`Wrong region provided`);
         }
         const player = this.playersRepository.create({ summonerName, region, user, game });
         return this.playersRepository.save(player);
