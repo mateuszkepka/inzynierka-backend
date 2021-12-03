@@ -35,6 +35,7 @@ export class ParticipatingTeam {
     @IsDateString()
     approvalDate: Date;
 
+    @Expose()
     @Column({ type: `json` })
     roster: Roster;
 }

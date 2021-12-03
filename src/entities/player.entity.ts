@@ -45,8 +45,8 @@ export class Player {
     @OneToMany(() => Performance, (performance) => performance.player)
     performances: Performance[];
 
-    @OneToMany(() => Team, (team) => team.captain)
     @Expose()
+    @OneToMany(() => Team, (team) => team.captain)
     ownedTeams: Team[];
 
     @Expose()

@@ -21,23 +21,20 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+@SerializeOptions({ strategy: `excludeAll` })
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) {}
+    constructor(private readonly tournamentsService: TournamentsService) { }
 
     @Get(`pending-teams/:id`)
     @UseGuards(JwtAuthGuard)
     async getPendingTeamsList(@Param(`id`) id: number, @Req() request: RequestWithUser) {
         const teamslist = await this.tournamentsService.getPendingTeamsList(id, request);
-
         if (!teamslist) {
             throw new NotFoundException(`No pending teams found!`);
         }
-
         return teamslist;
     }
+
     @Get(`managed-tournaments`)
     @UseGuards(JwtAuthGuard)
     async getManagedTournaments(@Req() request: RequestWithUser) {
@@ -49,25 +46,22 @@ export class TournamentsController {
 
         return torunamentlist;
     }
+
     @Get(`/:id`)
     async findById(@Param(`id`) id: string) {
         const torunament = await this.tournamentsService.getById(Number(id));
-
         if (!torunament) {
             throw new NotFoundException(`Tournament not found`);
         }
-
         return torunament;
     }
 
     @Get()
     async find() {
         const torunament = await this.tournamentsService.getAllTournaments();
-
         if (!torunament) {
             throw new NotFoundException(`Tournaments not found`);
         }
-
         return torunament;
     }
 
