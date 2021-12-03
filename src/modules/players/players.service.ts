@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, User } from 'src/entities';
+import { Player, Team, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { GamesService } from '../games/games.service';
@@ -14,6 +14,7 @@ export class PlayersService {
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly gamesService: GamesService,
+        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
     ) {}
 
     async getById(playerId: number) {
@@ -27,8 +28,12 @@ export class PlayersService {
         throw new NotFoundException(`Player with this id does not exist`);
     }
     async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
-        const players = await this.playersRepository.find({
-            where: {},
+        // const players = await this.playersRepository.find({
+        //     where: {},
+        //     relations: [`playerTeams`],
+        // });
+        const players = await this.teamsRepository.find({
+            where: { teamId: teamdata.teamId },
             relations: [`playerTeams`],
         });
         return players;
