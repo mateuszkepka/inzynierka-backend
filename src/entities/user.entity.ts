@@ -11,48 +11,45 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number;
 
-    @Column()
     @Expose()
+    @Column()
     username: string;
 
-    @Column({ unique: true })
     @Expose()
+    @Column({ unique: true })
     email: string;
 
     @Column()
-    @Expose()
     password: string;
 
-    @Column()
     @Expose()
+    @Column()
     country: string;
 
-    @Column()
     @Expose()
+    @Column()
     university: string;
 
-    @Column()
     @Expose()
+    @Column()
     studentId: string;
 
-    @Column({
-        nullable: true,
-    })
+    @Column({ nullable: true })
     currentRefreshToken?: string;
 
-    @OneToMany(() => Tournament, (tournament) => tournament.organizer)
     @Expose()
+    @OneToMany(() => Tournament, (tournament) => tournament.organizer)
     organizedTournaments: Tournament[];
 
-    @OneToMany(() => Suspension, (suspension) => suspension.user)
     @Expose()
+    @OneToMany(() => Suspension, (suspension) => suspension.user)
     suspensions: Suspension[];
 
-    @OneToMany(() => Player, (player) => player.user)
     @Expose()
+    @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 
-    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
     @Expose()
+    @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
     tournamentAdmins: TournamentAdmin[];
 }

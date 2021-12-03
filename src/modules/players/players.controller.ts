@@ -21,35 +21,32 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
     strategy: `excludeAll`,
 })
 export class PlayersController {
-    constructor(private readonly playersService: PlayersService) {}
+    constructor(private readonly playersService: PlayersService) { }
 
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
     async findById(@Param(`id`) id: string) {
-        const torunament = await this.playersService.getById(Number(id));
+        const player = await this.playersService.getById(Number(id));
 
-        if (!torunament) {
+        if (!player) {
             throw new NotFoundException(`Player not found`);
         }
 
-        return torunament;
+        return player;
     }
 
     @Get()
     async find() {
-        const torunament = await this.playersService.getAllPlayers();
-
-        if (!torunament) {
-            throw new NotFoundException(`Players not found`);
-        }
-
-        return torunament;
+        const players = await this.playersService.getAllPlayers();
+        return players;
     }
+    
     @UseGuards(JwtAuthGuard)
     @Post(`create`)
     async create(@Body() playerData: CreatePlayerDto, @Req() request: RequestWithUser) {
         return this.playersService.create(playerData, request);
     }
+    
     @Delete(`/:id`)
     removePlayer(@Param(`id`) id: string) {
         return this.playersService.remove(Number(id));
