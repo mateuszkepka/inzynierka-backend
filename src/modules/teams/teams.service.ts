@@ -11,13 +11,10 @@ import { InvitationStatus } from './teams.interface';
 @Injectable()
 export class TeamsService {
     constructor(
-        @InjectRepository(Team)
-        private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(Player)
-        private readonly playersRepository: Repository<Player>,
-        @InjectRepository(PlayerTeam)
-        private readonly playersTeamsRepository: Repository<PlayerTeam>,
-    ) {}
+        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
+        @InjectRepository(PlayerTeam) private readonly playersTeamsRepository: Repository<PlayerTeam>,
+    ) { }
 
     async getById(teamId: number) {
         const team = await this.teamsRepository.findOne({ teamId });

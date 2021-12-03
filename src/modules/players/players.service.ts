@@ -3,15 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { CreatePlayerDto } from './dto/create-player.dto';
+import { GamesService } from '../games/games.service';
+import { RegionsLoL } from '../games/regions';
+import { AddPlayerAccountDto } from './dto/create-player.dto';
 
 @Injectable()
 export class PlayersService {
     constructor(
-        @InjectRepository(Player)
-        private readonly playersRepository: Repository<Player>,
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        private readonly gamesService: GamesService
     ) { }
 
     async getById(playerId: number) {
@@ -24,18 +25,16 @@ export class PlayersService {
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
-    //here we will need to add player field verification
-    async create(player: CreatePlayerDto, request: RequestWithUser) {
+
+    async create(playerDto: AddPlayerAccountDto, request: RequestWithUser) {
         const { user } = request;
-        const tmpPlayer = new Player();
-        tmpPlayer.PUUID = player.PUUID;
-        tmpPlayer.accountId = player.accountId;
-        tmpPlayer.summonerId = player.summonerId;
-        tmpPlayer.region = player.region;
-        tmpPlayer.user = user;
-        const newPlayer = await this.playersRepository.create(tmpPlayer);
-        await this.playersRepository.save(newPlayer);
-        return newPlayer;
+        const { summonerName, gameId, region } = playerDto;
+        const game = await this.gamesService.getById(gameId);
+        if (!Object.values(RegionsLoL).includes(region)) {
+            throw new NotFoundException(`Wrong region provided`)
+        }
+        const player = this.playersRepository.create({ summonerName, region, user, game });
+        return this.playersRepository.save(player);
     }
 
     async remove(id: number) {

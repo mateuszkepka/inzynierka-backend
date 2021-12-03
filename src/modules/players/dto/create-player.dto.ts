@@ -1,14 +1,11 @@
-import { IsString } from 'class-validator';
-export class CreatePlayerDto {
+import { IsNumber, IsString } from 'class-validator';
+export class AddPlayerAccountDto {
     @IsString()
-    PUUID: string;
+    summonerName: string;
 
-    @IsString()
-    accountId: string;
-
-    @IsString()
-    summonerId: string;
-
+    @IsNumber()
+    gameId: number;
+    
     @IsString()
     region: string;
 }

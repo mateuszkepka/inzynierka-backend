@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { PlayersService } from './players.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
+import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 @Controller(`players`)
@@ -43,7 +43,7 @@ export class PlayersController {
     
     @UseGuards(JwtAuthGuard)
     @Post(`create`)
-    async create(@Body() playerData: CreatePlayerDto, @Req() request: RequestWithUser) {
+    async create(@Body() playerData: AddPlayerAccountDto, @Req() request: RequestWithUser) {
         return this.playersService.create(playerData, request);
     }
     
