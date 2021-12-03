@@ -16,7 +16,7 @@ export class TournamentsSeeder {
         prizes: Prize[],
         presets: Preset[],
         users: User[],
-        games: Game[],
+        game: Game,
     ) {
         const isSeeded = await this.tournamentsRepository.findOne();
 
@@ -44,7 +44,7 @@ export class TournamentsSeeder {
                 prize: prizes[i],
                 preset: presets[i],
                 organizer: users[i],
-                game: games[i],
+                game: game,
             };
             const newTournament = await this.tournamentsRepository.create(tournament);
             createdTournaments.push(newTournament);

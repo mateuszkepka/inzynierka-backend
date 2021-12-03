@@ -6,6 +6,7 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { InvitationStatus } from './teams.interface';
 
 @Injectable()
 export class TeamsService {
@@ -59,7 +60,6 @@ export class TeamsService {
         const tempPlayerTeam = new PlayerTeam();
         tempPlayerTeam.player = player;
         tempPlayerTeam.team = team;
-        tempPlayerTeam.isAccepted = false;
         const playerTeam = await this.playersTeamsRepository.create(tempPlayerTeam);
         await this.playersTeamsRepository.save(playerTeam);
         return playerTeam;
@@ -106,10 +106,10 @@ export class TeamsService {
         if (!check) {
             throw new NotFoundException(`You dont have permission to accept this invitation`);
         }
-        if (playerInvitaion.isAccepted) {
+        if (playerInvitaion.invitationStatus === InvitationStatus.ACCEPTED) {
             throw new NotFoundException(`This invitation is already accepted`);
         }
-        playerInvitaion.isAccepted = true;
+        playerInvitaion.invitationStatus = InvitationStatus.ACCEPTED;
         this.playersTeamsRepository.save(playerInvitaion);
         return playerInvitaion;
     }

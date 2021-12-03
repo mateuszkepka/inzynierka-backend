@@ -22,6 +22,10 @@ export class Player {
 
     @Expose()
     @Column()
+    summonerName: string;
+
+    @Expose()
+    @Column()
     PUUID: string;
 
     @Expose()
@@ -48,7 +52,7 @@ export class Player {
     @Expose()
     ownedTeams: Team[];
 
-    @OneToOne(() => Game)
+    @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 

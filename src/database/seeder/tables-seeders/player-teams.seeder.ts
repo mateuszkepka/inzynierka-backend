@@ -24,8 +24,7 @@ export class PlayerTeamSeeder {
         for (let i = 0; i < numberOfRows; ++i) {
             const playerTeam: Partial<PlayerTeam> = {
                 player: players[i],
-                team: teams[i],
-                isAccepted: true,
+                team: teams[i]
             };
             const newPlayerTeams = await this.playerTeamRepository.create(playerTeam);
             createdPlayerTeams.push(newPlayerTeams);

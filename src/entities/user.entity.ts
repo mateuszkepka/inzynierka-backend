@@ -7,6 +7,7 @@ import { Expose } from 'class-transformer';
 
 @Entity()
 export class User {
+    @Expose()
     @PrimaryGeneratedColumn()
     userId: number;
 

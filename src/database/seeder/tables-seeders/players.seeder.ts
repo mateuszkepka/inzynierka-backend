@@ -8,7 +8,7 @@ import * as faker from 'faker';
 export class PlayersSeeder {
     constructor(@InjectRepository(Player) private readonly usersRepository: Repository<Player>) {}
 
-    async seed(numberOfRows: number, users: User[], games: Game[]) {
+    async seed(numberOfRows: number, users: User[], game: Game) {
         const isSeeded = await this.usersRepository.findOne();
 
         if (isSeeded) {
@@ -22,12 +22,13 @@ export class PlayersSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const player: Partial<Player> = {
+                summonerName: faker.name.lastName(),
                 PUUID: faker.datatype.uuid(),
                 accountId: faker.datatype.number(),
                 summonerId: faker.datatype.number(),
                 region: faker.address.country(),
                 user: users[i],
-                game: games[i],
+                game: game,
             };
             const newPlayer = await this.usersRepository.create(player);
             createdPlayers.push(newPlayer);
