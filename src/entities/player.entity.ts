@@ -1,12 +1,4 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Game, PlayerTeam } from '.';
 
 import { Expose } from 'class-transformer';
@@ -22,14 +14,15 @@ export class Player {
 
     @Expose()
     @Column()
+    summonerName: string;
+
+    @Column({ nullable: true })
     PUUID: string;
 
-    @Expose()
-    @Column()
+    @Column({ nullable: true })
     accountId: string;
 
-    @Expose()
-    @Column()
+    @Column({ nullable: true })
     summonerId: string;
 
     @Expose()
@@ -48,10 +41,16 @@ export class Player {
     @Expose()
     ownedTeams: Team[];
 
-    @OneToOne(() => Game)
+    @Expose()
+    @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.team)
+<<<<<<< HEAD
+    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
+=======
+>>>>>>> e2ac1b582c0248e161286ec71f7768b74c072d1a
+    @Expose()
+    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
     playerTeams: PlayerTeam[];
 }

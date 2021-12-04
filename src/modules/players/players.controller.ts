@@ -13,43 +13,54 @@ import {
 } from '@nestjs/common';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { PlayersService } from './players.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
+import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
 @Controller(`players`)
 @SerializeOptions({
     strategy: `excludeAll`,
 })
 export class PlayersController {
-    constructor(private readonly playersService: PlayersService) {}
+    constructor(private readonly playersService: PlayersService) { }
 
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
     async findById(@Param(`id`) id: string) {
-        const torunament = await this.playersService.getById(Number(id));
+        const player = await this.playersService.getById(Number(id));
 
-        if (!torunament) {
+        if (!player) {
             throw new NotFoundException(`Player not found`);
         }
 
-        return torunament;
+        return player;
     }
 
     @Get()
     async find() {
-        const torunament = await this.playersService.getAllPlayers();
-
-        if (!torunament) {
-            throw new NotFoundException(`Players not found`);
-        }
-
-        return torunament;
+        const players = await this.playersService.getAllPlayers();
+        return players;
     }
+
     @UseGuards(JwtAuthGuard)
     @Post(`create`)
-    async create(@Body() playerData: CreatePlayerDto, @Req() request: RequestWithUser) {
+    async create(@Body() playerData: AddPlayerAccountDto, @Req() request: RequestWithUser) {
         return this.playersService.create(playerData, request);
     }
+
+    @Post(`available-players`)
+    @UseGuards(JwtAuthGuard)
+    async getAvailablePlayers(
+        @Body() teamdata: GetAvailablePlayersDto,
+        @Req() request: RequestWithUser,
+    ) {
+        const invitaionList = await this.playersService.getAvailablePlayers(teamdata, request);
+        if (!invitaionList) {
+            throw new NotFoundException(`Players not found`);
+        }
+        return invitaionList;
+    }
+
     @Delete(`/:id`)
     removePlayer(@Param(`id`) id: string) {
         return this.playersService.remove(Number(id));

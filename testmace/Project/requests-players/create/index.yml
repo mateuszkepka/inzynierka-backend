@@ -14,10 +14,9 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "PUUID": "2342345",
-        "accountId": "128731829323",
-        "summonerId": "21312321",
-        "region": "bajo jajo"
+        "summonerName": "Broulyy",
+        "gameId": 1,
+        "region": "EUNE"
       }
     xmlBody: ''
     textBody: ''

@@ -50,7 +50,7 @@ export class Seeder {
 
     async seed() {
         const createdTeams = await this.teamsSeeder.seed(10);
-        const createdGames = await this.gamesSeeder.seed(10);
+        const createdGame = await this.gamesSeeder.seed();
         const createdUsers = await this.usersSeeder.seed(10);
         const createdPresets = await this.presetsSeeder.seed(10);
         const createdPrizes = await this.prizesSeeder.seed(10);
@@ -59,7 +59,7 @@ export class Seeder {
             createdPrizes,
             createdPresets,
             createdUsers,
-            createdGames,
+            createdGame,
         );
         const createdRosters = await this.rosterSeeder.seed(
             10,
@@ -76,10 +76,9 @@ export class Seeder {
         const createdPlayers = await this.playersSeeder.seed(
             10,
             createdUsers,
-            createdGames
+            createdGame
         );
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
-
         await this.playerTeamsSeeder.seed(10, createdPlayers, createdTeams);
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);

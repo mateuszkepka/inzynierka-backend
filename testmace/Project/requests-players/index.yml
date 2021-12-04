@@ -3,6 +3,7 @@ children:
   - getall
   - get-by-id
   - create
+  - get-available-players
 variablesArray: []
 type: Folder
 authData:

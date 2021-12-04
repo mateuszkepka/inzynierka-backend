@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import { Team } from './team.entity';
 import { Player } from './player.entity';
 import { Expose } from 'class-transformer';
+import { InvitationStatus } from 'src/modules/teams/teams.interface';
 
 @Entity()
 export class PlayerTeam {
@@ -10,16 +11,20 @@ export class PlayerTeam {
     playerTeamId: number;
 
     @Expose()
-    @ManyToOne(() => Team, (team) => team.playerTeams)
-    @JoinColumn({ name: `teamId` })
-    team: Team;
-
-    @Expose()
     @ManyToOne(() => Player, (player) => player.playerTeams)
     @JoinColumn({ name: `playerId` })
     player: Player;
 
     @Expose()
-    @Column()
-    isAccepted: boolean;
+    @ManyToOne(() => Team, (team) => team.playerTeams)
+    @JoinColumn({ name: `teamId` })
+    team: Team;
+
+    @Expose()
+    @Column({
+        type: `enum`,
+        enum: InvitationStatus,
+        default: InvitationStatus.Pending,
+    })
+    invitationStatus: InvitationStatus;
 }

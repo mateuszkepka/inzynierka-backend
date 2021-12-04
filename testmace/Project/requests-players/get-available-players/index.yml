@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/register'
+    url: '${$env.url}/players/available-players'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,12 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "adam.krawczynski1999@gmail.com",
-        "password": "test",
-        "username": "Brouly",
-        "country": "Poland",
-        "university": "PJATK",
-        "studentId": "s18578"
+        "teamId": 10
       }
     xmlBody: ''
     textBody: ''
@@ -30,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: register
+name: get-available-players

@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { Game, Tournament } from 'src/entities';
+import { Game } from 'src/entities';
 
 @Injectable()
 export class GamesSeeder {
-    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
+    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) { }
 
-    async seed(numberOfRows: number) {
+    async seed() {
         const isSeeded = await this.gamesRepository.findOne();
 
         if (isSeeded) {
@@ -18,18 +18,14 @@ export class GamesSeeder {
         }
 
         console.log(`Seeding "Game" table...`);
-        const createdGames = [];
 
-        for (let i = 0; i < numberOfRows; ++i) {
-            const game: Partial<Game> = {
-                name: faker.name.findName(),
-                genre: faker.music.genre(),
-            };
-            const newGame = await this.gamesRepository.create(game);
-            createdGames.push(newGame);
-            await this.gamesRepository.save(newGame);
-        }
+        const game: Partial<Game> = {
+            title: 'League Of Legends',
+            genre: 'MOBA',
+        };
+        const newGame = await this.gamesRepository.create(game);
+        await this.gamesRepository.save(newGame);
 
-        return createdGames;
+        return newGame;
     }
 }

@@ -24,7 +24,6 @@ import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 })
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) {}
-
     @Get(`pending-invitations`)
     @UseGuards(JwtAuthGuard)
     async getManagedTournaments(@Req() request: RequestWithUser) {
