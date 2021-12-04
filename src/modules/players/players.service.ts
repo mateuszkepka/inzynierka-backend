@@ -27,16 +27,15 @@ export class PlayersService {
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
-    
+    //todo
     async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
-        // const players = await this.playersRepository.find({
-        //     where: {},
-        //     relations: [`playerTeams`],
-        // });
-        const players = await this.teamsRepository.find({
-            where: { teamId: teamdata.teamId },
-            relations: [`playerTeams`],
-        });
+        const players = await this.playersRepository
+            .createQueryBuilder(`player`)
+            .innerJoinAndSelect(`player.playerTeams`, `player_team`)
+            .innerJoinAndSelect(`player_team.team`, `team`)
+            .where(`team.teamId != :id`, { id: teamdata.teamId })
+            .getMany();
+        console.log(players);
         return players;
     }
 

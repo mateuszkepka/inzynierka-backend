@@ -20,7 +20,9 @@ export class TeamsService {
     ) {}
 
     async getById(teamId: number) {
-        const team = await this.teamsRepository.findOne({ teamId }, { relations: [`capitan`] });
+        const team = await this.teamsRepository.findOne({
+            where: { teamId: teamId },
+        });
         if (team) {
             return team;
         }

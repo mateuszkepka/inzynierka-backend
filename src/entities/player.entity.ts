@@ -46,7 +46,7 @@ export class Player {
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.team)
+    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
     @Expose()
     playerTeams: PlayerTeam[];
 }
