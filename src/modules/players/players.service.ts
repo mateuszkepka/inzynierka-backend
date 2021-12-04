@@ -26,6 +26,7 @@ export class PlayersService {
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
+    
     async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
         const players = await this.playersRepository.find({
             where: {},
@@ -60,6 +61,7 @@ export class PlayersService {
             .addSelect(`user.username`)
             .addSelect(`user.email`)
             .addSelect(`user.country`)
+            .addSelect(`player.playerId`)
             .addSelect(`player.summonerName`)
             .addSelect(`game.title`)
             .innerJoin(`user.accounts`, `player`)

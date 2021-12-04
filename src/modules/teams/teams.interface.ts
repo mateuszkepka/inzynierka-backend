@@ -6,7 +6,7 @@ export interface Roster {
 }
 
 export enum InvitationStatus {
-    PENDING,
-    REFUSED,
-    ACCEPTED,
+    Pending = "pending",
+    Refused = "refused",
+    Accepted = "accepted"
 }

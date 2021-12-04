@@ -22,7 +22,7 @@ import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
     strategy: `excludeAll`,
 })
 export class PlayersController {
-    constructor(private readonly playersService: PlayersService) {}
+    constructor(private readonly playersService: PlayersService) { }
 
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
@@ -47,6 +47,7 @@ export class PlayersController {
     async create(@Body() playerData: AddPlayerAccountDto, @Req() request: RequestWithUser) {
         return this.playersService.create(playerData, request);
     }
+
     @Post(`available-players`)
     @UseGuards(JwtAuthGuard)
     async getAvailablePlayers(
@@ -54,11 +55,9 @@ export class PlayersController {
         @Req() request: RequestWithUser,
     ) {
         const invitaionList = await this.playersService.getAvailablePlayers(teamdata, request);
-
         if (!invitaionList) {
             throw new NotFoundException(`Players not found`);
         }
-
         return invitaionList;
     }
 
