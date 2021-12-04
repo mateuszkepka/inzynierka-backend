@@ -133,15 +133,16 @@ export class TeamsService {
             const tmplist = await this.playersTeamsRepository
                 .createQueryBuilder(`player_team`)
                 .innerJoinAndSelect(`player_team.player`, `player`)
+                .innerJoinAndSelect(`player_team.team`, `team`)
                 .where(`player.playerId= :id and player_team.isAccepted = false`, {
                     id: player.playerId,
                 })
                 .getMany();
-            invitaionList.push(tmplist);
+            invitaionList.push(...tmplist);
         }
         let nullcheck = false;
         for (const entry of invitaionList) {
-            if (!entry.playerTeamId) {
+            if (entry.playerTeamId) {
                 break;
             } else nullcheck = true;
         }
