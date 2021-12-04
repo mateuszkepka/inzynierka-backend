@@ -79,7 +79,6 @@ export class Seeder {
             createdGame
         );
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
-
         await this.playerTeamsSeeder.seed(10, createdPlayers, createdTeams);
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);

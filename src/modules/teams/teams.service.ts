@@ -106,10 +106,10 @@ export class TeamsService {
         if (!check) {
             throw new NotFoundException(`You dont have permission to accept this invitation`);
         }
-        if (playerInvitaion.invitationStatus === InvitationStatus.ACCEPTED) {
+        if (playerInvitaion.invitationStatus === InvitationStatus.Accepted) {
             throw new NotFoundException(`This invitation is already accepted`);
         }
-        playerInvitaion.invitationStatus = InvitationStatus.ACCEPTED;
+        playerInvitaion.invitationStatus = InvitationStatus.Accepted;
         this.playersTeamsRepository.save(playerInvitaion);
         return playerInvitaion;
     }

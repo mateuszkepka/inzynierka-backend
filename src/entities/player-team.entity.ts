@@ -11,20 +11,20 @@ export class PlayerTeam {
     playerTeamId: number;
 
     @Expose()
-    @ManyToOne(() => Team, (team) => team.playerTeams)
-    @JoinColumn({ name: `teamId` })
-    team: Team;
-
-    @Expose()
     @ManyToOne(() => Player, (player) => player.playerTeams)
     @JoinColumn({ name: `playerId` })
     player: Player;
 
     @Expose()
+    @ManyToOne(() => Team, (team) => team.playerTeams)
+    @JoinColumn({ name: `teamId` })
+    team: Team;
+
+    @Expose()
     @Column({
-        type: `enum`,
+        type: "enum",
         enum: InvitationStatus,
-        default: InvitationStatus.PENDING,
+        default: InvitationStatus.Pending
     })
     invitationStatus: InvitationStatus;
 }

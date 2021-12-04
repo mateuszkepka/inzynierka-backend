@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team } from 'src/entities';
 import { PlayerTeam } from 'src/entities/player-team.entity';
+import { InvitationStatus } from 'src/modules/teams/teams.interface';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -24,7 +25,7 @@ export class PlayerTeamSeeder {
         for (let i = 0; i < numberOfRows; ++i) {
             const playerTeam: Partial<PlayerTeam> = {
                 player: players[i],
-                team: teams[i]
+                team: teams[i],
             };
             const newPlayerTeams = await this.playerTeamRepository.create(playerTeam);
             createdPlayerTeams.push(newPlayerTeams);
