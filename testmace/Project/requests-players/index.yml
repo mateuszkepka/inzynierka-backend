@@ -1,8 +1,9 @@
 enabled: true
 children:
-  - getall
-  - get-by-id
-  - create
+  - get-all-players
+  - get-player-by-id
+  - get-available-players
+  - create-player
 variablesArray: []
 type: Folder
 authData:

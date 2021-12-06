@@ -1,3 +1,3 @@
 export enum GameList {
-    "League of Legends"
+    'League of Legends',
 }

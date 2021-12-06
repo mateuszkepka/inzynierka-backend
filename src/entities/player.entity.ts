@@ -1,14 +1,5 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Game, PlayerTeam } from '.';
-
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Game, Invitation } from '.';
 import { Expose } from 'class-transformer';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
@@ -54,6 +45,7 @@ export class Player {
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.team)
-    playerTeams: PlayerTeam[];
+    @Expose()
+    @OneToMany(() => Invitation, (invitation) => invitation.player)
+    teams: Invitation[];
 }

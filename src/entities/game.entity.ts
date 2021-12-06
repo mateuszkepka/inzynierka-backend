@@ -1,6 +1,5 @@
 import { Expose } from 'class-transformer';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Player } from '.';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Game {
@@ -10,7 +9,7 @@ export class Game {
     @Expose()
     @Column()
     title: string;
-    
+
     @Expose()
     @Column()
     genre: string;

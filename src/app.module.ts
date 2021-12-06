@@ -13,6 +13,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { PlayersModule } from './modules/players/players.module';
 import { GamesModule } from './modules/games/games.module';
+import { InvitationsModule } from './modules/invitations/invitations.module';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { GamesModule } from './modules/games/games.module';
                     username: config.get<string>(`DB_USER`),
                     password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
+                    logging: true,
                     entities: [
                         entities.Game,
                         entities.Group,
@@ -54,7 +56,7 @@ import { GamesModule } from './modules/games/games.module';
                         entities.Prize,
                         entities.Suspension,
                         entities.Team,
-                        entities.PlayerTeam,
+                        entities.Invitation,
                         entities.TiebreakerRule,
                         entities.Tournament,
                         entities.TournamentAdmin,
@@ -70,6 +72,7 @@ import { GamesModule } from './modules/games/games.module';
         TeamsModule,
         PlayersModule,
         GamesModule,
+        InvitationsModule,
     ],
     providers: [
         {

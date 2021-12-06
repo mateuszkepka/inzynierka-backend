@@ -6,18 +6,20 @@ environments:
     dev:
       url: 'localhost:3000'
 children:
-  - requests-auth
+  - requests-authentication
   - requests-users
   - requests-suspensions
-  - requests-tournaments
-  - requests-teams
   - requests-players
+  - requests-invitations
+  - requests-teams
+  - requests-tournaments
+  - requests-organizers
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2Mzg1Njg1NTQsImV4cCI6MTYzODU3ODU1NH0.G3KYR1Ar9OR-uhXfm64IkXcBjcyhPqrJHwD911jc5cA;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2Mzg3Njc2MTMsImV4cCI6MTYzODc3NzYxM30.rB3icfHJWJCRnEa_qnDm-D_f7rf8juj8VfdA2CiQyGA;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2Mzg1Njg1NTQsImV4cCI6MTYzODY2ODU1NH0.Z4q1R7NCLhpNFTEqxTmF40jqB67dP1OocLQrRKP5hoE;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2Mzg3Njc2MTMsImV4cCI6MTYzODg2NzYxM30.gP7k-gCAM2D2HN5OqaLD773D55n3yl4Sd1YHRRaBhnI;
     Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:

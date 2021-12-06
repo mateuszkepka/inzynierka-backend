@@ -9,5 +9,5 @@ export enum RegionsLoL {
     RU,
     TR,
     JP,
-    KR
+    KR,
 }

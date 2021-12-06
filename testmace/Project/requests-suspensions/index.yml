@@ -1,8 +1,9 @@
 enabled: true
 children:
-  - suspend-player
-  - get-by-user
-  - get-by-id
+  - get-by-id (TODO)
+  - get-by-user (TODO)
+  - create-suspension (TODO)
+  - update-suspension (TODO)
 variablesArray: []
 type: Folder
 authData:

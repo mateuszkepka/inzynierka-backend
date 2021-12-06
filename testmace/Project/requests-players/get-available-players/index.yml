@@ -1,0 +1,31 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: GET
+    url: '${$env.url}/players/?status=available'
+  headers: []
+  disabledInheritedHeaders: []
+  params:
+    - name: status
+      value: available
+      isChecked: true
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "teamId": 6
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: get-available-players

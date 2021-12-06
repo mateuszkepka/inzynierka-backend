@@ -3,7 +3,6 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
     Post,
     Put,
@@ -15,7 +14,7 @@ import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
-import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
+import { CreateInvitation } from './dto/create-invitation.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 @Controller(`teams`)
@@ -23,40 +22,40 @@ import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) { }
 
+    @Get(`/:id/members`)
+    @UseGuards(JwtAuthGuard)
+    async getMembers(@Param(`id`) id: string) {
+        return await this.teamsService.getMembers(parseInt(id));
+    }
+
+    // TODO move to user's module
+    // should look like GET /user/:id/pending-invitations
     @Get(`pending-invitations`)
     @UseGuards(JwtAuthGuard)
     async getManagedTournaments(@Req() request: RequestWithUser) {
-        const invitaionList = await this.teamsService.getPendingInvitations(request);
-        if (!invitaionList) {
-            throw new NotFoundException(`Tournaments not found`);
-        }
-        return invitaionList;
+        return this.teamsService.getPendingInvitations(request);
     }
 
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
     async findById(@Param(`id`) id: string) {
-        const torunament = await this.teamsService.getById(Number(id));
-        if (!torunament) {
-            throw new NotFoundException(`Team not found`);
-        }
-        return torunament;
+        return this.teamsService.getById(Number(id));
     }
 
     @Get()
-    async find() {
-        const torunament = await this.teamsService.getAllTeams();
-        if (!torunament) {
-            throw new NotFoundException(`Teams not found`);
-        }
-        return torunament;
+    async getAllTeams() {
+        return this.teamsService.getAllTeams();
     }
 
+    // TODO move to invitation's module
+    // should look like POST /invitations
     @Post(`create-invitation`)
-    async createInvitaion(@Body() playerTeamData: CreatePlayerTeam) {
-        return this.teamsService.createInvitaion(playerTeamData);
+    async createInvitaion(@Body() invitationData: CreateInvitation) {
+        return this.teamsService.createInvitaion(invitationData);
     }
 
+    // TODO move to invitation's module
+    // should look like PUT /invitations/:id
     @UseGuards(JwtAuthGuard)
     @Post(`accept-invitation`)
     async acceptPlayerInvitation(
