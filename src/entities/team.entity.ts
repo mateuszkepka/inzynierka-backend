@@ -3,30 +3,31 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn
 import { Expose } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
-import { PlayerTeam } from '.';
+import { Invitation } from '.';
 
 @Entity()
 export class Team {
-    @PrimaryGeneratedColumn()
     @Expose()
+    @PrimaryGeneratedColumn()
     teamId: number;
 
-    @Column()
     @Expose()
+    @Column()
     name: string;
 
-    @Column()
     @Expose()
+    @Column()
     creationDate: Date;
 
-    @OneToOne(() => Player, (player) => player.ownedTeams)
-    @JoinColumn({ name: `captainId` })
     @Expose()
+    @OneToOne(() => Player, (player) => player.ownedTeams) 
+    @JoinColumn({ name: `captainId` })
     captain: Player;
 
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
-    playerTeams: PlayerTeam[];
+    @Expose()
+    @OneToMany(() => Invitation, (invitation) => invitation.team)
+    members: Invitation[];
 }

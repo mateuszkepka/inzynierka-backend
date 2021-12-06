@@ -1,30 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, PlayerTeam, Team, User } from 'src/entities';
+import { Player, Invitation, Team, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
-import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
+import { CreateInvitation } from './dto/create-invitation.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { InvitationStatus } from './teams.interface';
+import { InvitationStatus } from './interfaces/teams.interface';
 
 @Injectable()
 export class TeamsService {
     constructor(
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
-        @InjectRepository(PlayerTeam)
-        private readonly playersTeamsRepository: Repository<PlayerTeam>,
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-    ) {}
+        @InjectRepository(Invitation) private readonly playersTeamsRepository: Repository<Invitation>,
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    ) { }
+
+    async getMembers(teamId: number) {
+        const memberList = await this.teamsRepository
+            .createQueryBuilder(`team`)
+            .select(`user.userId`, `userId`)
+            .addSelect(`user.username`, `username`)
+            .addSelect(`player.playerId`, `playerId`)
+            .addSelect(`player.summonerName`, `summonerName`)
+            .innerJoin(`team.members`, `invitation`)
+            .innerJoin(`invitation.player`, `player`)
+            .innerJoin(`player.user`, `user`)
+            .where(`team.teamId = :id`, { id: teamId })
+            .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
+            .getRawMany();
+        return JSON.stringify(memberList);
+    }
 
     async getById(teamId: number) {
-        const team = await this.teamsRepository.findOne({ teamId }, { relations: [`capitan`] });
-        if (team) {
-            return team;
+        const team = await this.teamsRepository.findOne(
+            { teamId },
+            { relations: [`captain`, `members`] });
+        if (!team) {
+            throw new NotFoundException(`Team with this id does not exist`);
         }
-        throw new NotFoundException(`Team with this id does not exist`);
+        return team;
     }
 
     async getByName(name: string) {
@@ -34,9 +50,9 @@ export class TeamsService {
         }
         throw new NotFoundException(`Team with such name does not exist`);
     }
-    async createInvitaion(playerTeamData: CreatePlayerTeam) {
-        const playerId = playerTeamData.playerId;
-        const teamId = playerTeamData.teamId;
+    async createInvitaion(invitationData: CreateInvitation) {
+        const playerId = invitationData.playerId;
+        const teamId = invitationData.teamId;
         const player = await this.playersRepository.findOne({ playerId });
         const team = await this.teamsRepository.findOne({ teamId });
         const test = await this.playersTeamsRepository
@@ -57,12 +73,12 @@ export class TeamsService {
         if (test) {
             throw new NotFoundException(`This player is already invited to this team`);
         }
-        const tempPlayerTeam = new PlayerTeam();
-        tempPlayerTeam.player = player;
-        tempPlayerTeam.team = team;
-        const playerTeam = await this.playersTeamsRepository.create(tempPlayerTeam);
-        await this.playersTeamsRepository.save(playerTeam);
-        return playerTeam;
+        const tempInvitation = new Invitation();
+        tempInvitation.player = player;
+        tempInvitation.team = team;
+        const invitation = await this.playersTeamsRepository.create(tempInvitation);
+        await this.playersTeamsRepository.save(invitation);
+        return invitation;
     }
 
     async create(team: CreateTeamDto) {
@@ -83,15 +99,13 @@ export class TeamsService {
         const playerList = await this.playersRepository
             .createQueryBuilder(`player_team`)
             .innerJoinAndSelect(`player_team.user`, `user`)
-            .where(`user.userId= :id`, {
-                id: user.userId,
-            })
+            .where(`user.userId= :id`, { id: user.userId })
             .getMany();
         if (!playerList) {
             throw new NotFoundException(`You cant create a team without player account`);
         }
         const playerInvitaion = await this.playersTeamsRepository.findOne({
-            where: { playerTeamId: acceptData.playerTeamId },
+            where: { invitationId: acceptData.invitationId },
             relations: [`player`],
         });
         if (!playerInvitaion) {
@@ -106,10 +120,10 @@ export class TeamsService {
         if (!check) {
             throw new NotFoundException(`You dont have permission to accept this invitation`);
         }
-        if (playerInvitaion.invitationStatus === InvitationStatus.Accepted) {
+        if (playerInvitaion.status === InvitationStatus.Accepted) {
             throw new NotFoundException(`This invitation is already accepted`);
         }
-        playerInvitaion.invitationStatus = InvitationStatus.Accepted;
+        playerInvitaion.status = InvitationStatus.Accepted;
         this.playersTeamsRepository.save(playerInvitaion);
         return playerInvitaion;
     }
@@ -119,36 +133,25 @@ export class TeamsService {
         const playerList = await this.playersRepository
             .createQueryBuilder(`player_team`)
             .innerJoinAndSelect(`player_team.user`, `user`)
-            .where(`user.userId= :id`, {
-                id: user.userId,
-            })
+            .where(`user.userId= :id`, { id: user.userId })
             .getMany();
         if (!playerList) {
-            throw new NotFoundException(`You cant browse invitations without player account`);
+            throw new NotFoundException(`You can not browse invitations without player account`);
         }
-        const invitaionList = [];
+        const invitationList = [];
         for (const player of playerList) {
-            const tmplist = await this.playersTeamsRepository
+            const tmpList = await this.playersTeamsRepository
                 .createQueryBuilder(`player_team`)
-                .innerJoinAndSelect(`player_team.player`, `player`)
-                .where(`player.playerId= :id and player_team.isAccepted = false`, {
-                    id: player.playerId,
-                })
+                .innerJoinAndSelect(`player_team.team`, `team`)
+                .where(`player_team.playerId = :id`, { id: player.playerId })
+                .andWhere(`player_team.invitationStatus = :status`, { status: InvitationStatus.Pending })
                 .getMany();
-            invitaionList.push(tmplist);
+            if (tmpList.length === 0) {
+                throw new NotFoundException(`You have no pending invitations`);
+            }
+            invitationList.push(tmpList);
         }
-        let nullcheck = false;
-        for (const entry of invitaionList) {
-            if (!entry.playerTeamId) {
-                break;
-            } else nullcheck = true;
-        }
-        if (nullcheck) {
-            throw new NotFoundException(`You have no pending invitations`);
-        }
-
-        const invList = JSON.stringify(invitaionList);
-        return invList;
+        return JSON.stringify(invitationList);
     }
 
     async remove(id: number) {
@@ -160,7 +163,9 @@ export class TeamsService {
     }
 
     async getAllTeams() {
-        const team = await this.teamsRepository.find({ relations: [`captain`] });
+        const team = await this.teamsRepository.find({
+            relations: [`captain`, `members`]
+        });
         const teams = JSON.stringify(team);
         if (!teams) {
             throw new NotFoundException(`Not even single team exists in the system`);

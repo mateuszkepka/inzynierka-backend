@@ -77,23 +77,24 @@ export class TournamentsController {
         return this.tournamentsService.acceptTeam(acceptdata, request);
     }
 
-    @Post(`add-admin`)
+    @Post(`admins`)
     @UseGuards(JwtAuthGuard)
     async addAdmin(@Body() admindata: CreateAdminDto, @Req() request: RequestWithUser) {
         return this.tournamentsService.addAdmin(admindata, request);
     }
 
-    @Post(`add-prize`)
+    @Post(`prizes`)
     @UseGuards(JwtAuthGuard)
     async addPrize(@Body() prizedata: CreatePrizeDto, @Req() request: RequestWithUser) {
         return this.tournamentsService.addPrize(prizedata, request);
     }
 
-    @Post(`add-team`)
+    @Post(`teams`)
     async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
         return this.tournamentsService.addTeam(participatingTeamData);
     }
-    @Post(`create`)
+    
+    @Post()
     @UseGuards(JwtAuthGuard)
     async create(@Body() tournamentData: CreateTournamentDto, @Req() request: RequestWithUser) {
         return this.tournamentsService.create(tournamentData, request);

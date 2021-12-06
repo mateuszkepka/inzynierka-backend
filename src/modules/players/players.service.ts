@@ -1,21 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team, User } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { GamesService } from '../games/games.service';
 import { RegionsLoL } from '../games/regions';
 import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
+import { InvitationStatus } from '../teams/interfaces/teams.interface';
 
 @Injectable()
 export class PlayersService {
     constructor(
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
-        private readonly gamesService: GamesService,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-    ) {}
+        private readonly gamesService: GamesService,
+    ) { }
 
     async getById(playerId: number) {
         const player = await this.playersRepository.findOne(
@@ -27,16 +28,33 @@ export class PlayersService {
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
-    
+
+    // TODO
     async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
-        // const players = await this.playersRepository.find({
-        //     where: {},
-        //     relations: [`playerTeams`],
-        // });
-        const players = await this.teamsRepository.find({
-            where: { teamId: teamdata.teamId },
-            relations: [`playerTeams`],
-        });
+        const { teamId } = teamdata;
+        const players = await this.teamsRepository
+            .createQueryBuilder()
+            .select(`player.playerId`)
+            .addSelect(`player.summonerName`)
+            .from(Player, `player`)
+            .innerJoin(`player.teams`, `invitation`)
+            .innerJoin(`invitation.team`, `team`)
+            .where(qb => {
+                const subQuery = qb.subQuery()
+                    .select(`player.playerId`)
+                    .from(Player, `player`)
+                    .innerJoin(`player.teams`, `invitation`)
+                    .innerJoin(`invitation.team`, `team`)
+                    .where(`team.teamId = :teamId`, { teamId: teamId })
+                    .andWhere(new Brackets(qb => {
+                        qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
+                            .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending })
+                    }))
+                    .getQuery();
+                return `player.playerId NOT IN ` + subQuery;
+            })
+            .printSql()
+            .getMany();
         return players;
     }
 
@@ -83,7 +101,6 @@ export class PlayersService {
         if (!player) {
             throw new NotFoundException(`Player not found`);
         }
-
         Object.assign(player, attributes);
         return this.playersRepository.save(player);
     }

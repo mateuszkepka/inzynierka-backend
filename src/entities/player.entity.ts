@@ -1,6 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Game, PlayerTeam } from '.';
-
+import { Game, Invitation } from '.';
 import { Expose } from 'class-transformer';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
@@ -47,6 +46,6 @@ export class Player {
     game: Game;
 
     @Expose()
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
-    playerTeams: PlayerTeam[];
+    @OneToMany(() => Invitation, (invitation) => invitation.player)
+    teams: Invitation[];
 }

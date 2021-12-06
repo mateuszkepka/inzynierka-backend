@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities';
+import { Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
@@ -8,9 +8,9 @@ import * as argon2 from 'argon2';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-    ) {}
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>
+    ) { }
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
@@ -32,6 +32,17 @@ export class UsersService {
             return user;
         }
         throw new NotFoundException(`User with this email does not exist`);
+    }
+
+    async getAccounts(id: number) {
+        await this.getById(id);
+        const accounts = await this.playersRepository
+            .createQueryBuilder(`player`)
+            .innerJoin(`player.user`, `user`)
+            .where(`user.userId = :userId`, { userId: id })
+            .getMany();
+        console.log(accounts)
+        return accounts;
     }
 
     async create(user: CreateUserDto) {

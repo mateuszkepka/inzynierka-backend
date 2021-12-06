@@ -27,19 +27,12 @@ export class PlayersController {
     @Get(`/:id`)
     @UseGuards(JwtAuthGuard)
     async findById(@Param(`id`) id: string) {
-        const player = await this.playersService.getById(Number(id));
-
-        if (!player) {
-            throw new NotFoundException(`Player not found`);
-        }
-
-        return player;
+        return this.playersService.getById(Number(id));
     }
 
     @Get()
     async find() {
-        const players = await this.playersService.getAllPlayers();
-        return players;
+        return this.playersService.getAllPlayers();
     }
 
     @UseGuards(JwtAuthGuard)

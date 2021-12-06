@@ -17,4 +17,4 @@ export * from './group-standings.seeder';
 export * from './ladder-standings.seeder';
 export * from './ladders.seeder';
 export * from './tiebreaker-rules.seeder';
-export * from './player-teams.seeder'
+export * from './invitations.seeder'
