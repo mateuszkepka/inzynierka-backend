@@ -82,7 +82,7 @@ import JwtAuthGuard from './modules/auth/guards/jwt-auth.guard';
         {
             provide: APP_PIPE,
             useValue: new ValidationPipe({
-                whitelist: true,
+                whitelist: true
             })
         },
         {

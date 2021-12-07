@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/invitations'
+    url: '${$env.url}/invitations/'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "playerId": 1,
-        "teamId": 5
+        "playerId": 3,
+        "teamId": 21
       }
     xmlBody: ''
     textBody: ''

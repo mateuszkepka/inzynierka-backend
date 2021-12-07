@@ -1,8 +1,7 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/entities';
 import { Repository } from 'typeorm';
-import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { PlayersService } from '../players/players.service';
 import { TeamsService } from '../teams/teams.service';
 import { UsersService } from '../users/users.service';
@@ -15,37 +14,13 @@ export class InvitationsService {
   constructor(
     @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
     private readonly playersService: PlayersService,
     private readonly teamsService: TeamsService
   ) { }
 
-  async create(createInvitationDto: CreateInvitationDto) {
-    const { teamId, playerId } = createInvitationDto;
-    const team = await this.teamsService.getById(teamId);
-    const player = await this.playersService.getById(playerId);
-    const ifInvited = await this.invitationsRepository
-      .createQueryBuilder(`invitation`)
-      .select(`status`)
-      .where(`invitation.teamId = :teamId`, { teamId: teamId })
-      .andWhere(`invitation.playerId = :playerId`, { playerId: playerId })
-      .getOne();
-    if (ifInvited?.status === InvitationStatus.Accepted) {
-      throw new NotFoundException(`This player is already in the team`);
-    }
-    if (ifInvited?.status === InvitationStatus.Pending) {
-      throw new NotFoundException(`This player is already invited to this team`);
-    }
-    const invitation = this.invitationsRepository.create({
-      player: player,
-      team: team
-    });
-    return await this.invitationsRepository.save(invitation);
-  }
-
   async getById(id: number) {
     const invitation = await this.invitationsRepository.findOne({
-      relations: [`player`],
+      relations: [`player`, `team`],
       where: { invitationId: id }
     });
     if (!invitation) {
@@ -54,9 +29,8 @@ export class InvitationsService {
     return invitation;
   }
 
-  async findPending(status: InvitationStatus, request: RequestWithUser) {
+  async findPending(status: InvitationStatus, user: User) {
     if (status === InvitationStatus.Pending) {
-      const { user } = request;
       const invitation = await this.usersRepository
         .createQueryBuilder(`user`)
         .select(`invitation.invitationId`, `invitationId`)
@@ -76,12 +50,39 @@ export class InvitationsService {
     }
   }
 
-  async update(id: number, updateInvitationDto: UpdateInvitationDto) {
-    const invitation = await this.getById(id);
-    if (invitation.status === updateInvitationDto.status) {
-      throw new ForbiddenException(`You have already responded this invitation`);
+  async create(createInvitationDto: CreateInvitationDto) {
+    const { teamId, playerId } = createInvitationDto;
+    const team = await this.teamsService.getById(teamId);
+    const player = await this.playersService.getById(playerId);
+    const ifInvited = await this.invitationsRepository.findOne({
+      where: { team: team, player: player }
+    })
+    if (ifInvited?.status === InvitationStatus.Accepted) {
+      throw new NotFoundException(`This player is already in the team`);
     }
-    invitation.status = updateInvitationDto.status;
+    if (ifInvited?.status === InvitationStatus.Pending) {
+      throw new NotFoundException(`This player is already invited to this team`);
+    }
+    if (ifInvited?.status === InvitationStatus.Refused) {
+      await this.invitationsRepository.update(ifInvited.invitationId, {
+        invitationId: ifInvited.invitationId,
+        status: InvitationStatus.Pending
+      });
+      return this.getById(ifInvited.invitationId);
+    }
+    const invitation = this.invitationsRepository.create({
+      player: player,
+      team: team
+    });
+    return await this.invitationsRepository.save(invitation);
+  }
+
+  async update(id: number, attrs: Partial<Invitation>) {
+    const invitation = await this.getById(id);
+    if (invitation.status === attrs.status) {
+      throw new BadRequestException(`You have already responded this invitation`);
+    }
+    Object.assign(invitation, attrs);
     return await this.invitationsRepository.save(invitation);
   }
 

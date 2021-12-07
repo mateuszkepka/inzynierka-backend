@@ -6,13 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/suspensions/?user=brouly'
+    url: '${$env.url}/invitations/?status=pending'
   headers: []
   disabledInheritedHeaders: []
   params:
-    - isChecked: true
-      name: user
-      value: brouly
+    - name: status
+      value: pending
+      isChecked: true
   body:
     type: Json
     jsonBody: ''
@@ -25,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-by-user (TODO)
+name: get-invitations-filtered

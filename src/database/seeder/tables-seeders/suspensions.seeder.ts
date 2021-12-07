@@ -25,8 +25,8 @@ export class SuspensionsSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const suspension: Partial<Suspension> = {
-                suspensionStartDate: faker.datatype.datetime(),
-                suspensionEndDate: faker.datatype.datetime(),
+                startDate: faker.datatype.datetime(),
+                endDate: faker.datatype.datetime(),
                 reason: faker.lorem.sentences(5),
                 user: users[i],
             };

@@ -1,6 +1,6 @@
 enabled: true
 children:
-  - get-pending-invitations
+  - get-invitations-filtered
   - create-invitation
   - update-invitation
   - remove-invitation (TODO)

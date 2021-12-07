@@ -6,10 +6,16 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/suspensions/1'
+    url: '${$env.url}/suspensions/?userId=4&status=active'
   headers: []
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - name: userId
+      value: '4'
+      isChecked: true
+    - name: status
+      value: active
+      isChecked: true
   body:
     type: Json
     jsonBody: ''
@@ -22,4 +28,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-by-id (TODO)
+name: get-suspensions-filtered

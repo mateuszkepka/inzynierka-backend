@@ -64,7 +64,6 @@ export class TeamsService {
         const player = await this.playersService.getById(createTeamDto.playerId);
         const team = this.teamsRepository.create({
             name: createTeamDto.name,
-            creationDate: new Date(),
             captain: player
         });
         return await this.connection.transaction(async manager => {

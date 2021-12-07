@@ -1,20 +1,13 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
-
-import { User } from 'src/entities';
+import { IsDateString, IsNotEmpty, IsString, MinDate } from 'class-validator';
 
 export class UpdateSuspensionDto {
+    @IsNotEmpty()
     @IsDateString()
-    @IsOptional()
-    suspensionStartDate: Date;
+    //czemu nie dziala?
+    //@MinDate(new Date())
+    endDate: Date;
 
-    @IsDateString()
-    @IsOptional()
-    suspensionEndDate: Date;
-
+    @IsNotEmpty()
     @IsString()
-    @IsOptional()
     reason: string;
-
-    @IsOptional()
-    user: User;
 }

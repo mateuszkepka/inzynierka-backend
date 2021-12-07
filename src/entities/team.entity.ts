@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -7,6 +7,11 @@ import { Invitation } from '.';
 
 @Entity()
 export class Team {
+    @BeforeInsert()
+    setCreationDate() {
+        this.creationDate = new Date()
+    }
+
     @Expose()
     @PrimaryGeneratedColumn()
     teamId: number;

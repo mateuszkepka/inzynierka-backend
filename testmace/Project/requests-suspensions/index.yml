@@ -1,9 +1,10 @@
 enabled: true
 children:
-  - get-by-id (TODO)
-  - get-by-user (TODO)
-  - create-suspension (TODO)
-  - update-suspension (TODO)
+  - get-suspensions-by-id
+  - get-suspensions-filtered
+  - create-suspension
+  - update-suspension
+  - remove-suspension
 variablesArray: []
 type: Folder
 authData:

@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: PUT
-    url: '${$env.url}/invitations/12'
+    method: PATCH
+    url: '${$env.url}/invitations/32'
   headers: []
   disabledInheritedHeaders: []
   params: []
