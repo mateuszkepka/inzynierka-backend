@@ -9,8 +9,9 @@ import {
     Post,
     Query,
     Req,
-    SerializeOptions,
+    SerializeOptions
 } from '@nestjs/common';
+import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
@@ -35,12 +36,12 @@ export class SuspensionsController {
     }
 
     @Post()
-    async create(@Body() body: CreateSuspensionDto, @Req() { user }: RequestWithUser) {
+    async create(@Body(new DateValidationPipe()) body: CreateSuspensionDto, @Req() { user }: RequestWithUser) {
         return await this.suspensionsService.create(body, user);
     }
 
     @Patch(`/:id`)
-    async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateSuspensionDto) {
+    async update(@Param('id', ParseIntPipe) id: number, @Body(new DateValidationPipe()) body: UpdateSuspensionDto) {
         return await this.suspensionsService.update(id, body);
     }
 

@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "endDate": "2022-12-08T17:09:09+0000",
+        "endDate": "2019-12-08T17:09:09+0000",
         "reason": "za winnosc"
       }
     xmlBody: ''

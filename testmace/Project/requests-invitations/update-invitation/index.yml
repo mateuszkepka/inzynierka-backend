@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/invitations/32'
+    url: '${$env.url}/invitations/36'
   headers: []
   disabledInheritedHeaders: []
   params: []
