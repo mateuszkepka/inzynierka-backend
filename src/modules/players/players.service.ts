@@ -7,7 +7,7 @@ import { GamesService } from '../games/games.service';
 import { RegionsLoL } from '../games/regions';
 import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
-import { InvitationStatus } from '../teams/interfaces/teams.interface';
+import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 
 @Injectable()
 export class PlayersService {

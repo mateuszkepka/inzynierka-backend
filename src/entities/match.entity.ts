@@ -1,38 +1,56 @@
+import { Expose } from 'class-transformer';
+import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Match {
+    @Expose()
     @PrimaryGeneratedColumn()
     matchId: number;
 
+    @Expose()
     @Column()
     matchStartDate: Date;
 
+    @Expose()
     @Column()
     matchEndDate: Date;
 
+    @Expose()
     @Column()
     tournamentStage: string;
 
-    @Column()
+    @Expose()
+    @Column({
+        type: `enum`,
+        enum: MatchStatus,
+        default: MatchStatus.Scheduled
+    })
+    matchStatus: MatchStatus
+
+    @Expose()
+    @Column({ nullable: true })
     matchResult: string;
 
+    @Expose()
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
+    @Expose()
     @ManyToOne(() => ParticipatingTeam)
     @JoinColumn({ name: `firstRosterId` })
     firstRoster: ParticipatingTeam;
 
+    @Expose()
     @ManyToOne(() => ParticipatingTeam)
     @JoinColumn({ name: `secondRosterId` })
     secondRoster: ParticipatingTeam;
 
+    @Expose()
     @OneToMany(() => Map, (map) => map.match)
     maps: Map[];
 }

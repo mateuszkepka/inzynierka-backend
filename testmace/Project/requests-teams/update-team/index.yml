@@ -6,13 +6,17 @@ assignVariables: []
 requestData:
   request:
     method: PUT
-    url: '${$env.url}/teams/1'
+    url: '${$env.url}/teams/20'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "name": "testowa2",
+        "captainId": 2
+      }
     xmlBody: ''
     textBody: ''
     formData: []

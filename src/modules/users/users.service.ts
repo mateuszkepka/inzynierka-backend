@@ -15,23 +15,23 @@ export class UsersService {
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
             { userId },
-            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`accounts`, `suspensions`, `organizedTournaments`, `tournamentAdmins`] },
         );
-        if (user) {
-            return user;
+        if (!user) {
+            throw new NotFoundException(`User with this id does not exist`);
         }
-        throw new NotFoundException(`User with this id does not exist`);
+        return user;
     }
 
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne(
             { email },
-            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`accounts`, `suspensions`, `organizedTournaments`, `tournamentAdmins`] },
         );
-        if (user) {
-            return user;
+        if (!user) {
+            throw new NotFoundException(`User with this email does not exist`);;
         }
-        throw new NotFoundException(`User with this email does not exist`);
+        return user;
     }
 
     async getAccounts(id: number) {
@@ -41,7 +41,6 @@ export class UsersService {
             .innerJoin(`player.user`, `user`)
             .where(`user.userId = :userId`, { userId: id })
             .getMany();
-        console.log(accounts)
         return accounts;
     }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team } from 'src/entities';
 import { Invitation } from 'src/entities/invitation.entity';
-import { InvitationStatus } from 'src/modules/teams/interfaces/teams.interface';
+import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
 import { Repository } from 'typeorm';
 
 @Injectable()

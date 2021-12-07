@@ -17,10 +17,9 @@ import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
+
 @Controller(`players`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+@SerializeOptions({ strategy: `excludeAll` })
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) { }
 

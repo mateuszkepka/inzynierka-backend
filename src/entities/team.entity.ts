@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -12,7 +12,7 @@ export class Team {
     teamId: number;
 
     @Expose()
-    @Column()
+    @Column({ unique: true })
     name: string;
 
     @Expose()
@@ -20,7 +20,7 @@ export class Team {
     creationDate: Date;
 
     @Expose()
-    @OneToOne(() => Player, (player) => player.ownedTeams) 
+    @ManyToOne(() => Player, (player) => player.ownedTeams)
     @JoinColumn({ name: `captainId` })
     captain: Player;
 
@@ -28,6 +28,6 @@ export class Team {
     rosters: ParticipatingTeam[];
 
     @Expose()
-    @OneToMany(() => Invitation, (invitation) => invitation.team)
+    @OneToMany(() => Invitation, (invitation) => invitation.team, { onDelete: `CASCADE` })
     members: Invitation[];
 }

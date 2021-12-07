@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: GET
-    url: '${$env.url}/teams/20/members'
+    method: DELETE
+    url: '${$env.url}/teams/20'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-team-members
+name: remove-team

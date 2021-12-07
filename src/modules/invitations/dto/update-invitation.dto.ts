@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { ResponseStatus } from 'src/modules/teams/interfaces/teams.interface';
+import { ResponseStatus } from '../interfaces/invitation-status.enum';
 
 export class UpdateInvitationDto {
     @IsEnum(ResponseStatus)

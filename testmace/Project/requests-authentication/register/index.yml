@@ -14,12 +14,12 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "adam1.krawczynski1999@gmail.com",
-        "password": "test",
-        "username": "Brouly",
+        "email": "adam2.krawczynski1999@gmail.com",
+        "password": "test2",
+        "username": "Brouly2",
         "country": "Poland",
-        "university": "PJATK",
-        "studentId": "s18578"
+        "university": "PJATK2",
+        "studentId": "s18577"
       }
     xmlBody: ''
     textBody: ''

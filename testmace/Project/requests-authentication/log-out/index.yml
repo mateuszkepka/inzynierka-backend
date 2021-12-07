@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: DELETE
-    url: '${$env.url}/auth/log-out'
+    method: POST
+    url: '${$env.url}/auth/logout'
   headers: []
   disabledInheritedHeaders: []
   params: []

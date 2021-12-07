@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/log-in'
+    url: '${$env.url}/auth/login'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "adam.krawczynski1999@gmail.com",
+        "email": "adam1.krawczynski1999@gmail.com",
         "password": "test"
       }
     xmlBody: ''

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ParticipatingTeam, Team, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { Roster } from 'src/modules/teams/interfaces/teams.interface';
+import { Roster } from 'src/modules/teams/interfaces/roster.interface';
 
 @Injectable()
 export class ParticipatingTeamSeeder {

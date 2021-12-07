@@ -119,7 +119,6 @@ export class TournamentsService {
             },
             relations: [`user`],
         });
-        console.log(admins);
         let isadmin = false;
         if (admins) {
             admins.forEach(function (element) {

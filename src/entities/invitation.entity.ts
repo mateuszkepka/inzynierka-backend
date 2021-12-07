@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import { Team } from './team.entity';
 import { Player } from './player.entity';
 import { Expose } from 'class-transformer';
-import { InvitationStatus, Statuses } from 'src/modules/teams/interfaces/teams.interface';
+import { InvitationStatus, Status } from 'src/modules/invitations/interfaces/invitation-status.enum';
 
 @Entity()
 export class Invitation {
@@ -16,7 +16,7 @@ export class Invitation {
     player: Player;
 
     @Expose()
-    @ManyToOne(() => Team, (team) => team.members)
+    @ManyToOne(() => Team, (team) => team.members, { onDelete: `CASCADE` })
     @JoinColumn({ name: `teamId` })
     team: Team;
 
@@ -26,5 +26,5 @@ export class Invitation {
         enum: InvitationStatus,
         default: InvitationStatus.Pending
     })
-    status: Statuses;
+    status: Status;
 }

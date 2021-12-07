@@ -5,6 +5,7 @@ children:
   - get-team-members
   - create-team
   - update-team
+  - remove-team
 variablesArray: []
 type: Folder
 authData:
