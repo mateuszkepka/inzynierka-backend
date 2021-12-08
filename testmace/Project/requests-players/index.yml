@@ -2,8 +2,8 @@ enabled: true
 children:
   - get-all-players
   - get-player-by-id
-  - get-available-players
   - create-player
+  - update-player
 variablesArray: []
 type: Folder
 authData:

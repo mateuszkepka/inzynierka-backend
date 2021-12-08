@@ -1,6 +1,6 @@
 enabled: true
 children:
-  - get-suspensions-by-id
+  - get-suspension-by-id
   - get-suspensions-filtered
   - create-suspension
   - update-suspension

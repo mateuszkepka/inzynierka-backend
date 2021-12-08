@@ -4,8 +4,10 @@ import {
     Delete,
     Get,
     Param,
+    ParseIntPipe,
     Post,
     Put,
+    Req,
     SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
@@ -15,12 +17,18 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 
 @Controller(`teams`)
 @Roles(Role.User)
 @SerializeOptions({ strategy: `excludeAll` })
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) { }
+
+    @Get(`/:id/players/available`)
+    async getAvailablePlayers(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+        return await this.teamsService.getAvailablePlayers(id, user);
+    }
 
     @Get(`/:id/members`)
     async getMembers(@Param(`id`) id: string) {

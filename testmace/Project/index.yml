@@ -13,7 +13,6 @@ children:
   - requests-invitations
   - requests-teams
   - requests-tournaments
-  - requests-organizers
 cookies:
   - >-
     Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2Mzg4OTQzOTQsImV4cCI6MTY0ODg5NDM5NH0.UbjJ06eMnE-YT_MqEqEGiNrZDTHZMQ0SG6Va9yer2VE;

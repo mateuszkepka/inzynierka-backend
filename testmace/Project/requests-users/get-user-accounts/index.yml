@@ -6,19 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/players/?status=available'
+    url: '${$env.url}/users/11/accounts'
   headers: []
   disabledInheritedHeaders: []
-  params:
-    - name: status
-      value: available
-      isChecked: true
+  params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "teamId": 6
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -28,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-available-players
+name: get-user-accounts

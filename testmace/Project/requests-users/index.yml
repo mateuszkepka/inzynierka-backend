@@ -1,7 +1,7 @@
 enabled: true
 children:
   - get-user-by-id
-  - get-accounts
+  - get-user-accounts
   - update-user (TODO)
   - delete-user (TODO)
 variablesArray: []

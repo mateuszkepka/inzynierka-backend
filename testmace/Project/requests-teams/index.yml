@@ -3,6 +3,7 @@ children:
   - get-all-teams
   - get-team-by-id
   - get-team-members
+  - get-players-to-invite
   - create-team
   - update-team
   - remove-team

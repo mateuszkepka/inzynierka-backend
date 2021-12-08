@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Invitation, Team } from 'src/entities';
-import { Connection, Repository } from 'typeorm';
+import { Invitation, Player, Team, User } from 'src/entities';
+import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { PlayersService } from '../players/players.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -12,9 +12,38 @@ export class TeamsService {
     constructor(
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection
     ) { }
+
+    async getAvailablePlayers(teamId: number, user: User) {
+        const team = await this.getById(teamId);
+        const players = await this.playersRepository
+            .createQueryBuilder(`player`)
+            .select(`player.playerId`)
+            .addSelect(`player.summonerName`)
+            .innerJoin(`player.user`, `user`)
+            .innerJoin(`player.teams`, `invitation`)
+            .innerJoin(`invitation.team`, `team`)
+            .where(`user.userId != :userId`, { userId: user.userId })
+            .andWhere(qb => {
+                const subQuery = qb.subQuery()
+                    .select(`player.playerId`)
+                    .from(Player, `player`)
+                    .innerJoin(`player.teams`, `invitation`)
+                    .innerJoin(`invitation.team`, `team`)
+                    .where(`team.teamId = :teamId`, { teamId: team.teamId })
+                    .andWhere(new Brackets(qb => {
+                        qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
+                            .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending })
+                    }))
+                    .getQuery();
+                return `player.playerId NOT IN ` + subQuery;
+            })
+            .getMany();
+        return players;
+    }
 
     async getAll() {
         const teams = await this.teamsRepository.find({

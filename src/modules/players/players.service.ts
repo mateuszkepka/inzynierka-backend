@@ -2,10 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team, User } from 'src/entities';
 import { Brackets, Repository } from 'typeorm';
-import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { GamesService } from '../games/games.service';
 import { RegionsLoL } from '../games/regions';
-import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 
@@ -19,47 +17,17 @@ export class PlayersService {
     ) { }
 
     async getById(playerId: number) {
-        const player = await this.playersRepository.findOne(
-            { playerId },
-            { relations: [`ownedTeams`] },
-        );
+        const player = await this.playersRepository.findOne({
+            relations: [`ownedTeams`],
+            where: { playerId: playerId }
+        });
         if (player) {
             return player;
         }
         throw new NotFoundException(`Player with this id does not exist`);
     }
 
-    // TODO
-    async getAvailablePlayers(teamdata: GetAvailablePlayersDto, request: RequestWithUser) {
-        const { teamId } = teamdata;
-        const players = await this.teamsRepository
-            .createQueryBuilder()
-            .select(`player.playerId`)
-            .addSelect(`player.summonerName`)
-            .from(Player, `player`)
-            .innerJoin(`player.teams`, `invitation`)
-            .innerJoin(`invitation.team`, `team`)
-            .where(qb => {
-                const subQuery = qb.subQuery()
-                    .select(`player.playerId`)
-                    .from(Player, `player`)
-                    .innerJoin(`player.teams`, `invitation`)
-                    .innerJoin(`invitation.team`, `team`)
-                    .where(`team.teamId = :teamId`, { teamId: teamId })
-                    .andWhere(new Brackets(qb => {
-                        qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
-                            .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending })
-                    }))
-                    .getQuery();
-                return `player.playerId NOT IN ` + subQuery;
-            })
-            .printSql()
-            .getMany();
-        return players;
-    }
-
-    async create(playerDto: AddPlayerAccountDto, request: RequestWithUser) {
-        const { user } = request;
+    async create(playerDto: AddPlayerAccountDto, user: User) {
         const { summonerName, gameId, region } = playerDto;
         const game = await this.gamesService.getById(gameId);
         if (!Object.values(RegionsLoL).includes(region)) {
