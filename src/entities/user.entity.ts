@@ -1,18 +1,20 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose } from 'class-transformer';
+import { Expose, plainToClass, Transform, Type } from 'class-transformer';
+import { Role } from 'src/roles/roles.enum';
 
 @Entity()
+@Unique(['university', `studentId`])
 export class User {
     @Expose()
     @PrimaryGeneratedColumn()
     userId: number;
 
     @Expose()
-    @Column()
+    @Column({ unique: true })
     username: string;
 
     @Expose()
@@ -34,6 +36,13 @@ export class User {
     @Column()
     studentId: string;
 
+    @Expose()
+    @Column(`text`, {
+        array: true,
+        default: [`user`]
+    })
+    roles: Role[]
+
     @Column({ nullable: true })
     currentRefreshToken?: string;
 
@@ -46,6 +55,7 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
+    @Type(() => Player)
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 

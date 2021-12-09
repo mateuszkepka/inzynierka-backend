@@ -2,48 +2,69 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Suspension, User } from 'src/entities';
 import { Repository } from 'typeorm';
+import { UsersService } from '../users/users.service';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
 
 @Injectable()
 export class SuspensionsService {
     constructor(
-        @InjectRepository(Suspension)
-        private readonly suspensionsRepository: Repository<Suspension>,
-    ) {}
+        @InjectRepository(Suspension) private readonly suspensionsRepository: Repository<Suspension>,
+        private readonly usersService: UsersService
+    ) { }
 
     async getById(suspensionId: number) {
-        const suspension = await this.suspensionsRepository.findOne({ suspensionId });
-        if (suspension) {
-            return suspension;
-        }
-        throw new NotFoundException(`Suspension with this id does not exist`);
-    }
-
-    async getByUser(user: User) {
-        return await this.suspensionsRepository.find({ user });
-    }
-
-    async suspend(suspension: CreateSuspensionDto) {
-        const newSuspension = await this.suspensionsRepository.create(suspension);
-        await this.suspensionsRepository.save(newSuspension);
-        return newSuspension;
-    }
-
-    async update(id: number, attributes: Partial<Suspension>) {
-        const suspension = await this.getById(id);
+        const suspension = await this.suspensionsRepository.findOne({
+            relations: [`user`],
+            where: { suspensionId: suspensionId }
+        });
         if (!suspension) {
-            throw new NotFoundException(`Suspension not found`);
+            throw new NotFoundException(`Suspension with this id does not exist`);
         }
+        return suspension;
+    }
 
-        Object.assign(suspension, attributes);
+    async getFiltered(userId: number, status: string) {
+        const queryBuilder = this.suspensionsRepository
+            .createQueryBuilder(`suspension`)
+            .innerJoinAndSelect(`suspension.user`, `user`)
+            .where(`1=1`);
+        if (userId) {
+            const user = await this.usersService.getById(userId);
+            queryBuilder.andWhere(`user.userId = :userId`, { userId: user.userId });
+        }
+        switch (status) {
+            case `active`:
+                queryBuilder.andWhere(`suspension.startDate <= :date1`, { date1: new Date() })
+                queryBuilder.andWhere(`suspension.endDate >= :date2`, { date2: new Date() })
+                break;
+            case `past`:
+                queryBuilder.andWhere(`suspension.endDate < :date`, { date: new Date() })
+                break;
+            default:
+                break;
+        }
+        return queryBuilder.getMany();
+    }
+
+    async create(body: CreateSuspensionDto, admin: User) {
+        const user = await this.usersService.getById(body.userId);
+        const suspension = this.suspensionsRepository.create({
+            endDate: body.endDate,
+            reason: body.reason,
+            user: user,
+            admin: admin
+        });
+        return await this.suspensionsRepository.save(suspension);
+    }
+
+    async update(id: number, attrs: Partial<Suspension>) {
+        const suspension = await this.getById(id);
+        Object.assign(suspension, attrs);
         return this.suspensionsRepository.save(suspension);
     }
 
     async remove(id: number) {
         const suspension = await this.getById(id);
-        if (!suspension) {
-            throw new NotFoundException(`User not found`);
-        }
         return this.suspensionsRepository.remove(suspension);
     }
 }

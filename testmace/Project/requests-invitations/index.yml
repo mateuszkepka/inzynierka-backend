@@ -1,0 +1,16 @@
+enabled: true
+children:
+  - get-invitations-filtered
+  - create-invitation
+  - update-invitation
+  - remove-invitation (TODO)
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-invitations

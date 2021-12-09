@@ -3,71 +3,49 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
+    ParseIntPipe,
+    Patch,
     Post,
-    Put,
+    Query,
     Req,
-    SerializeOptions,
-    UseGuards,
+    SerializeOptions
 } from '@nestjs/common';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { PlayersService } from './players.service';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { GetAvailablePlayersDto } from './dto/get-available-players.dto';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/roles.enum';
+
+@Roles(Role.User)
 @Controller(`players`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) { }
 
     @Get(`/:id`)
-    @UseGuards(JwtAuthGuard)
-    async findById(@Param(`id`) id: string) {
-        const player = await this.playersService.getById(Number(id));
-
-        if (!player) {
-            throw new NotFoundException(`Player not found`);
-        }
-
-        return player;
+    async getById(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.playersService.getById(id);
     }
 
     @Get()
-    async find() {
-        const players = await this.playersService.getAllPlayers();
-        return players;
+    async getAll() {
+        return await this.playersService.getAllPlayers();
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post(`create`)
-    async create(@Body() playerData: AddPlayerAccountDto, @Req() request: RequestWithUser) {
-        return this.playersService.create(playerData, request);
+    async create(@Body() body: AddPlayerAccountDto, @Req() { user }: RequestWithUser) {
+        return this.playersService.create(body, user);
     }
 
-    @Post(`available-players`)
-    @UseGuards(JwtAuthGuard)
-    async getAvailablePlayers(
-        @Body() teamdata: GetAvailablePlayersDto,
-        @Req() request: RequestWithUser,
-    ) {
-        const invitaionList = await this.playersService.getAvailablePlayers(teamdata, request);
-        if (!invitaionList) {
-            throw new NotFoundException(`Players not found`);
-        }
-        return invitaionList;
+    @Patch(`/:id`)
+    async update(@Param(`id`) id: string, @Body() body: UpdatePlayerDto) {
+        return await this.playersService.update(Number(id), body);
     }
 
     @Delete(`/:id`)
-    removePlayer(@Param(`id`) id: string) {
-        return this.playersService.remove(Number(id));
-    }
-
-    @Put(`/:id`)
-    updatePlayer(@Param(`id`) id: string, @Body() body: UpdatePlayerDto) {
-        return this.playersService.update(Number(id), body);
+    async remove(@Param(`id`) id: string) {
+        return await this.playersService.remove(Number(id));
     }
 }

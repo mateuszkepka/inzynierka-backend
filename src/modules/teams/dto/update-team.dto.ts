@@ -1,10 +1,11 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
-export class UpdateTeamDto {
-    @IsString()
-    @IsOptional()
-    name: string;
+import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
 
-    @IsNumber()
+export class UpdateTeamDto {
     @IsOptional()
-    creationDate: Date;
+    @IsString()
+    teamName: string;
+
+    @IsOptional()
+    @IsNumber()
+    captainId: number
 }

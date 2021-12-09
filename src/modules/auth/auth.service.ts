@@ -20,7 +20,6 @@ export class AuthService {
         const hashedPassword = await argon2.hash(registrationData.password, {
             type: argon2.argon2id,
         });
-
         try {
             const createdUser = await this.usersService.create({
                 ...registrationData,
@@ -39,7 +38,6 @@ export class AuthService {
         try {
             const user = await this.usersService.getByEmail(email);
             await this.verifyPassword(user.password, plainTextPassword);
-
             return user;
         } catch (error) {
             throw new BadRequestException(`Wrong credentials provided`);
@@ -60,17 +58,14 @@ export class AuthService {
 
     getCookieWithJwtRefreshToken(userId: number) {
         const payload: TokenPayload = { userId };
-
         const token = this.jwtService.sign(payload, {
             secret: this.configService.get<string>(`JWT_REFRESH_TOKEN_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_REFRESH_TOKEN_EXPIRATION_TIME`),
         });
-
         // TODO: HttpOnly should be true on prod and false on dev environment
         const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_REFRESH_TOKEN_EXPIRATION_TIME`,
         )}`;
-
         return { cookie, token };
     }
 
@@ -85,7 +80,6 @@ export class AuthService {
         const isPasswordMatching = await argon2.verify(hashedPassword, plainTextPassword, {
             type: argon2.argon2id,
         });
-
         if (!isPasswordMatching) {
             throw new BadRequestException(`Wrong credentials provided`);
         }

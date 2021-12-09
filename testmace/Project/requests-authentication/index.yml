@@ -1,0 +1,17 @@
+enabled: true
+children:
+  - log-in
+  - log-out
+  - register
+  - authenticate
+  - refresh-token
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-authentication

@@ -3,50 +3,44 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
+    ParseIntPipe,
     Put,
-    UseGuards,
+    SerializeOptions,
 } from '@nestjs/common';
-import { User } from 'src/entities';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
-import { DefaultUserDto } from './dto/default-user.dto';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller(`users`)
-// @SerializeOptions({
-//     strategy: 'excludeAll',
-// })
-@Serialize(DefaultUserDto)
+@Roles(Role.User)
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) { }
 
-    @Get(`/whoami`)
-    @UseGuards(JwtAuthGuard)
-    whoAmI(@CurrentUser() user: User) {
-        return user;
+    @Get(`/:id/accounts`)
+    async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getAccounts(id);
+    }
+
+    @Get(`/:id/teams`)
+    async getTeams(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getTeams(id);
     }
 
     @Get(`/:id`)
-    @UseGuards(JwtAuthGuard)
-    findUser(@Param(`id`) id: string) {
-        const user = this.usersService.getById(parseInt(id));
-        if (!user) {
-            throw new NotFoundException(`User not found`);
-        }
-        return user;
+    async findUser(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getById(id);
     }
 
     @Delete(`/:id`)
-    removeUser(@Param(`id`) id: string) {
-        return this.usersService.remove(parseInt(id));
+    async removeUser(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.remove(id);
     }
 
     @Put(`/:id`)
-    updateUser(@Param(`id`) id: string, @Body() body: UpdateUserDto) {
-        return this.usersService.update(parseInt(id), body);
+    async updateUser(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+        return await this.usersService.update(id, body);
     }
 }

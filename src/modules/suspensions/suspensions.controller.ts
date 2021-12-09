@@ -1,67 +1,52 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
+    ParseIntPipe,
+    Patch,
     Post,
-    Put,
+    Query,
     Req,
-    SerializeOptions,
-    UseGuards,
+    SerializeOptions
 } from '@nestjs/common';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
 import { UpdateSuspensionDto } from './dto/update-suspension.dto';
-
 import { SuspensionsService } from './suspensions.service';
 
 @Controller(`suspensions`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+@Roles(Role.Admin)
+@SerializeOptions({ strategy: `excludeAll` })
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) {}
+    constructor(private readonly suspensionsService: SuspensionsService) { }
 
-    @Post(`/:id`)
-    suspend(@Body() body: CreateSuspensionDto) {
-        const { player } = body;
-        if (!player) {
-            throw new BadRequestException(`Such player doesn't exist`);
-        }
-        return this.suspensionsService.suspend(body);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get(`/usersSuspensions`)
-    async findByUser(@Req() request: RequestWithUser) {
-        const { user } = request;
-        if (!user) {
-            throw new BadRequestException(`Such player doesn't exist`);
-        }
-
-        return await this.suspensionsService.getByUser(user);
+    @Get()
+    async getFiltered(@Query(`userId`) userId: number, @Query(`status`) status: string) {
+        return await this.suspensionsService.getFiltered(userId, status);
     }
 
     @Get(`/:id`)
-    async findById(@Param(`id`) id: string) {
-        const suspension = await this.suspensionsService.getById(Number(id));
-        if (!suspension) {
-            throw new NotFoundException(`Suspension not found`);
-        }
-        return suspension;
+    async getById(@Param('id', ParseIntPipe) id: number) {
+        return await this.suspensionsService.getById(id);
+    }
+
+    @Post()
+    async create(@Body(new DateValidationPipe()) body: CreateSuspensionDto, @Req() { user }: RequestWithUser) {
+        return await this.suspensionsService.create(body, user);
+    }
+
+    @Patch(`/:id`)
+    async update(@Param('id', ParseIntPipe) id: number, @Body(new DateValidationPipe()) body: UpdateSuspensionDto) {
+        return await this.suspensionsService.update(id, body);
     }
 
     @Delete(`/:id`)
-    removeSuspension(@Param() id: string) {
-        return this.suspensionsService.remove(Number(id));
-    }
-
-    @Put(`/:id`)
-    updateSuspension(@Param(`id`) id: string, @Body() body: UpdateSuspensionDto) {
-        return this.suspensionsService.update(Number(id), body);
+    async remove(@Param('id', ParseIntPipe) id: number) {
+        return await this.suspensionsService.remove(id);
     }
 }

@@ -1,34 +1,42 @@
+<<<<<<< HEAD
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Expose, Transform, Type } from 'class-transformer';
+=======
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
+>>>>>>> d0fb705d834e31ffd267bd7d5c6c4bcc91276d6a
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
-import { PlayerTeam } from '.';
+import { Invitation } from '.';
 
 @Entity()
 export class Team {
-    @PrimaryGeneratedColumn()
+    @BeforeInsert()
+    setCreationDate() {
+        this.creationDate = new Date()
+    }
+
     @Expose()
+    @PrimaryGeneratedColumn()
     teamId: number;
 
-    @Column()
     @Expose()
-    name: string;
+    @Column({ unique: true })
+    teamName: string;
 
-    @Column()
     @Expose()
+    @Column()
     creationDate: Date;
 
-    @ManyToOne(() => Player, (player) => player.ownedTeams, {
-        eager: true,
-    })
-    @JoinColumn({ name: `captainId` })
     @Expose()
+    @ManyToOne(() => Player, (player) => player.ownedTeams)
+    @JoinColumn({ name: `captainId` })
     captain: Player;
 
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
-    @OneToMany(() => PlayerTeam, (playerTeam) => playerTeam.player)
-    playerTeams: PlayerTeam[];
+    @OneToMany(() => Invitation, (invitation) => invitation.team, { onDelete: `CASCADE` })
+    members: Invitation[];
 }

@@ -6,13 +6,23 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: null
+    url: '${$env.url}/tournaments'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "name": "Fanny.Stark6222",
+        "numberOfPlayers": 1,
+        "numberOfTeams": 6,
+        "registerStartDate": "2005-12-16",
+        "registerEndDate": "2030-12-16",
+        "tournamentStartDate": "2005-12-16",
+        "tournamentEndDate": "2030-12-16",
+        "description": "Quibusdam magni ipsaet ui. Voluptates par"
+      }
     xmlBody: ''
     textBody: ''
     formData: []

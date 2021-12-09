@@ -3,89 +3,65 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
+    ParseIntPipe,
+    Patch,
     Post,
-    Put,
     Req,
     SerializeOptions,
     UseGuards,
 } from '@nestjs/common';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
-import { CreatePlayerTeam } from './dto/create-playerTeam.dto';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/roles.enum';
+import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { AcceptPlayerInvitationDto } from './dto/accept-player-invitation.dto';
+
 @Controller(`teams`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
+@Roles(Role.User)
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class TeamsController {
-    constructor(private readonly teamsService: TeamsService) {}
-    @Get(`pending-invitations`)
-    @UseGuards(JwtAuthGuard)
-    async getManagedTournaments(@Req() request: RequestWithUser) {
-        const invitaionList = await this.teamsService.getPendingInvitations(request);
+    constructor(private readonly teamsService: TeamsService) { }
 
-        if (!invitaionList) {
-            throw new NotFoundException(`Tournaments not found`);
-        }
-
-        return invitaionList;
+    @Get(`/:id/players/available`)
+    async getAvailablePlayers(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+        return await this.teamsService.getAvailablePlayers(id, user);
     }
+
+    @Get(`/:id/members`)
+    async getMembers(@Param(`id`, ParseIntPipe) id: number) {
+        return JSON.stringify(await this.teamsService.getMembers(id));
+    }
+
     @Get(`/:id`)
-    @UseGuards(JwtAuthGuard)
-    async findById(@Param(`id`) id: string) {
-        const torunament = await this.teamsService.getById(Number(id));
-
-        if (!torunament) {
-            throw new NotFoundException(`Team not found`);
-        }
-
-        return torunament;
+    async get(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.teamsService.getById(id);
     }
 
     @Get()
-    async find() {
-        const torunament = await this.teamsService.getAllTeams();
+    async getAll() {
+        return await this.teamsService.getAll();
+    }
 
-        if (!torunament) {
-            throw new NotFoundException(`Teams not found`);
-        }
-
-        return torunament;
-    }
-    @Post(`create-invitation`)
-    async createInvitaion(@Body() playerTeamData: CreatePlayerTeam) {
-        return this.teamsService.createInvitaion(playerTeamData);
-    }
-    @UseGuards(JwtAuthGuard)
-    @Post(`accept-invitation`)
-    async acceptPlayerInvitation(
-        @Body() acceptData: AcceptPlayerInvitationDto,
-        @Req() request: RequestWithUser,
-    ) {
-        return this.teamsService.acceptPlayerInvitation(acceptData, request);
-    }
-    @UseGuards(JwtAuthGuard)
-    @Post(`create`)
+    @Post()
+    @Roles(Role.Player)
     async create(@Body() teamData: CreateTeamDto) {
-        return this.teamsService.create(teamData);
+        return await this.teamsService.create(teamData);
     }
+
+    @Patch(`/:id`)
+    @Roles(Role.Player)
+    @UseGuards(UserIsCaptainGuard)
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateTeamDto) {
+        return await this.teamsService.update(id, body);
+    }
+
     @Delete(`/:id`)
-    removeTeam(@Param(`id`) id: string) {
-        return this.teamsService.remove(Number(id));
-    }
-    @UseGuards(JwtAuthGuard)
-    @Get(`/cos`)
-    authenticate(@Req() request: RequestWithUser) {
-        const { user } = request;
-        return user;
-    }
-    @Put(`/:id`)
-    updateTeam(@Param(`id`) id: string, @Body() body: UpdateTeamDto) {
-        return this.teamsService.update(Number(id), body);
+    @Roles(Role.Player)
+    @UseGuards(UserIsCaptainGuard)
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.teamsService.remove(id);
     }
 }

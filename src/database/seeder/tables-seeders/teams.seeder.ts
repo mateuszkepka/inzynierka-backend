@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Team } from 'src/entities';
+import { Player, Team } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
 @Injectable()
 export class TeamsSeeder {
     constructor(
-        @InjectRepository(Team)
-        private readonly teamsRepository: Repository<Team>,
+        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
     ) {}
 
-    async seed(numberOfRows: number) {
+    async seed(numberOfRows: number, captains: Player[]) {
         const isSeeded = await this.teamsRepository.findOne();
 
         if (isSeeded) {
@@ -25,8 +24,9 @@ export class TeamsSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const team: Partial<Team> = {
-                name: faker.internet.userName(),
+                teamName: faker.internet.userName(),
                 creationDate: faker.datatype.datetime(),
+                captain: captains[i]
             };
             const newTeam = await this.teamsRepository.create(team);
             createdTeams.push(newTeam);

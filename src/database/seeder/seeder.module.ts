@@ -22,6 +22,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                     username: config.get<string>(`DB_USER`),
                     password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
+                    logging: true,
                     entities: [
                         entities.Game,
                         entities.Group,
@@ -38,7 +39,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                         entities.ParticipatingTeam,
                         entities.Suspension,
                         entities.Team,
-                        entities.PlayerTeam,
+                        entities.Invitation,
                         entities.TiebreakerRule,
                         entities.Tournament,
                         entities.TournamentAdmin,

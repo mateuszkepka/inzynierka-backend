@@ -1,9 +1,10 @@
 enabled: true
 children:
-  - delete
-  - get-by-id
-  - patch
-  - who-am-i
+  - get-user-by-id
+  - get-user-accounts
+  - get-user-teams
+  - update-user (TODO)
+  - delete-user (TODO)
 variablesArray: []
 type: Folder
 authData:

@@ -18,7 +18,7 @@ import {
     TournamentsSeeder,
     UsersSeeder,
     TournamentAdminSeeder,
-    PlayerTeamSeeder
+    InvitationsSeeder
 } from './tables-seeders';
 
 import { Injectable } from '@nestjs/common';
@@ -45,13 +45,18 @@ export class Seeder {
         private readonly ladderSeeder: LadderSeeder,
         private readonly tiebreakerRuleSeeder: TiebreakerRuleSeeder,
         private readonly rosterSeeder: ParticipatingTeamSeeder,
-        private readonly playerTeamsSeeder: PlayerTeamSeeder,
+        private readonly invitationsSeeder: InvitationsSeeder,
     ) { }
 
     async seed() {
-        const createdTeams = await this.teamsSeeder.seed(10);
-        const createdGame = await this.gamesSeeder.seed();
         const createdUsers = await this.usersSeeder.seed(10);
+        const createdGame = await this.gamesSeeder.seed();
+        const createdPlayers = await this.playersSeeder.seed(
+            10,
+            createdUsers,
+            createdGame
+        );
+        const createdTeams = await this.teamsSeeder.seed(10, createdPlayers);
         const createdPresets = await this.presetsSeeder.seed(10);
         const createdPrizes = await this.prizesSeeder.seed(10);
         const createdTournaments = await this.tournamentsSeeder.seed(
@@ -73,13 +78,9 @@ export class Seeder {
         const createdMaps = await this.mapSeeder.seed(10, createdMatches);
         const createdGroups = await this.groupsSeeder.seed(10, createdTournaments);
         const createdTiebreakerRules = await this.tiebreakerRuleSeeder.seed(10);
-        const createdPlayers = await this.playersSeeder.seed(
-            10,
-            createdUsers,
-            createdGame
-        );
+
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
-        await this.playerTeamsSeeder.seed(10, createdPlayers, createdTeams);
+        await this.invitationsSeeder.seed(10, createdPlayers, createdTeams);
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);
         await this.suspensionsSeeder.seed(10, createdUsers);

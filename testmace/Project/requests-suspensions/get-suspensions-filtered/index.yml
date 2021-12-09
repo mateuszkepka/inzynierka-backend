@@ -1,0 +1,31 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: GET
+    url: '${$env.url}/suspensions/?userId=6&status=active'
+  headers: []
+  disabledInheritedHeaders: []
+  params:
+    - name: userId
+      value: '6'
+      isChecked: true
+    - name: status
+      value: active
+      isChecked: true
+  body:
+    type: Json
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: get-suspensions-filtered

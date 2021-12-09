@@ -17,4 +17,4 @@ export * from './tiebreaker-rule.entity';
 export * from './tournament-admin.entity';
 export * from './tournament.entity';
 export * from './user.entity';
-export * from './player-team.entity';
+export * from './invitation.entity';

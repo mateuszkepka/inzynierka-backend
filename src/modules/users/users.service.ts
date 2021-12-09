@@ -1,37 +1,68 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities';
+import { Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
+import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-    ) {}
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>
+    ) { }
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
             { userId },
-            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`accounts`, `suspensions`, `organizedTournaments`, `tournamentAdmins`] },
         );
-        if (user) {
-            return user;
+        if (!user) {
+            throw new NotFoundException(`User with this id does not exist`);
         }
-        throw new NotFoundException(`User with this id does not exist`);
+        return user;
     }
 
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne(
             { email },
-            { relations: [`suspensions`, `accounts`, `organizedTournaments`, `tournamentAdmins`] },
+            { relations: [`accounts`, `suspensions`, `organizedTournaments`, `tournamentAdmins`] },
         );
-        if (user) {
-            return user;
+        if (!user) {
+            throw new NotFoundException(`User with this email does not exist`);;
         }
-        throw new NotFoundException(`User with this email does not exist`);
+        return user;
+    }
+
+    async getAccounts(id: number) {
+        await this.getById(id);
+        const accounts = await this.playersRepository
+            .createQueryBuilder(`player`)
+            .innerJoin(`player.user`, `user`)
+            .leftJoinAndSelect(`player.ownedTeams`, `teams`)
+            .where(`user.userId = :userId`, { userId: id })
+            .getMany();
+        return accounts;
+    }
+
+    async getTeams(id: number) {
+        await this.getById(id);
+        const teams = await this.usersRepository
+            .createQueryBuilder(`user`)
+            .select(`user.userId`, `userId`)
+            .addSelect(`team.teamId`, `teamId`)
+            .addSelect(`team.teamName`, `teamName`)
+            .addSelect(`team.captain`, `captainId`)
+            .addSelect(`player.playerId`, `playerId`)
+            .addSelect(`player.summonerName`, `summonerName`)
+            .innerJoin(`user.accounts`, `player`)
+            .innerJoin(`player.teams`, `invitation`)
+            .innerJoin(`invitation.team`, `team`)
+            .where(`user.userId = :userId`, { userId: id })
+            .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
+            .getRawMany();
+        return teams;
     }
 
     async create(user: CreateUserDto) {
@@ -52,9 +83,6 @@ export class UsersService {
 
     async remove(id: number) {
         const user = await this.getById(id);
-        if (!user) {
-            throw new NotFoundException(`User not found`);
-        }
         return this.usersRepository.remove(user);
     }
 

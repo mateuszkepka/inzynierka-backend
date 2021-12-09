@@ -1,12 +1,12 @@
 enabled: true
 children:
-  - get-by-id
-  - getall
-  - addPlayer
-  - createTeam
-  - test
-  - get-pending-invitations
-  - accept-player-invitation
+  - get-all-teams
+  - get-team-by-id
+  - get-team-members
+  - get-players-to-invite
+  - create-team
+  - update-team
+  - remove-team
 variablesArray: []
 type: Folder
 authData:
