@@ -23,9 +23,9 @@ export class Invitation {
 
     @Expose()
     @Column({
-        type: "enum",
+        type: `enum`,
         enum: InvitationStatus,
-        default: InvitationStatus.Pending
+        default: InvitationStatus.Pending,
     })
     status: Status;
 }

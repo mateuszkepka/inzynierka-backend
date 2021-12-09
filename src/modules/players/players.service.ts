@@ -25,21 +25,18 @@ export class PlayersService {
     // }
 
     async getAllPlayers() {
-        // const players = await this.usersRepository
-        //     .createQueryBuilder(`user`)
-        //     .select(`user.userId`)
-        //     .addSelect(`user.username`)
-        //     .addSelect(`user.email`)
-        //     .addSelect(`user.country`)
-        //     .addSelect(`player.playerId`)
-        //     .addSelect(`player.summonerName`)
-        //     .addSelect(`game.title`)
-        //     .innerJoin(`user.accounts`, `player`)
-        //     .innerJoin(`player.game`, `game`)
-        //     .getMany();
-        const players = await this.usersRepository.find({
-            relations: [`suspensions`, `accounts`, `accounts.teams`]
-        })
+        const players = await this.usersRepository
+            .createQueryBuilder(`user`)
+            .select(`user.userId`)
+            .addSelect(`user.username`)
+            .addSelect(`user.email`)
+            .addSelect(`user.country`)
+            .addSelect(`player.playerId`)
+            .addSelect(`player.summonerName`)
+            .addSelect(`game.title`)
+            .innerJoin(`user.accounts`, `player`)
+            .innerJoin(`player.game`, `game`)
+            .getMany();
         if (!players) {
             throw new NotFoundException(`No players found`);
         }

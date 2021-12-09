@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform, Type } from 'class-transformer';
+=======
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Expose } from 'class-transformer';
+>>>>>>> d0fb705d834e31ffd267bd7d5c6c4bcc91276d6a
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
 import { Invitation } from '.';
@@ -23,7 +29,7 @@ export class Team {
     @Column()
     creationDate: Date;
 
-    @Expose({ name: `captainId` })
+    @Expose()
     @ManyToOne(() => Player, (player) => player.ownedTeams)
     @JoinColumn({ name: `captainId` })
     captain: Player;
