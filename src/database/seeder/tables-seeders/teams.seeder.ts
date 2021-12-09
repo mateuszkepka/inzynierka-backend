@@ -24,7 +24,7 @@ export class TeamsSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const team: Partial<Team> = {
-                name: faker.internet.userName(),
+                teamName: faker.internet.userName(),
                 creationDate: faker.datatype.datetime(),
                 captain: captains[i]
             };

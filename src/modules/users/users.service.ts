@@ -4,6 +4,7 @@ import { Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
+import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 
 @Injectable()
 export class UsersService {
@@ -39,9 +40,29 @@ export class UsersService {
         const accounts = await this.playersRepository
             .createQueryBuilder(`player`)
             .innerJoin(`player.user`, `user`)
+            .leftJoinAndSelect(`player.ownedTeams`, `teams`)
             .where(`user.userId = :userId`, { userId: id })
             .getMany();
         return accounts;
+    }
+
+    async getTeams(id: number) {
+        await this.getById(id);
+        const teams = await this.usersRepository
+            .createQueryBuilder(`user`)
+            .select(`user.userId`, `userId`)
+            .addSelect(`team.teamId`, `teamId`)
+            .addSelect(`team.teamName`, `teamName`)
+            .addSelect(`team.captain`, `captainId`)
+            .addSelect(`player.playerId`, `playerId`)
+            .addSelect(`player.summonerName`, `summonerName`)
+            .innerJoin(`user.accounts`, `player`)
+            .innerJoin(`player.teams`, `invitation`)
+            .innerJoin(`invitation.team`, `team`)
+            .where(`user.userId = :userId`, { userId: id })
+            .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
+            .getRawMany();
+        return teams;
     }
 
     async create(user: CreateUserDto) {
@@ -62,9 +83,6 @@ export class UsersService {
 
     async remove(id: number) {
         const user = await this.getById(id);
-        if (!user) {
-            throw new NotFoundException(`User not found`);
-        }
         return this.usersRepository.remove(user);
     }
 

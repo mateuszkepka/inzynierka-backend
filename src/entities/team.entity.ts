@@ -1,6 +1,5 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Expose } from 'class-transformer';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
 import { Invitation } from '.';
@@ -18,13 +17,13 @@ export class Team {
 
     @Expose()
     @Column({ unique: true })
-    name: string;
+    teamName: string;
 
     @Expose()
     @Column()
     creationDate: Date;
 
-    @Expose()
+    @Expose({ name: `captainId` })
     @ManyToOne(() => Player, (player) => player.ownedTeams)
     @JoinColumn({ name: `captainId` })
     captain: Player;
@@ -32,7 +31,6 @@ export class Team {
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
-    @Expose()
     @OneToMany(() => Invitation, (invitation) => invitation.team, { onDelete: `CASCADE` })
     members: Invitation[];
 }

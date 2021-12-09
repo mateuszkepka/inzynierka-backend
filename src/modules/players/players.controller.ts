@@ -3,7 +3,6 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
     ParseIntPipe,
     Patch,
@@ -21,7 +20,7 @@ import { Role } from 'src/roles/roles.enum';
 
 @Roles(Role.User)
 @Controller(`players`)
-@SerializeOptions({ strategy: `excludeAll` })
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) { }
 

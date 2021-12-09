@@ -56,9 +56,10 @@ export class TeamsService {
     }
 
     async getById(teamId: number) {
-        const team = await this.teamsRepository.findOne(
-            { teamId },
-            { relations: [`captain`, `members`] });
+        const team = await this.teamsRepository.findOne({
+            relations: [`captain`, `members`],
+            where: { teamId: teamId }
+        });
         if (!team) {
             throw new NotFoundException(`Team with given id does not exist`);
         }
@@ -66,7 +67,9 @@ export class TeamsService {
     }
 
     async getByName(name: string) {
-        const team = await this.teamsRepository.findOne({ name });
+        const team = await this.teamsRepository.findOne({
+            where: { teamName: name }
+        });
         if (!team) {
             throw new NotFoundException(`Team with given name does not exist`);
         }
@@ -74,36 +77,38 @@ export class TeamsService {
     }
 
     async getMembers(teamId: number) {
-        const memberList = await this.teamsRepository
+        const members = await this.teamsRepository
             .createQueryBuilder(`team`)
             .select(`user.userId`, `userId`)
             .addSelect(`user.username`, `username`)
             .addSelect(`player.playerId`, `playerId`)
             .addSelect(`player.summonerName`, `summonerName`)
+            .addSelect(`invitation.invitationId`, `invitation`)
             .innerJoin(`team.members`, `invitation`)
             .innerJoin(`invitation.player`, `player`)
             .innerJoin(`player.user`, `user`)
             .where(`team.teamId = :id`, { id: teamId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
             .getRawMany();
-        return JSON.stringify(memberList);
+        console.log(members)
+        return members;
     }
 
     async create(createTeamDto: CreateTeamDto) {
-        const player = await this.playersService.getById(createTeamDto.playerId);
+        const captain = await this.playersService.getById(createTeamDto.captainId);
         const team = this.teamsRepository.create({
-            name: createTeamDto.name,
-            captain: player
+            teamName: createTeamDto.teamName,
+            captain: captain
         });
         return await this.connection.transaction(async manager => {
             await manager.save(team);
             const insertedTeam = await manager.findOne(Team, {
-                name: team.name,
+                teamName: team.teamName,
                 creationDate: team.creationDate,
                 captain: team.captain
             })
             const invitation = this.invitationsRepository.create({
-                player: player,
+                player: captain,
                 team: insertedTeam,
                 status: InvitationStatus.Accepted
             });
@@ -111,15 +116,16 @@ export class TeamsService {
         });
     }
 
-    async update(id: number, teamData: UpdateTeamDto) {
-        const captain = await this.playersService.getById(teamData.captainId);
-        const captainId = teamData.captainId;
-        const team = JSON.parse(await this.getMembers(id));
-        if (!team.some(member => member.playerId === captainId)) {
+    async update(id: number, attrs: Partial<UpdateTeamDto>) {
+        const team = await this.getById(id);
+        const members = await this.getMembers(id);
+        const captain = await this.playersService.getById(attrs.captainId);
+        if (!members.some(member => member.playerId === attrs.captainId)) {
             throw new BadRequestException(`Given player is not a member of the team`);
         }
+        Object.assign(team, attrs);
         return this.teamsRepository.update(id, {
-            name: teamData.name,
+            teamName: attrs.teamName,
             captain: captain
         });
     }

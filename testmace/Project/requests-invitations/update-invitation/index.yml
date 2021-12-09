@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/invitations/36'
+    url: '${$env.url}/invitations/38'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "status": "refused"
+        "status": "accepted"
       }
     xmlBody: ''
     textBody: ''

@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseIntPipe,
     Put,
     SerializeOptions,
 } from '@nestjs/common';
@@ -12,29 +13,34 @@ import { Role } from 'src/roles/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
-@Roles(Role.User)
-@SerializeOptions({ strategy: 'excludeAll' })
 @Controller(`users`)
+@Roles(Role.User)
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Get(`/:id/accounts`)
-    async getAccounts(@Param(`id`) id: string) {
-        return await this.usersService.getAccounts(+id);
+    async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getAccounts(id);
+    }
+
+    @Get(`/:id/teams`)
+    async getTeams(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getTeams(id);
     }
 
     @Get(`/:id`)
-    async findUser(@Param(`id`) id: string) {
-        return await this.usersService.getById(+id);
+    async findUser(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.getById(id);
     }
 
     @Delete(`/:id`)
-    async removeUser(@Param(`id`) id: string) {
-        return await this.usersService.remove(+id);
+    async removeUser(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.usersService.remove(id);
     }
 
     @Put(`/:id`)
-    async updateUser(@Param(`id`) id: string, @Body() body: UpdateUserDto) {
-        return await this.usersService.update(+id, body);
+    async updateUser(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+        return await this.usersService.update(id, body);
     }
 }

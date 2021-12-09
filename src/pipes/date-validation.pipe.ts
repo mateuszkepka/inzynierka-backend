@@ -10,6 +10,5 @@ export class DateValidationPipe implements PipeTransform {
             throw new BadRequestException(`The end date cannot be in the past`)
         }
         return value;
-
     }
 }

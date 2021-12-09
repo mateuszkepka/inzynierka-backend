@@ -5,8 +5,8 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
-    Put,
     Req,
     SerializeOptions,
     UseGuards,
@@ -21,7 +21,7 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 
 @Controller(`teams`)
 @Roles(Role.User)
-@SerializeOptions({ strategy: `excludeAll` })
+@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) { }
 
@@ -31,13 +31,13 @@ export class TeamsController {
     }
 
     @Get(`/:id/members`)
-    async getMembers(@Param(`id`) id: string) {
-        return await this.teamsService.getMembers(parseInt(id));
+    async getMembers(@Param(`id`, ParseIntPipe) id: number) {
+        return JSON.stringify(await this.teamsService.getMembers(id));
     }
 
     @Get(`/:id`)
-    async get(@Param(`id`) id: string) {
-        return await this.teamsService.getById(Number(id));
+    async get(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.teamsService.getById(id);
     }
 
     @Get()
@@ -51,17 +51,17 @@ export class TeamsController {
         return await this.teamsService.create(teamData);
     }
 
-    @Put(`/:id`)
+    @Patch(`/:id`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async update(@Param(`id`) id: string, @Body() teamData: UpdateTeamDto) {
-        return await this.teamsService.update(+id, teamData);
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateTeamDto) {
+        return await this.teamsService.update(id, body);
     }
 
     @Delete(`/:id`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async remove(@Param(`id`) id: string) {
-        return await this.teamsService.remove(+id);
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.teamsService.remove(id);
     }
 }

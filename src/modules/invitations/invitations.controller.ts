@@ -33,7 +33,7 @@ export class InvitationsController {
   }
 
   @Delete(':id')
-  async remove(@Param(`id`, ParseIntPipe) id: number) {
-    return await this.invitationsService.remove(id);
+  async remove(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+    return await this.invitationsService.remove(id, user);
   }
 }

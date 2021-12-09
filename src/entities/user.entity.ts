@@ -3,7 +3,7 @@ import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose } from 'class-transformer';
+import { Expose, plainToClass, Transform, Type } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
 
 @Entity()
@@ -55,6 +55,7 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
+    @Type(() => Player)
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 

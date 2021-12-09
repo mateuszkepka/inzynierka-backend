@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/entities';
 import { Repository } from 'typeorm';
@@ -15,6 +15,7 @@ export class InvitationsService {
     @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
     private readonly playersService: PlayersService,
+    private readonly usersService: UsersService,
     private readonly teamsService: TeamsService
   ) { }
 
@@ -37,7 +38,7 @@ export class InvitationsService {
         .addSelect(`player.playerId`, `playerId`)
         .addSelect(`player.summonerName`, `summonerName`)
         .addSelect(`team.teamId`, `teamId`)
-        .addSelect(`team.name`, `teamName`)
+        .addSelect(`team.teamName`, `teamName`)
         .innerJoin(`user.accounts`, `player`)
         .innerJoin(`player.teams`, `invitation`)
         .innerJoin(`invitation.team`, `team`)
@@ -77,7 +78,7 @@ export class InvitationsService {
     return await this.invitationsRepository.save(invitation);
   }
 
-  async update(id: number, attrs: Partial<Invitation>) {
+  async update(id: number, attrs: Partial<UpdateInvitationDto>) {
     const invitation = await this.getById(id);
     if (invitation.status === attrs.status) {
       throw new BadRequestException(`You have already responded this invitation`);
@@ -86,8 +87,44 @@ export class InvitationsService {
     return await this.invitationsRepository.save(invitation);
   }
 
-  async remove(id: number) {
-    return 'ss'
-    //return await this.invitationsRepository.delete(id);
+  async remove(id: number, user: User) {
+    const invitation = await this.getById(id);
+    // TEAMS OF THE USER WHO SENDS REQUEST
+    const teams = await this.usersService.getTeams(user.userId);
+    if (Object.keys(teams).length === 0) {
+      console.log(`bez teamu`)
+      throw new BadRequestException();
+    }
+    console.log(invitation);
+    // TEAM WHICH INVITATION IS ABOUT
+    const teamOnInvitation = await this.teamsService.getById(invitation.team.teamId)
+    if (!teams.some(team => team.teamId === teamOnInvitation.teamId)) {
+      console.log(`to nie jest team wysylajacego request`)
+      throw new BadRequestException();
+    }
+    // ACCOUNTS OF THE USER WHO SENDS REQUEST
+    const accounts = await this.usersService.getAccounts(user.userId);
+    // PLAYER TO BE DELETED FROM THE TEAM
+    
+    const playerOnInvitation = await this.playersService.getById(invitation.player.playerId)
+    //const owner = await this.playersService.getOwner(invitation.player.playerId)
+    if (accounts.some(account => account.ownedTeams.some(team => team.teamId === teamOnInvitation.teamId))) {
+      console.log(`typ ownuje team`)
+      // INVITATION IS NOT ACCEPTED = THE PLAYER IS NOT A TEAM MEMBER
+      if (invitation.status === InvitationStatus.Refused) {
+        console.log(`typ odrzucil zapro`)
+        throw new BadRequestException();
+      }
+      // CAPTAIN CANNOT KICK HIMSELF
+      if (playerOnInvitation) {
+        console.log(`lota od admina`)
+        return this.invitationsRepository.remove(invitation);
+      }
+    }
+    if (playerOnInvitation.user.userId !== user.userId) {
+      console.log(`typ jest w teamie ale próbuje wyjebac innego, a nie jest kapitanem`)
+      throw new BadRequestException();
+    }
+    return this.invitationsRepository.remove(invitation);
   }
 }

@@ -14,7 +14,7 @@ export class PlayerIsMemberGuard implements CanActivate {
         }
         const teamId = Number(request.params.id);
         const captainId = request.body.captainId;
-        const team = JSON.parse(await this.teamsService.getMembers(teamId));
+        const team = await this.teamsService.getMembers(teamId);
         if (team.find((playerId: number) => playerId === captainId)) {
             return true;
         }

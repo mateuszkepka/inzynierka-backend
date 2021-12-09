@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: DELETE
-    url: '${$env.url}/invitations/5'
+    url: '${$env.url}/invitations/23'
   headers: []
   disabledInheritedHeaders: []
   params: []
