@@ -17,7 +17,7 @@ import { UsersService } from './users.service';
 @Roles(Role.User)
 @SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {

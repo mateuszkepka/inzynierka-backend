@@ -10,8 +10,8 @@ import { InvitationStatus } from '../invitations/interfaces/invitation-status.en
 export class UsersService {
     constructor(
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
-        @InjectRepository(Player) private readonly playersRepository: Repository<Player>
-    ) { }
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
+    ) {}
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne(
@@ -30,7 +30,7 @@ export class UsersService {
             { relations: [`accounts`, `suspensions`, `organizedTournaments`, `tournamentAdmins`] },
         );
         if (!user) {
-            throw new NotFoundException(`User with this email does not exist`);;
+            throw new NotFoundException(`User with this email does not exist`);
         }
         return user;
     }

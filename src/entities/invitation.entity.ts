@@ -2,10 +2,13 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 import { Team } from './team.entity';
 import { Player } from './player.entity';
 import { Expose } from 'class-transformer';
-import { InvitationStatus, Status } from 'src/modules/invitations/interfaces/invitation-status.enum';
+import {
+    InvitationStatus,
+    Status,
+} from 'src/modules/invitations/interfaces/invitation-status.enum';
 
 @Entity()
-@Unique(['player', `team`])
+@Unique([`player`, `team`])
 export class Invitation {
     @Expose()
     @PrimaryGeneratedColumn()

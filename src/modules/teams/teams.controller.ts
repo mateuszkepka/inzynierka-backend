@@ -23,10 +23,13 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 @Roles(Role.User)
 @SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class TeamsController {
-    constructor(private readonly teamsService: TeamsService) { }
+    constructor(private readonly teamsService: TeamsService) {}
 
     @Get(`/:id/players/available`)
-    async getAvailablePlayers(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+    async getAvailablePlayers(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Req() { user }: RequestWithUser,
+    ) {
         return await this.teamsService.getAvailablePlayers(id, user);
     }
 

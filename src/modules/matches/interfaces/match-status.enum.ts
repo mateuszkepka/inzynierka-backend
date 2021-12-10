@@ -3,5 +3,5 @@ export enum MatchStatus {
     Postponed = `postponed`,
     Ongoing = `ongoing`,
     Finished = `finished`,
-    Cancelled = `cancelled`
+    Cancelled = `cancelled`,
 }

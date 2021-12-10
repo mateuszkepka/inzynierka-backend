@@ -23,7 +23,7 @@ import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
 @SerializeOptions({ strategy: `excludeAll` })
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) { }
+    constructor(private readonly tournamentsService: TournamentsService) {}
 
     @Get(`pending-teams/:id`)
     @UseGuards(JwtAuthGuard)
@@ -64,6 +64,10 @@ export class TournamentsController {
         }
         return torunament;
     }
+    @Post(`teams`)
+    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
+        return this.tournamentsService.addTeam(participatingTeamData);
+    }
 
     @Post(`accept-team`)
     @UseGuards(JwtAuthGuard)
@@ -83,11 +87,6 @@ export class TournamentsController {
         return this.tournamentsService.addPrize(prizedata, request);
     }
 
-    @Post(`teams`)
-    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
-        return this.tournamentsService.addTeam(participatingTeamData);
-    }
-    
     @Post()
     @UseGuards(JwtAuthGuard)
     async create(@Body() tournamentData: CreateTournamentDto, @Req() request: RequestWithUser) {

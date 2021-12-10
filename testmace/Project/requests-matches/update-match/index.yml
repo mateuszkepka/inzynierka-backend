@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/auth/login'
+    method: PATCH
+    url: '${$env.url}/matches/14'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "adam9.krawczynski1999@gmail.com",
-        "password": "test9"
+        "firstRosterId": 3,
+        "tournamentStage": "bobass"
       }
     xmlBody: ''
     textBody: ''
@@ -26,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in
+name: update-match

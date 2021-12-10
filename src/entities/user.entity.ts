@@ -3,11 +3,11 @@ import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose, plainToClass, Transform, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
 
 @Entity()
-@Unique(['university', `studentId`])
+@Unique([`university`, `studentId`])
 export class User {
     @Expose()
     @PrimaryGeneratedColumn()
@@ -39,9 +39,9 @@ export class User {
     @Expose()
     @Column(`text`, {
         array: true,
-        default: [`user`]
+        default: [`user`],
     })
-    roles: Role[]
+    roles: Role[];
 
     @Column({ nullable: true })
     currentRefreshToken?: string;

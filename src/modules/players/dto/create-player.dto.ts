@@ -5,7 +5,7 @@ export class AddPlayerAccountDto {
 
     @IsNumber()
     gameId: number;
-    
+
     @IsString()
     region: string;
 }

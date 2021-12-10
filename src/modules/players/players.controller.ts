@@ -7,9 +7,8 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    Query,
     Req,
-    SerializeOptions
+    SerializeOptions,
 } from '@nestjs/common';
 import { PlayersService } from './players.service';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
@@ -22,7 +21,7 @@ import { Role } from 'src/roles/roles.enum';
 @Controller(`players`)
 @SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class PlayersController {
-    constructor(private readonly playersService: PlayersService) { }
+    constructor(private readonly playersService: PlayersService) {}
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {
