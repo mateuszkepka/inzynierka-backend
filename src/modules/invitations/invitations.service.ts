@@ -98,10 +98,10 @@ export class InvitationsService {
     console.log(invitation);
     // TEAM WHICH INVITATION IS ABOUT
     const teamOnInvitation = await this.teamsService.getById(invitation.team.teamId)
-    if (!teams.some(team => team.teamId === teamOnInvitation.teamId)) {
-      console.log(`to nie jest team wysylajacego request`)
-      throw new BadRequestException();
-    }
+    // if (!teams.some(team => team.teamId === teamOnInvitation.teamId)) {
+    //   console.log(`to nie jest team wysylajacego request`)
+    //   throw new BadRequestException();
+    // }
     // ACCOUNTS OF THE USER WHO SENDS REQUEST
     const accounts = await this.usersService.getAccounts(user.userId);
     // PLAYER TO BE DELETED FROM THE TEAM

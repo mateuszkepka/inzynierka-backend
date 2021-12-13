@@ -3,7 +3,7 @@ import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose, plainToClass, Transform, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
 
 @Entity()
@@ -28,15 +28,12 @@ export class User {
     @Column()
     country: string;
 
-    @Expose()
     @Column()
     university: string;
 
-    @Expose()
     @Column()
     studentId: string;
 
-    @Expose()
     @Column(`text`, {
         array: true,
         default: [`user`]
@@ -55,7 +52,6 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
-    @Type(() => Player)
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 

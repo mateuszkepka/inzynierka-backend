@@ -26,11 +26,9 @@ export class ParticipatingTeam {
     signDate: Date;
 
     @Column()
-    @Expose()
     @IsBoolean()
     isApproved: boolean;
 
-    @Expose()
     @Column()
     @IsDateString()
     approvalDate: Date;

@@ -5,7 +5,7 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: PUT
+    method: PATCH
     url: '${$env.url}/tournaments/1/teams'
   headers: []
   disabledInheritedHeaders: []

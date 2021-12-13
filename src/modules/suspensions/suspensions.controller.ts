@@ -9,7 +9,6 @@ import {
     Post,
     Query,
     Req,
-    SerializeOptions
 } from '@nestjs/common';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 import { Roles } from 'src/roles/roles.decorator';
@@ -21,7 +20,6 @@ import { SuspensionsService } from './suspensions.service';
 
 @Controller(`suspensions`)
 @Roles(Role.Admin)
-@SerializeOptions({ strategy: `excludeAll` })
 export class SuspensionsController {
     constructor(private readonly suspensionsService: SuspensionsService) { }
 

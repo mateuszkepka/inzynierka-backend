@@ -10,16 +10,22 @@ export class TournamentAdmin {
     tournamentAdminId: number;
 
     @Expose()
-    @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins)
+    @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins, {
+        cascade: true,
+        eager: true
+    })
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
     @Expose()
-    @ManyToOne(() => User, (user) => user.tournamentAdmins)
+    @ManyToOne(() => User, (user) => user.tournamentAdmins, {
+        cascade: true,
+        eager: true
+    })
     @JoinColumn({ name: `userId` })
     user: User;
 
     @Expose()
-    @Column()
+    @Column(`boolean`, { default: false })
     isAccepted: boolean;
 }

@@ -26,7 +26,7 @@ export class TournamentAdminSeeder {
             const tournamentAdmin: Partial<TournamentAdmin> = {
                 tournament: tournaments[i],
                 user: users[i],
-                isAccepted: true,
+                //isAccepted: true,
             };
 
             const newTournamentAdmin = await this.tournamentAdminRepository.create(tournamentAdmin);

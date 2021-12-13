@@ -1,22 +1,27 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-// TODO add all properties
 export class CreateUserDto {
+    @IsNotEmpty()
     @IsEmail()
     email: string;
 
+    @IsNotEmpty()
     @IsString()
     password: string;
 
+    @IsNotEmpty()
     @IsString()
     username: string;
 
+    @IsNotEmpty()
     @IsString()
     country: string;
 
+    @IsOptional()
     @IsString()
     university: string;
 
+    @IsOptional()
     @IsString()
     studentId: string;
 }

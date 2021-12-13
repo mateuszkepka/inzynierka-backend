@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
 import { Ladder } from './ladder.entity';
@@ -20,8 +20,8 @@ import { ParticipatingTeam, TournamentAdmin } from '.';
 
 @Entity()
 export class Tournament {
-    @PrimaryGeneratedColumn()
     @Expose()
+    @PrimaryGeneratedColumn()
     tournamentId: number;
 
     @Column()
@@ -56,17 +56,17 @@ export class Tournament {
     @Expose()
     description: string;
 
-    @OneToOne(() => Prize, (prize) => prize.tournament, {
-        eager: true,
-        onDelete: `CASCADE`,
-    })
-    @JoinColumn({ name: `prizeId` })
-    @Expose()
-    prize: Prize;
-
+    @Expose({ name: `gameId` })
+    @Transform(({ value }) => value.gameId, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
+
+    @Expose({ name: `organizerId` })
+    @Transform(({ value }) => value.userId, { toPlainOnly: true })
+    @ManyToOne(() => User, (user) => user.organizedTournaments)
+    @JoinColumn({ name: `organizerId` })
+    organizer: User;
 
     @OneToMany(() => Group, (group) => group.tournament)
     groups: Group[];
@@ -84,11 +84,11 @@ export class Tournament {
     @JoinColumn({ name: `presetId` })
     preset: Preset;
 
-    @ManyToOne(() => User, (user) => user.organizedTournaments)
-    @JoinColumn({ name: `organizerId` })
-    @Expose()
-    organizer: User;
-
     @OneToMany(() => ParticipatingTeam, (roster) => roster.tournament)
     rosters: ParticipatingTeam[];
+
+    @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true })
+    @JoinColumn({ name: `prizeId` })
+    @Expose()
+    prize: Prize;
 }

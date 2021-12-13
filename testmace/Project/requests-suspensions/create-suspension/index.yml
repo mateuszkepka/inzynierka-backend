@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "endDate": "2021-12-08T14:54:25+0000",
-        "reason": "za niewinność v2",
+        "endDate": "2021-12-11T14:54:25+0000",
+        "reason": "za twarz",
         "userId": 7
       }
     xmlBody: ''

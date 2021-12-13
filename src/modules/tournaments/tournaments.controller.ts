@@ -3,15 +3,16 @@ import {
     Controller,
     Delete,
     Get,
-    NotFoundException,
     Param,
+    ParseIntPipe,
+    Patch,
     Post,
-    Put,
+    Query,
     Req,
-    SerializeOptions,
-    UseGuards,
 } from '@nestjs/common';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { Public } from 'src/roles/public.decorator';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
@@ -20,86 +21,76 @@ import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
+
 @Controller(`tournaments`)
-@SerializeOptions({ strategy: `excludeAll` })
+@Roles(Role.Player)
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
-    @Get(`pending-teams/:id`)
-    @UseGuards(JwtAuthGuard)
-    async getPendingTeamsList(@Param(`id`) id: number, @Req() request: RequestWithUser) {
-        const teamslist = await this.tournamentsService.getPendingTeamsList(id, request);
-        if (!teamslist) {
-            throw new NotFoundException(`No pending teams found!`);
-        }
-        return teamslist;
+    @Get(`/:id/admins`)
+    @Roles(Role.Organizer)
+    async getAdmins(@Param(`id`, ParseIntPipe) id: number) {
+        return this.tournamentsService.getAdmins(id, true);
     }
 
-    @Get(`managed-tournaments`)
-    @UseGuards(JwtAuthGuard)
-    async getManagedTournaments(@Req() request: RequestWithUser) {
-        const torunamentlist = await this.tournamentsService.getManagedTournaments(request);
-
-        if (!torunamentlist) {
-            throw new NotFoundException(`Tournaments not found`);
-        }
-
-        return torunamentlist;
+    @Get(`/:id/teams`)
+    @Roles(Role.Organizer)
+    async getTeamsFiltered(@Param(`id`, ParseIntPipe) id: number, @Query('approved') approved: string) {
+        return this.tournamentsService.getTeamsFiltered(id, approved);
     }
 
     @Get(`/:id`)
-    async findById(@Param(`id`) id: string) {
-        const torunament = await this.tournamentsService.getById(Number(id));
-        if (!torunament) {
-            throw new NotFoundException(`Tournament not found`);
-        }
-        return torunament;
+    @Public()
+    async getById(@Param(`id`) id: string) {
+        return this.tournamentsService.getById(Number(id));
     }
 
     @Get()
-    async find() {
-        const torunament = await this.tournamentsService.getAllTournaments();
-        if (!torunament) {
-            throw new NotFoundException(`Tournaments not found`);
-        }
-        return torunament;
+    @Public()
+    async getAll() {
+        return this.tournamentsService.getAllTournaments();
     }
 
-    @Post(`accept-team`)
-    @UseGuards(JwtAuthGuard)
-    async acceptTeam(@Body() acceptdata: AcceptTeamDto, @Req() request: RequestWithUser) {
-        return this.tournamentsService.acceptTeam(acceptdata, request);
-    }
-
-    @Post(`admins`)
-    @UseGuards(JwtAuthGuard)
-    async addAdmin(@Body() admindata: CreateAdminDto, @Req() request: RequestWithUser) {
-        return this.tournamentsService.addAdmin(admindata, request);
-    }
-
-    @Post(`prizes`)
-    @UseGuards(JwtAuthGuard)
-    async addPrize(@Body() prizedata: CreatePrizeDto, @Req() request: RequestWithUser) {
-        return this.tournamentsService.addPrize(prizedata, request);
-    }
-
-    @Post(`teams`)
-    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
-        return this.tournamentsService.addTeam(participatingTeamData);
-    }
-    
     @Post()
-    @UseGuards(JwtAuthGuard)
+    @Roles(Role.Organizer)
     async create(@Body() tournamentData: CreateTournamentDto, @Req() request: RequestWithUser) {
         return this.tournamentsService.create(tournamentData, request);
     }
-    @Delete(`/:id`)
-    removeTournament(@Param(`id`) id: string) {
-        return this.tournamentsService.remove(Number(id));
+
+    @Post(`/:id/admins`)
+    @Roles(Role.Organizer)
+    async addAdmin(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreateAdminDto) {
+        return this.tournamentsService.addAdmin(id, body);
     }
 
-    @Put(`/:id`)
+    @Post(`/:id/prizes`)
+    @Roles(Role.Organizer)
+    async addPrize(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreatePrizeDto) {
+        return this.tournamentsService.addPrize(id, body);
+    }
+
+    @Post(`/:id/teams`)
+    // TODO GUARD FOR A TEAM'S CAPTAIN
+    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
+        return this.tournamentsService.addTeam(participatingTeamData);
+    }
+
+    @Patch(`/:id`)
+    @Roles(Role.Organizer)
     updateTournament(@Param(`id`) id: string, @Body() body: UpdateTournamentDto) {
         return this.tournamentsService.update(Number(id), body);
+    }
+
+    @Patch(`/:id/teams`)
+    // TODO TOURNAMENT ADMIN LOGIC
+    @Roles(Role.Organizer, Role.TournamentAdmin)
+    async acceptTeam(@Body() acceptdata: AcceptTeamDto, @Req() { user }: RequestWithUser) {
+        return this.tournamentsService.acceptTeam(acceptdata, user);
+    }
+
+    @Delete(`/:id`)
+    @Roles(Role.Organizer)
+    removeTournament(@Param(`id`) id: string) {
+        return this.tournamentsService.remove(Number(id));
     }
 }

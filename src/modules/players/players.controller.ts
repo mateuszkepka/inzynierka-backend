@@ -7,9 +7,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    Query,
     Req,
-    SerializeOptions
 } from '@nestjs/common';
 import { PlayersService } from './players.service';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
@@ -20,7 +18,6 @@ import { Role } from 'src/roles/roles.enum';
 
 @Roles(Role.User)
 @Controller(`players`)
-@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) { }
 
@@ -34,18 +31,18 @@ export class PlayersController {
         return await this.playersService.getAllPlayers();
     }
 
-    @Post(`create`)
+    @Post()
     async create(@Body() body: AddPlayerAccountDto, @Req() { user }: RequestWithUser) {
         return this.playersService.create(body, user);
     }
 
     @Patch(`/:id`)
-    async update(@Param(`id`) id: string, @Body() body: UpdatePlayerDto) {
-        return await this.playersService.update(Number(id), body);
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdatePlayerDto) {
+        return await this.playersService.update(id, body);
     }
 
     @Delete(`/:id`)
-    async remove(@Param(`id`) id: string) {
-        return await this.playersService.remove(Number(id));
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
+        return await this.playersService.remove(id);
     }
 }

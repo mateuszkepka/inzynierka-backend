@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/1'
+    url: '${$env.url}/tournaments/1/matches/'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-tournaments-by-id
+name: get-tournament-matches (TODO)

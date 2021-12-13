@@ -6,41 +6,46 @@ import {
     Param,
     ParseIntPipe,
     Put,
-    SerializeOptions,
+    Query,
 } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
+import { GetTournamentsQuery } from './dto/get-tournaments.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller(`users`)
 @Roles(Role.User)
-@SerializeOptions({ strategy: `excludeAll`, enableCircularCheck: true })
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.usersService.getAccounts(id);
+        return this.usersService.getAccounts(id);
     }
 
     @Get(`/:id/teams`)
     async getTeams(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.usersService.getTeams(id);
+        return this.usersService.getTeams(id);
+    }
+
+    @Get(`/:id/tournaments`)
+    async getTournaments(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: GetTournamentsQuery) {
+        return this.usersService.getTournaments(id, queryParams);
     }
 
     @Get(`/:id`)
-    async findUser(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.usersService.getById(id);
+    async getById(@Param(`id`, ParseIntPipe) id: number) {
+        return this.usersService.getById(id);
     }
 
     @Delete(`/:id`)
-    async removeUser(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.usersService.remove(id);
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
+        return this.usersService.remove(id);
     }
 
     @Put(`/:id`)
-    async updateUser(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
-        return await this.usersService.update(id, body);
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+        return this.usersService.update(id, body);
     }
 }

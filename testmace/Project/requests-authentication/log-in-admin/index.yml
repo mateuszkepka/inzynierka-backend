@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/1/admins'
+    url: '${$env.url}/auth/login'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "userId": 11,
-        "tournamentId": 17
+        "email": "adam1.krawczynski1999@gmail.com",
+        "password": "test"
       }
     xmlBody: ''
     textBody: ''
@@ -26,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-tournament-admin (TODO)
+name: log-in-admin

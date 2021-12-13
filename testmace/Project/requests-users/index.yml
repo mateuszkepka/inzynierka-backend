@@ -3,6 +3,7 @@ children:
   - get-user-by-id
   - get-user-accounts
   - get-user-teams
+  - get-user-tournaments
   - update-user (TODO)
   - delete-user (TODO)
 variablesArray: []

@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team, User } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Role } from 'src/roles/roles.enum';
+import { Connection, Repository } from 'typeorm';
 import { GamesService } from '../games/games.service';
-import { RegionsLoL } from '../games/regions';
+import { RegionsLoL } from '../games/regions'; import { UsersService } from '../users/users.service';
 import { AddPlayerAccountDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 
@@ -12,17 +13,9 @@ export class PlayersService {
     constructor(
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
-        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         private readonly gamesService: GamesService,
+        private readonly connection: Connection
     ) { }
-
-    // async getOwner(id: number) {
-    //     const user = await this.playersRepository.findOne({
-    //         relations: [`user`],
-    //         where: { playerId: id }
-    //     })
-    //     return user;
-    // }
 
     async getAllPlayers() {
         const players = await this.usersRepository
@@ -54,14 +47,26 @@ export class PlayersService {
         return player;
     }
 
-    async create(playerDto: AddPlayerAccountDto, user: User) {
-        const { summonerName, gameId, region } = playerDto;
-        const game = await this.gamesService.getById(gameId);
+    async create(body: AddPlayerAccountDto, user: User) {
+        const { gameId, region } = body;
+        await this.gamesService.getById(gameId);
         if (!Object.values(RegionsLoL).includes(region)) {
             throw new NotFoundException(`Wrong region provided`);
         }
-        const player = this.playersRepository.create({ summonerName, region, user, game });
-        return this.playersRepository.save(player);
+        return this.connection.transaction(async manager => {
+            const player = this.playersRepository.create({
+                ...body,
+                user: user
+            });
+            if (!user.roles.includes(Role.Player)) {
+                await manager.query(
+                    `UPDATE "user" SET roles = roles || '{"player"}' WHERE "user"."userId" = $1`,
+                    [user.userId]
+                );
+            }
+            await manager.save(player);
+        });
+
     }
 
     async update(id: number, attributes: Partial<UpdatePlayerDto>) {

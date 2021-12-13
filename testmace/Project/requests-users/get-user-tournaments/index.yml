@@ -1,0 +1,31 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: GET
+    url: '${$env.url}/users/1/tournaments?status=upcoming&role=player'
+  headers: []
+  disabledInheritedHeaders: []
+  params:
+    - name: status
+      value: upcoming
+      isChecked: true
+    - name: role
+      value: player
+      isChecked: true
+  body:
+    type: Json
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: get-user-tournaments

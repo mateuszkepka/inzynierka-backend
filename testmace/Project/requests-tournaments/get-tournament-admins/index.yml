@@ -6,13 +6,10 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments?organizerId=1'
+    url: '${$env.url}/tournaments/1/admins'
   headers: []
   disabledInheritedHeaders: []
-  params:
-    - isChecked: true
-      name: organizerId
-      value: '1'
+  params: []
   body:
     type: Json
     jsonBody: ''
@@ -25,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-managened-tournaments (TODO)
+name: get-tournament-admins

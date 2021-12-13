@@ -5,19 +5,17 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/tournaments/1/prizes'
+    method: GET
+    url: '${$env.url}/tournaments/1/teams/?approved=true'
   headers: []
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - name: approved
+      value: 'true'
+      isChecked: true
   body:
     type: Json
-    jsonBody: |-
-      {
-        "currency": "bubu",
-        "distribution": "costam",
-        "tournamentId": 15
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -27,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-tournament-prize (TODO)
+name: get-tournament-teams

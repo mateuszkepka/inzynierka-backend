@@ -5,7 +5,6 @@ import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { PlayersService } from '../players/players.service';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
 
 @Injectable()
 export class TeamsService {
@@ -77,21 +76,15 @@ export class TeamsService {
     }
 
     async getMembers(teamId: number) {
-        const members = await this.teamsRepository
+        const teams = await this.teamsRepository
             .createQueryBuilder(`team`)
-            .select(`user.userId`, `userId`)
-            .addSelect(`user.username`, `username`)
-            .addSelect(`player.playerId`, `playerId`)
-            .addSelect(`player.summonerName`, `summonerName`)
-            .addSelect(`invitation.invitationId`, `invitation`)
-            .innerJoin(`team.members`, `invitation`)
-            .innerJoin(`invitation.player`, `player`)
-            .innerJoin(`player.user`, `user`)
+            .innerJoinAndSelect(`team.members`, `invitation`)
+            .innerJoinAndSelect(`invitation.player`, `player`)
+            .innerJoinAndSelect(`player.user`, `user`)
             .where(`team.teamId = :id`, { id: teamId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
-            .getRawMany();
-        console.log(members)
-        return members;
+            .getMany();
+        return teams;
     }
 
     async create(createTeamDto: CreateTeamDto) {
@@ -100,7 +93,7 @@ export class TeamsService {
             teamName: createTeamDto.teamName,
             captain: captain
         });
-        return await this.connection.transaction(async manager => {
+        return this.connection.transaction(async manager => {
             await manager.save(team);
             const insertedTeam = await manager.findOne(Team, {
                 teamName: team.teamName,
@@ -116,19 +109,19 @@ export class TeamsService {
         });
     }
 
-    async update(id: number, attrs: Partial<UpdateTeamDto>) {
-        const team = await this.getById(id);
-        const members = await this.getMembers(id);
-        const captain = await this.playersService.getById(attrs.captainId);
-        if (!members.some(member => member.playerId === attrs.captainId)) {
-            throw new BadRequestException(`Given player is not a member of the team`);
-        }
-        Object.assign(team, attrs);
-        return this.teamsRepository.update(id, {
-            teamName: attrs.teamName,
-            captain: captain
-        });
-    }
+    // async update(id: number, attrs: Partial<UpdateTeamDto>) {
+    //     const team = await this.getById(id);
+    //     const members = await this.getMembers(id);
+    //     const captain = await this.playersService.getById(attrs.captainId);
+    //     if (!members.some(member => member.playerId === attrs.captainId)) {
+    //         throw new BadRequestException(`Given player is not a member of the team`);
+    //     }
+    //     Object.assign(team, attrs);
+    //     return this.teamsRepository.update(id, {
+    //         teamName: attrs.teamName,
+    //         captain: captain
+    //     });
+    // }
 
     async remove(id: number) {
         const team = await this.getById(id);

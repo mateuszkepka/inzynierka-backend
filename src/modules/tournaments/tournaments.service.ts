@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { UsersService } from '../users/users.service';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
@@ -12,29 +13,36 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 @Injectable()
 export class TournamentsService {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
-        @InjectRepository(Team)
-        private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(ParticipatingTeam)
-        private readonly participatingTeamsRepository: Repository<ParticipatingTeam>,
-        @InjectRepository(TournamentAdmin)
-        private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
-        @InjectRepository(Prize)
-        private readonly prizeRepository: Repository<Prize>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-    ) {}
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
+        @InjectRepository(ParticipatingTeam) private readonly participatingTeamsRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+        @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private readonly usersService: UsersService,
+        private readonly connection: Connection
+    ) { }
 
     async getById(tournamentId: number) {
-        const tournament = await this.tournamentsRepository.findOne(
-            { tournamentId },
-            { relations: [`prize`] },
-        );
-        if (tournament) {
-            return tournament;
+        const tournament = await this.tournamentsRepository.findOne({
+            where: { tournamentId },
+            relations: [`organizer`, `game`]
+        });
+        if (!tournament) {
+            throw new NotFoundException(`Tournament with this id does not exist`);
         }
-        throw new NotFoundException(`Tournament with this id does not exist`);
+        return tournament;
+    }
+
+    async getAdmins(tournamentId: number, accepted: boolean) {
+        const admins = await this.userRepository
+            .createQueryBuilder(`user`)
+            .innerJoin(`user.tournamentAdmins`, `admins`)
+            .innerJoin(`admins.tournament`, `tournament`)
+            .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
+            .andWhere(`admins.isAccepted = :accepted`, { accepted: accepted })
+            .getMany()
+        return admins;
     }
 
     /*async getByOrganizer(organizer: User) {
@@ -90,57 +98,29 @@ export class TournamentsService {
         throw new NotFoundException(`Tournament with such name does not exist`);
     }
 
-    async getManagedTournaments(request: RequestWithUser) {
-        const { user } = request;
-        const tournamentList = await this.tournamentAdminRepository.find({
-            where: {
-                user: user,
-            },
-            relations: [`tournament`],
-        });
-        if (!tournamentList) {
-            throw new NotFoundException(`You dont manage any tournaments!`);
-        }
-        const tournamentListt = JSON.stringify(tournamentList);
-        return tournamentListt;
-    }
-
-    async getPendingTeamsList(tournamentId: number, request: RequestWithUser) {
-        const { user } = request;
-        const tournament = await this.tournamentsRepository.findOne({
-            where: {
-                tournamentId: tournamentId,
-            },
-            relations: [`tournamentAdmins`],
-        });
-        const admins = await this.tournamentAdminRepository.find({
-            where: {
-                tournament: tournament,
-            },
-            relations: [`user`],
-        });
-        let isadmin = false;
-        if (admins) {
-            admins.forEach(function (element) {
-                if (element.user.userId === user.userId) {
-                    isadmin = true;
-                }
+    async getTeamsFiltered(tournamentId: number, approved: string) {
+        const tournament = await this.getById(tournamentId);
+        let teams = [];
+        if (approved === undefined) {
+            teams = await this.participatingTeamsRepository.find({
+                where: {
+                    tournament: tournament,
+                },
+                relations: [`tournament`, `team`],
             });
         }
-        if (!isadmin) {
-            throw new NotFoundException(`You dont have have permision to manage this tournament`);
-        }
-        const teamslist = await this.participatingTeamsRepository.find({
-            where: {
-                tournament: tournament,
-                isApproved: false,
-            },
-            relations: [`tournament`, `team`],
-        });
-        if (!teamslist) {
+        if (approved === `false` || approved === `true`)
+            teams = await this.participatingTeamsRepository.find({
+                where: {
+                    tournament: tournament,
+                    isApproved: approved,
+                },
+                relations: [`tournament`, `team`],
+            });
+        if (teams.length === 0) {
             throw new NotFoundException(`No teams to manage in this tournament`);
         }
-        return teamslist;
+        return teams;
     }
 
     async acceptTeam(acceptdata: AcceptTeamDto, request) {
@@ -189,77 +169,21 @@ export class TournamentsService {
         return teaminvite;
     }
 
-    //For now this is for testing I will complete it later
-    async addAdmin(admindata: CreateAdminDto, request) {
-        const { user } = request;
-        const tournament = await this.tournamentsRepository.findOne({
-            where: {
-                tournamentId: admindata.tournamentId,
-            },
-            relations: [`tournamentAdmins`, `organizer`],
+    async addAdmin(id: number, body: CreateAdminDto) {
+        const tournament = await this.getById(id);
+        const user = await this.usersService.getById(body.userId);
+        return await this.tournamentAdminRepository.save({
+            tournament: tournament,
+            user: user
         });
-        if (!tournament) {
-            throw new NotFoundException(`Such tournament does not exist`);
-        }
-        if (tournament.organizer.userId !== user.userId) {
-            throw new NotFoundException(
-                `You dont have have permision to create admins for this tournament`,
-            );
-        }
-        const admin = await this.userRepository.findOne({
-            where: {
-                userId: admindata.userId,
-            },
-            relations: [`tournamentAdmins`],
-        });
-        const adminCheck = await this.tournamentAdminRepository
-            .createQueryBuilder(`tournament_admin`)
-            .innerJoinAndSelect(`tournament_admin.tournament`, `tournament`)
-            .innerJoinAndSelect(`tournament_admin.user`, `user`)
-            .where(`tournament.tournamentId = :id and user.userId = :id2`, {
-                id: admindata.tournamentId,
-                id2: admindata.userId,
-            })
-            .getOne();
-        if (adminCheck) {
-            throw new NotFoundException(`This admin is already added to this Tournament`);
-        }
-        const tournamentAdmin = new TournamentAdmin();
-        tournamentAdmin.isAccepted = false;
-        tournamentAdmin.tournament = tournament;
-        tournamentAdmin.user = admin;
-        await this.tournamentAdminRepository.save(tournamentAdmin);
-        return tournamentAdmin;
     }
 
-    async addPrize(prize: CreatePrizeDto, request) {
-        const { user } = request;
-        const tournament = await this.tournamentsRepository.findOne({
-            where: {
-                tournamentId: prize.tournamentId,
-            },
-            relations: [`prize`, `organizer`],
+    async addPrize(id: number, body: CreatePrizeDto) {
+        const tournament = await this.getById(id);
+        return await this.prizeRepository.save({
+            ...body,
+            tournament: tournament
         });
-        if (!tournament) {
-            throw new NotFoundException(`Such tournament does not exist`);
-        }
-        if (tournament.organizer.userId !== user.userId) {
-            throw new NotFoundException(
-                `You dont have permission to add Prizes to this Tournament`,
-            );
-        }
-        const oldprize = tournament.prize;
-        const newprize = new Prize();
-        newprize.currency = prize.currency;
-        newprize.distribution = prize.distribution;
-        newprize.tournament = tournament;
-        await this.prizeRepository.save(newprize);
-        if (oldprize) {
-            await this.prizeRepository.delete({ prizeId: oldprize.prizeId });
-        }
-        tournament.prize = newprize;
-        await this.tournamentsRepository.save(tournament);
-        return tournament;
     }
 
     //async removeAdmin(id: number, request) {
