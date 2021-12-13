@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateTeamDto {
     @IsOptional()
@@ -7,5 +7,5 @@ export class UpdateTeamDto {
 
     @IsOptional()
     @IsNumber()
-    captainId: number
+    captainId: number;
 }

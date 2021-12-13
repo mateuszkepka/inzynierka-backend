@@ -30,7 +30,7 @@ export class UsersService {
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne(email);
         if (!user) {
-            throw new NotFoundException(`User with this email does not exist`);;
+            throw new NotFoundException(`User with this email does not exist`);
         }
         return user;
     }

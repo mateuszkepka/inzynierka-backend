@@ -17,7 +17,7 @@ import { UsersService } from './users.service';
 @Controller(`users`)
 @Roles(Role.User)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {

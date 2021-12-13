@@ -8,14 +8,15 @@ import { CreateSuspensionDto } from './dto/create-suspension.dto';
 @Injectable()
 export class SuspensionsService {
     constructor(
-        @InjectRepository(Suspension) private readonly suspensionsRepository: Repository<Suspension>,
-        private readonly usersService: UsersService
-    ) { }
+        @InjectRepository(Suspension)
+        private readonly suspensionsRepository: Repository<Suspension>,
+        private readonly usersService: UsersService,
+    ) {}
 
     async getById(suspensionId: number) {
         const suspension = await this.suspensionsRepository.findOne({
             relations: [`user`],
-            where: { suspensionId: suspensionId }
+            where: { suspensionId: suspensionId },
         });
         if (!suspension) {
             throw new NotFoundException(`Suspension with this id does not exist`);
@@ -34,11 +35,11 @@ export class SuspensionsService {
         }
         switch (status) {
             case `active`:
-                queryBuilder.andWhere(`suspension.startDate <= :date1`, { date1: new Date() })
-                queryBuilder.andWhere(`suspension.endDate >= :date2`, { date2: new Date() })
+                queryBuilder.andWhere(`suspension.startDate <= :date1`, { date1: new Date() });
+                queryBuilder.andWhere(`suspension.endDate >= :date2`, { date2: new Date() });
                 break;
             case `past`:
-                queryBuilder.andWhere(`suspension.endDate < :date`, { date: new Date() })
+                queryBuilder.andWhere(`suspension.endDate < :date`, { date: new Date() });
                 break;
             default:
                 break;
@@ -52,7 +53,7 @@ export class SuspensionsService {
             endDate: body.endDate,
             reason: body.reason,
             user: user,
-            admin: admin
+            admin: admin,
         });
         return await this.suspensionsRepository.save(suspension);
     }

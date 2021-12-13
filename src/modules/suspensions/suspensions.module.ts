@@ -11,4 +11,4 @@ import { UsersModule } from '../users/users.module';
     exports: [SuspensionsService],
     controllers: [SuspensionsController],
 })
-export class SuspensionsModule { }
+export class SuspensionsModule {}

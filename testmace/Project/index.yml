@@ -6,6 +6,7 @@ environments:
     dev:
       url: 'localhost:3000'
 children:
+  - requests-matches
   - requests-authentication
   - requests-users
   - requests-suspensions

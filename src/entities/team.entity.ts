@@ -1,5 +1,5 @@
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Expose, Transform } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
 import { Invitation } from '.';
@@ -8,7 +8,7 @@ import { Invitation } from '.';
 export class Team {
     @BeforeInsert()
     setCreationDate() {
-        this.creationDate = new Date()
+        this.creationDate = new Date();
     }
 
     @Expose()

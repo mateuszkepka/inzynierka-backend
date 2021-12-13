@@ -1,0 +1,16 @@
+enabled: true
+children:
+  - get-match-by-id
+  - get-all-matches
+  - create-match
+  - update-match
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-matches

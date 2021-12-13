@@ -8,8 +8,13 @@ import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Invitation, User]), UsersModule, PlayersModule, TeamsModule],
-  controllers: [InvitationsController],
-  providers: [InvitationsService]
+    imports: [
+        TypeOrmModule.forFeature([Invitation, User]),
+        UsersModule,
+        PlayersModule,
+        TeamsModule,
+    ],
+    controllers: [InvitationsController],
+    providers: [InvitationsService],
 })
-export class InvitationsModule { }
+export class InvitationsModule {}

@@ -39,7 +39,7 @@ export class PlayersService {
     async getById(playerId: number) {
         const player = await this.playersRepository.findOne({
             relations: [`ownedTeams`, `game`, `ownedTeams.captain`],
-            where: { playerId: playerId }
+            where: { playerId: playerId },
         });
         if (!player) {
             throw new NotFoundException(`Player with this id does not exist`);

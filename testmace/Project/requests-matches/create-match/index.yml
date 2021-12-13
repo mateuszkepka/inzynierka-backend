@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/login'
+    url: '${$env.url}/matches/'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,12 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "adam9.krawczynski1999@gmail.com",
-        "password": "test9"
+        "tournamentId": 1,
+        "matchStartDate": "2030-12-16",
+        "tournamentStage": "cus",
+        "firstRosterId": 1,
+        "secondRosterId": 3,
+        "numberOfMaps": 1
       }
     xmlBody: ''
     textBody: ''
@@ -26,4 +30,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in-admin
+name: create-match

@@ -19,7 +19,7 @@ import { Role } from 'src/roles/roles.enum';
 @Roles(Role.User)
 @Controller(`players`)
 export class PlayersController {
-    constructor(private readonly playersService: PlayersService) { }
+    constructor(private readonly playersService: PlayersService) {}
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {

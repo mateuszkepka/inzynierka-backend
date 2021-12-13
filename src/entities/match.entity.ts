@@ -16,7 +16,7 @@ export class Match {
     matchStartDate: Date;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true })
     matchEndDate: Date;
 
     @Expose()
@@ -27,13 +27,17 @@ export class Match {
     @Column({
         type: `enum`,
         enum: MatchStatus,
-        default: MatchStatus.Scheduled
+        default: MatchStatus.Scheduled,
     })
-    matchStatus: MatchStatus
+    matchStatus: MatchStatus;
 
     @Expose()
     @Column({ nullable: true })
     matchResult: string;
+
+    @Expose()
+    @Column({ nullable: true })
+    numberOfMaps: number;
 
     @Expose()
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)

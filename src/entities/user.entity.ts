@@ -7,7 +7,7 @@ import { Expose } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
 
 @Entity()
-@Unique(['university', `studentId`])
+@Unique([`university`, `studentId`])
 export class User {
     @Expose()
     @PrimaryGeneratedColumn()
@@ -36,9 +36,9 @@ export class User {
 
     @Column(`text`, {
         array: true,
-        default: [`user`]
+        default: [`user`],
     })
-    roles: Role[]
+    roles: Role[];
 
     @Column({ nullable: true })
     currentRefreshToken?: string;

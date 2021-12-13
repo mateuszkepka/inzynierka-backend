@@ -21,7 +21,7 @@ import { SuspensionsService } from './suspensions.service';
 @Controller(`suspensions`)
 @Roles(Role.Admin)
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) { }
+    constructor(private readonly suspensionsService: SuspensionsService) {}
 
     @Get()
     async getFiltered(@Query(`userId`) userId: number, @Query(`status`) status: string) {
@@ -29,22 +29,28 @@ export class SuspensionsController {
     }
 
     @Get(`/:id`)
-    async getById(@Param('id', ParseIntPipe) id: number) {
+    async getById(@Param(`id`, ParseIntPipe) id: number) {
         return await this.suspensionsService.getById(id);
     }
 
     @Post()
-    async create(@Body(new DateValidationPipe()) body: CreateSuspensionDto, @Req() { user }: RequestWithUser) {
+    async create(
+        @Body(new DateValidationPipe()) body: CreateSuspensionDto,
+        @Req() { user }: RequestWithUser,
+    ) {
         return await this.suspensionsService.create(body, user);
     }
 
     @Patch(`/:id`)
-    async update(@Param('id', ParseIntPipe) id: number, @Body(new DateValidationPipe()) body: UpdateSuspensionDto) {
+    async update(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body(new DateValidationPipe()) body: UpdateSuspensionDto,
+    ) {
         return await this.suspensionsService.update(id, body);
     }
 
     @Delete(`/:id`)
-    async remove(@Param('id', ParseIntPipe) id: number) {
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
         return await this.suspensionsService.remove(id);
     }
 }

@@ -45,6 +45,17 @@ export class TournamentsService {
         return admins;
     }
 
+    async getParticipatingTeam(participatingTeamId: number) {
+        const participatingteam = await this.participatingTeamsRepository.findOne({
+            where: { participatingTeamId: participatingTeamId },
+            relations: [`tournament`, `team`],
+        });
+        if (participatingteam) {
+            return participatingteam;
+        }
+        throw new NotFoundException(`ParticipatingTeam with this id does not exist`);
+    }
+
     /*async getByOrganizer(organizer: User) {
         const tournament = await this.tournamentsRepository.findOne({ organizer });
         if (tournament) {
