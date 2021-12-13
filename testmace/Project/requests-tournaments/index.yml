@@ -4,7 +4,7 @@ children:
   - get-tournament-by-id
   - get-tournament-teams
   - get-tournament-admins
-  - get-tournament-matches (TODO)
+  - get-tournament-matches
   - create-tournament
   - create-tournament-prize
   - create-tournament-admin

@@ -14,11 +14,14 @@ import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { MatchStatus } from '../matches/match-status.enum';
+import { GetTournamentsQuery } from '../users/dto/get-tournaments.dto';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { MatchStatusQuery } from './dto/get-matches.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 
@@ -37,6 +40,12 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getTeamsFiltered(@Param(`id`, ParseIntPipe) id: number, @Query('approved') approved: string) {
         return this.tournamentsService.getTeamsFiltered(id, approved);
+    }
+
+    @Get(`/:id/matches`)
+    @Roles(Role.Organizer)
+    async getMatchesFiltered(@Param(`id`, ParseIntPipe) id: number, @Query() status: MatchStatusQuery) {
+        return this.tournamentsService.getMatchesFiltered(id, status);
     }
 
     @Get(`/:id`)

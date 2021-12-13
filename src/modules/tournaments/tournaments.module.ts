@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, User } from 'src/entities';
+import { Match, ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, User } from 'src/entities';
 import { UsersModule } from '../users/users.module';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
@@ -10,6 +10,7 @@ import { TournamentsService } from './tournaments.service';
         TypeOrmModule.forFeature([
             Tournament,
             Team,
+            Match,
             ParticipatingTeam,
             TournamentAdmin,
             Prize,

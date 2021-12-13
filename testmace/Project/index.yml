@@ -6,7 +6,6 @@ environments:
     dev:
       url: 'localhost:3000'
 children:
-  - requests-matches
   - requests-authentication
   - requests-users
   - requests-suspensions
@@ -14,6 +13,7 @@ children:
   - requests-invitations
   - requests-teams
   - requests-tournaments
+  - requests-matches
 cookies:
   - >-
     Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE2LCJpYXQiOjE2MzkyNDc3MzcsImV4cCI6MTY0OTI0NzczN30.2LLiFygYB6aF9_t94DbT05LaGVptLhaMPt3cLqLXFks;

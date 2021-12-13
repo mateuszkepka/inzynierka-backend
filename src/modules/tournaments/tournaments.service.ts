@@ -1,14 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User } from 'src/entities';
+import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match } from 'src/entities';
 import { Connection, Repository } from 'typeorm';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { MatchStatus } from '../matches/match-status.enum';
 import { UsersService } from '../users/users.service';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { MatchStatusQuery } from './dto/get-matches.dto';
 
 @Injectable()
 export class TournamentsService {
@@ -19,6 +21,7 @@ export class TournamentsService {
         @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
         @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly usersService: UsersService,
         private readonly connection: Connection
     ) { }
@@ -132,6 +135,18 @@ export class TournamentsService {
             throw new NotFoundException(`No teams to manage in this tournament`);
         }
         return teams;
+    }
+
+    async getMatchesFiltered(tournamentId: number, query: MatchStatusQuery) {
+        const { status } = query;
+        const tournament = await this.getById(tournamentId);
+        const matches = await this.matchesRepository.find({
+            where: { matchStatus: status, tournament: tournament }
+        })
+        if (matches.length === 0) {
+            throw new NotFoundException(`No matches with given status found`);
+        }
+        return matches;
     }
 
     async acceptTeam(acceptdata: AcceptTeamDto, request) {
