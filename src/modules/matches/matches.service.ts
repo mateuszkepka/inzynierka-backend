@@ -13,7 +13,7 @@ export class MatchesService {
         @InjectRepository(ParticipatingTeam)
         private readonly participatingTeamsRepository: Repository<ParticipatingTeam>,
         private readonly tournamentService: TournamentsService,
-    ) {}
+    ) { }
 
     async getById(id: number) {
         const match = await this.matchesRepository.findOne({
@@ -31,7 +31,7 @@ export class MatchesService {
             relations: [`maps`, `tournament`],
         });
         if (!matches) {
-            throw new NotFoundException(`No teams found`);
+            throw new NotFoundException(`No matches found`);
         }
         return matches;
     }
@@ -61,7 +61,6 @@ export class MatchesService {
     }
 
     async update(id: number, attrs: Partial<UpdateMatchDto>) {
-        console.log(attrs);
         const match = await this.getById(id);
         let firstRoster = null;
         if (attrs.firstRosterId) {
