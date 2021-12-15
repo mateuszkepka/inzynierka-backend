@@ -17,7 +17,7 @@ import { MatchesService } from './matches.service';
 @Controller(`matches`)
 @Roles(Role.Player)
 export class MatchesController {
-    constructor(private readonly matchesService: MatchesService) {}
+    constructor(private readonly matchesService: MatchesService) { }
 
     @Get(`/:id`)
     async get(@Param(`id`, ParseIntPipe) id: number) {
@@ -31,8 +31,8 @@ export class MatchesController {
 
     @Post()
     @Roles(Role.Organizer)
-    async create(@Body() teamData: CreateMatchDto) {
-        return await this.matchesService.create(teamData);
+    async create(@Body() matchData: CreateMatchDto) {
+        return await this.matchesService.create(matchData);
     }
 
     @Patch(`/:id`)
