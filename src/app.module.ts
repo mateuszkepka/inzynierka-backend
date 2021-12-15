@@ -36,11 +36,8 @@ import { UsersModule } from './modules/users/users.module';
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
-                console.log({
-                    database: config.get<string>(`DB_NAME`),
-                    username: config.get<string>(`DB_USER`),
-                });
                 return {
+                    host: config.get<string>(`DB_HOST`),
                     type: `postgres`,
                     database: config.get<string>(`DB_NAME`),
                     username: config.get<string>(`DB_USER`),
