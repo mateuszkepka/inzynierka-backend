@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/entities';
 import { Repository } from 'typeorm';
@@ -12,17 +12,16 @@ import { InvitationStatus } from './interfaces/invitation-status.enum';
 @Injectable()
 export class InvitationsService {
     constructor(
-        @InjectRepository(Invitation)
-        private readonly invitationsRepository: Repository<Invitation>,
+        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
-    ) {}
+    ) { }
 
     async getById(id: number) {
         const invitation = await this.invitationsRepository.findOne({
-            relations: [`player`, `team`],
+            relations: [`player`, `team`, `player.game`],
             where: { invitationId: id },
         });
         if (!invitation) {
@@ -31,22 +30,20 @@ export class InvitationsService {
         return invitation;
     }
 
-    async findPending(status: InvitationStatus, user: User) {
+    async getFiltered(status: InvitationStatus, user: User) {
         if (status === InvitationStatus.Pending) {
-            const invitation = await this.usersRepository
-                .createQueryBuilder(`user`)
-                .select(`invitation.invitationId`, `invitationId`)
-                .addSelect(`player.playerId`, `playerId`)
-                .addSelect(`player.summonerName`, `summonerName`)
-                .addSelect(`team.teamId`, `teamId`)
-                .addSelect(`team.teamName`, `teamName`)
-                .innerJoin(`user.accounts`, `player`)
-                .innerJoin(`player.teams`, `invitation`)
-                .innerJoin(`invitation.team`, `team`)
+            const invitation = await this.invitationsRepository
+                .createQueryBuilder(`invitation`)
+                .innerJoinAndSelect(`invitation.player`, `player`)
+                .innerJoinAndSelect(`invitation.team`, `team`)
+                .innerJoinAndSelect(`player.user`, `user`)
                 .where(`user.userId = :userId`, { userId: user.userId })
                 .andWhere(`invitation.status = :status`, { status: InvitationStatus.Pending })
-                .getRawMany();
-            return JSON.stringify(invitation);
+                .getMany();
+            if (invitation.length === 0) {
+                throw new NotFoundException(`You have no pending invitations`);
+            }
+            return invitation;
         } else {
             throw new NotFoundException();
         }
@@ -56,6 +53,9 @@ export class InvitationsService {
         const { teamId, playerId } = createInvitationDto;
         const team = await this.teamsService.getById(teamId);
         const player = await this.playersService.getById(playerId);
+        if (player.region !== team.region) {
+            throw new BadRequestException(`The invited player has to be from the same region`);
+        }
         const ifInvited = await this.invitationsRepository.findOne({
             where: { team: team, player: player },
         });
@@ -76,7 +76,6 @@ export class InvitationsService {
             player: player,
             team: team,
         });
-
         return await this.invitationsRepository.save(invitation);
     }
 
@@ -92,45 +91,39 @@ export class InvitationsService {
     async remove(id: number, user: User) {
         const invitation = await this.getById(id);
         // TEAMS OF THE USER WHO SENDS REQUEST
-        const teams = await this.usersService.getTeams(user.userId);
-        if (Object.keys(teams).length === 0) {
-            console.log(`bez teamu`);
-            throw new BadRequestException();
+        var teams = []
+        try {
+            teams = await this.usersService.getTeams(user.userId);
+        } catch (ignore) {
+            throw new ForbiddenException(`You are not a team member`);
         }
-        console.log(teams);
-        // TEAM WHICH INVITATION IS ABOUT
+        // THE TEAM WHICH INVITATION IS ABOUT
         const teamOnInvitation = await this.teamsService.getById(invitation.team.teamId);
-        if (!teams.some((team) => team.teamId === teamOnInvitation.teamId)) {
-            console.log(`to nie jest team wysylajacego request`);
-            throw new BadRequestException();
+        if (!(teams.some((team) => team.teamId === teamOnInvitation.teamId))) {
+            throw new ForbiddenException(`You are not a team member`);
         }
         // ACCOUNTS OF THE USER WHO SENDS REQUEST
         const accounts = await this.usersService.getAccounts(user.userId);
-        // PLAYER TO BE DELETED FROM THE TEAM
-
+        // A PLAYER TO BE DELETED FROM THE TEAM
         const playerOnInvitation = await this.playersService.getById(invitation.player.playerId);
-        //const owner = await this.playersService.getOwner(invitation.player.playerId)
-        if (
-            accounts.some((account) =>
-                account.ownedTeams.some((team) => team.teamId === teamOnInvitation.teamId),
-            )
-        ) {
-            console.log(`typ ownuje team`);
+        // CHECKING IF THE USER IS THE TEAM'S CAPTAIN
+        if (accounts.some((account) => account.playerId === teamOnInvitation.captain.playerId)) {
             // INVITATION IS NOT ACCEPTED = THE PLAYER IS NOT A TEAM MEMBER
             if (invitation.status === InvitationStatus.Refused) {
-                console.log(`typ odrzucil zapro`);
-                throw new BadRequestException();
+                throw new BadRequestException(`The player is not a team member`);
             }
-            // CAPTAIN CANNOT KICK HIMSELF
+            // A CAPTAIN CANNOT KICK HIMSELF
             if (playerOnInvitation) {
-                console.log(`lota od admina`);
-                return this.invitationsRepository.remove(invitation);
+                throw new ForbiddenException(`You can not kick a team's captain`)
             }
+            // THE CAPTAIN KICKS A TEAM MEMBER
+            return this.invitationsRepository.remove(invitation);
         }
+        // A USER IS NOT A CAPTAIN AND IS TRYING TO KICK ANOTHER MEMBER
         if (playerOnInvitation.user.userId !== user.userId) {
-            console.log(`typ jest w teamie ale próbuje wyjebac innego, a nie jest kapitanem`);
-            throw new BadRequestException();
+            throw new ForbiddenException(`Only captain's can kick players`);
         }
+        // PLAYER LEAVING THE TEAM
         return this.invitationsRepository.remove(invitation);
     }
 }

@@ -14,13 +14,14 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "name": "Fanny.Stark6222",
+        "gameId": 1,
+        "name": "tessst",
         "numberOfPlayers": 1,
         "numberOfTeams": 6,
-        "registerStartDate": "2005-12-16",
-        "registerEndDate": "2030-12-16",
-        "tournamentStartDate": "2005-12-16",
-        "tournamentEndDate": "2030-12-16",
+        "registerStartDate": "2021-12-11T14:54:25+0000",
+        "registerEndDate": "2021-12-13T14:54:25+0000",
+        "tournamentStartDate": "2021-12-15T14:54:25+0000",
+        "tournamentEndDate": "2021-12-16T14:54:25+0000",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

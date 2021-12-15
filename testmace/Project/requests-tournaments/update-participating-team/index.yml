@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/tournaments/1/teams'
+    url: '${$env.url}/tournaments/1/teams/21'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "participatingTeamId": 17
+        "isApproved": true
       }
     xmlBody: ''
     textBody: ''
@@ -25,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: update-participating-team (TODO)
+name: update-participating-team

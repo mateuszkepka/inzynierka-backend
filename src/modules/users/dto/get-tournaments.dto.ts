@@ -8,6 +8,6 @@ export class GetTournamentsQuery {
     status: TournamentStatus;
 
     @IsNotEmpty()
-    @IsIn([Role.Player, Role.TournamentAdmin])
-    role: Role.Player | Role.TournamentAdmin
+    @IsIn([Role.Player, Role.TournamentAdmin, Role.Organizer])
+    role: Role.Player | Role.TournamentAdmin | Role.Organizer
 }

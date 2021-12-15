@@ -19,13 +19,10 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 @Controller(`teams`)
 @Roles(Role.User)
 export class TeamsController {
-    constructor(private readonly teamsService: TeamsService) {}
+    constructor(private readonly teamsService: TeamsService) { }
 
     @Get(`/:id/players/available`)
-    async getAvailablePlayers(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Req() { user }: RequestWithUser,
-    ) {
+    async getAvailablePlayers(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
         return await this.teamsService.getAvailablePlayers(id, user);
     }
 

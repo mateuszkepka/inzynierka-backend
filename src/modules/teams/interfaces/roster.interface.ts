@@ -1,6 +1,6 @@
-import { PlayerInRoster } from '../../players/interfaces/player.interface';
+// import { PlayerInRoster } from "src/modules/tournaments/dto/create-participating-team.dto";
 
-export interface Roster {
-    roster: PlayerInRoster[];
-    subs: PlayerInRoster[];
-}
+// export interface Roster {
+//     roster: PlayerInRoster[];
+//     subs: PlayerInRoster[];
+// }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
@@ -9,6 +9,7 @@ import { TournamentStatus } from '../tournaments/interfaces/tourrnament.status-e
 import { Role } from 'src/roles/roles.enum';
 import { GetTournamentsQuery } from './dto/get-tournaments.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RolesDto } from './dto/roles.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,9 @@ export class UsersService {
     ) { }
 
     async getById(userId: number) {
-        const user = await this.usersRepository.findOne(userId);
+        const user = await this.usersRepository.findOne({
+            where: { userId: userId }
+        });
         if (!user) {
             throw new NotFoundException(`User with this id does not exist`);
         }
@@ -28,43 +31,48 @@ export class UsersService {
     }
 
     async getByEmail(email: string) {
-        const user = await this.usersRepository.findOne(email);
-        if (!user) {
-            throw new NotFoundException(`User with this email does not exist`);
-        }
+        const user = await this.usersRepository.findOne({
+            where: { email: email }
+        });
         return user;
     }
 
-    async getAccounts(id: number) {
-        await this.getById(id);
+    async getAccounts(userId: number) {
+        await this.getById(userId);
         const accounts = await this.playersRepository
             .createQueryBuilder(`player`)
             .innerJoin(`player.user`, `user`)
             .innerJoinAndSelect(`player.game`, `game`)
-            .where(`user.userId = :userId`, { userId: id })
+            .where(`user.userId = :userId`, { userId: userId })
             .getMany();
+        if (accounts.length === 0) {
+            throw new NotFoundException(`This player has no games connected`);
+        }
         return accounts;
     }
 
-    async getTeams(id: number) {
-        await this.getById(id);
+    async getTeams(userId: number) {
+        await this.getById(userId);
         const teams = await this.teamsRepository
             .createQueryBuilder(`team`)
+            .innerJoinAndSelect(`team.game`, `game`)
             .innerJoin(`team.members`, `invitation`)
             .innerJoin(`invitation.player`, `player`)
             .innerJoin(`player.user`, `user`)
-            .innerJoin(`player.game`, `game`)
-            .where(`user.userId = :userId`, { userId: id })
+            .where(`user.userId = :userId`, { userId: userId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
             .getMany()
+        if (teams.length === 0) {
+            throw new NotFoundException(`This player is not a member of any team`);
+        }
         return teams;
     }
 
-    async getTournaments(id: number, queryParams: GetTournamentsQuery) {
-        await this.getById(id);
+    async getTournaments(userId: number, queryParams: GetTournamentsQuery) {
+        await this.getById(userId);
         const queryBuilder = this.tournamentsRepository
             .createQueryBuilder(`tournament`)
-            .where(`user.userId = :userId`, { userId: id });
+            .where(`user.userId = :userId`, { userId: userId });
         const { status, role } = queryParams;
         switch (role) {
             case Role.Player:
@@ -77,6 +85,9 @@ export class UsersService {
             case Role.TournamentAdmin:
                 queryBuilder.innerJoin(`tournament.tournamentAdmins`, `admins`)
                     .innerJoin(`admins.user`, `user`)
+                break;
+            case Role.Organizer:
+                queryBuilder.innerJoin(`tournament.organizer`, `user`)
                 break;
             default:
                 break;
@@ -95,23 +106,57 @@ export class UsersService {
             default:
                 break;
         }
-        return queryBuilder.getMany();
+        const tournaments = await queryBuilder.getMany();
+        if (tournaments.length === 0) {
+            throw new NotFoundException(`No tournaments with given parameters found`)
+        }
+        return tournaments;
     }
 
-    async create(user: CreateUserDto) {
-        const newUser = this.usersRepository.create(user);
-        this.usersRepository.save(newUser);
-        return await newUser;
+    async create(body: CreateUserDto) {
+        const user = this.usersRepository.create(body);
+        return this.usersRepository.save(user);
     }
 
-    async update(id: number, attributes: Partial<UpdateUserDto>) {
-        const user = await this.getById(id);
+    async grantRole(userId: number, body: RolesDto) {
+        const { role } = body;
+        const user = await this.getById(userId);
+        if (user.roles.includes(role)) {
+            throw new BadRequestException(`This user already possesses this role`);
+        }
+        user.roles.push(role);
+        return this.usersRepository.save(user);
+    }
+
+    async revokeRole(userId: number, body: RolesDto) {
+        const { role } = body;
+        const user = await this.getById(userId);
+        if (!user.roles.includes(role)) {
+            throw new BadRequestException(`This user doesnt't have given role`);
+        }
+        const index = user.roles.indexOf(role, 0);
+        user.roles.splice(index, 1);
+        return this.usersRepository.save(user);
+    }
+
+    async update(userId: number, attributes: UpdateUserDto) {
+        const user = await this.getById(userId);
         Object.assign(user, attributes);
         return this.usersRepository.save(user);
     }
 
-    async remove(id: number) {
-        const user = await this.getById(id);
+    async remove(userId: number) {
+        const user = await this.getById(userId);
+        const queryParams = new GetTournamentsQuery();
+        queryParams.status = TournamentStatus.Ongoing;
+        queryParams.role = Role.Organizer;
+        var tournaments = [];
+        try {
+            tournaments = await this.getTournaments(userId, queryParams);
+        } catch (ignore) { }
+        if (tournaments.length !== 0) {
+            throw new ForbiddenException(`You can not delete your account when you have ongoing tournaments`);
+        }
         return this.usersRepository.remove(user);
     }
 

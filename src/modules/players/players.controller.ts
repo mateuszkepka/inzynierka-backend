@@ -16,8 +16,8 @@ import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 
-@Roles(Role.User)
 @Controller(`players`)
+@Roles(Role.User)
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) {}
 
@@ -28,7 +28,7 @@ export class PlayersController {
 
     @Get()
     async getAll() {
-        return await this.playersService.getAllPlayers();
+        return await this.playersService.getAll();
     }
 
     @Post()

@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 export class AddPlayerAccountDto {
     @IsNotEmpty()
     @IsString()
@@ -9,6 +10,6 @@ export class AddPlayerAccountDto {
     gameId: number;
     
     @IsNotEmpty()
-    @IsString()
-    region: string;
+    @IsEnum(RegionsLoL)
+    region: RegionsLoL;
 }

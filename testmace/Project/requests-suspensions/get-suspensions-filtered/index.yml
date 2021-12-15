@@ -6,12 +6,12 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/suspensions/?userId=6&status=past'
+    url: '${$env.url}/suspensions/?userId=4&status=past'
   headers: []
   disabledInheritedHeaders: []
   params:
     - name: userId
-      value: '6'
+      value: '4'
       isChecked: true
     - name: status
       value: past

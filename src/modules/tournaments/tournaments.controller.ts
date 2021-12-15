@@ -14,11 +14,9 @@ import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { MatchStatus } from '../matches/match-status.enum';
-import { GetTournamentsQuery } from '../users/dto/get-tournaments.dto';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
-import { CreateParticipatingTeamDto } from './dto/create-participatingTeam.dto';
+import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { MatchStatusQuery } from './dto/get-matches.dto';
@@ -28,7 +26,7 @@ import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) {}
+    constructor(private readonly tournamentsService: TournamentsService) { }
 
     @Get(`/:id/admins`)
     @Roles(Role.Organizer)
@@ -62,44 +60,72 @@ export class TournamentsController {
 
     @Post()
     @Roles(Role.Organizer)
-    async create(@Body() tournamentData: CreateTournamentDto, @Req() request: RequestWithUser) {
-        return this.tournamentsService.create(tournamentData, request);
+    async create(
+        @Body() body: CreateTournamentDto,
+        @Req() { user }: RequestWithUser
+    ) {
+        return this.tournamentsService.create(body, user);
     }
 
     @Post(`/:id/admins`)
     @Roles(Role.Organizer)
-    async addAdmin(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreateAdminDto) {
+    async addAdmin(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: CreateAdminDto
+    ) {
         return this.tournamentsService.addAdmin(id, body);
     }
 
     @Post(`/:id/prizes`)
     @Roles(Role.Organizer)
-    async addPrize(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreatePrizeDto) {
+    async addPrize(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: CreatePrizeDto
+    ) {
         return this.tournamentsService.addPrize(id, body);
     }
 
     @Post(`/:id/teams`)
     // TODO GUARD FOR A TEAM'S CAPTAIN
-    async addTeam(@Body() participatingTeamData: CreateParticipatingTeamDto) {
-        return this.tournamentsService.addTeam(participatingTeamData);
+    async addTeam(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: CreateParticipatingTeamDto
+    ) {
+        return this.tournamentsService.addTeam(id, body);
     }
 
     @Patch(`/:id`)
     @Roles(Role.Organizer)
-    updateTournament(@Param(`id`) id: string, @Body() body: UpdateTournamentDto) {
-        return this.tournamentsService.update(Number(id), body);
+    async update(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: UpdateTournamentDto
+    ) {
+        return this.tournamentsService.update(id, body);
     }
 
-    @Patch(`/:id/teams`)
-    // TODO TOURNAMENT ADMIN LOGIC
+    @Patch(`/:id/teams/:teamId`)
     @Roles(Role.Organizer, Role.TournamentAdmin)
-    async acceptTeam(@Body() acceptdata: AcceptTeamDto, @Req() { user }: RequestWithUser) {
-        return this.tournamentsService.acceptTeam(acceptdata, user);
+    async verifyTeam(
+        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
+        @Body() body: AcceptTeamDto
+    ) {
+        return this.tournamentsService.verifyTeam(tournamentId, teamId, body);
     }
 
     @Delete(`/:id`)
     @Roles(Role.Organizer)
-    removeTournament(@Param(`id`) id: string) {
-        return this.tournamentsService.remove(Number(id));
+    async remove(@Param(`id`, ParseIntPipe) id: number) {
+        return this.tournamentsService.remove(id);
+    }
+
+    // TODO
+    @Delete(`/:id/admins/:adminId`)
+    @Roles(Role.Organizer)
+    async removeAdmin(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`adminId`, ParseIntPipe) adminId: number
+    ) {
+        return `todo`;
     }
 }

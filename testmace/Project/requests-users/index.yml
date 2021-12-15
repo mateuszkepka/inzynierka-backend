@@ -4,8 +4,10 @@ children:
   - get-user-accounts
   - get-user-teams
   - get-user-tournaments
-  - update-user (TODO)
-  - delete-user (TODO)
+  - grant-role
+  - revoke-role
+  - update-user
+  - remove-user
 variablesArray: []
 type: Folder
 authData:

@@ -15,7 +15,7 @@ export class SuspensionsService {
 
     async getById(suspensionId: number) {
         const suspension = await this.suspensionsRepository.findOne({
-            relations: [`user`],
+            relations: [`user`, `admin`],
             where: { suspensionId: suspensionId },
         });
         if (!suspension) {
@@ -28,6 +28,7 @@ export class SuspensionsService {
         const queryBuilder = this.suspensionsRepository
             .createQueryBuilder(`suspension`)
             .innerJoinAndSelect(`suspension.user`, `user`)
+            .innerJoinAndSelect(`suspension.admin`, `admin`)
             .where(`1=1`);
         if (userId) {
             const user = await this.usersService.getById(userId);
@@ -44,7 +45,11 @@ export class SuspensionsService {
             default:
                 break;
         }
-        return queryBuilder.getMany();
+        const suspensions = await queryBuilder.getMany()
+        if (suspensions.length === 0) {
+            throw new NotFoundException(`No suspensions found`)
+        }
+        return suspensions;
     }
 
     async create(body: CreateSuspensionDto, admin: User) {

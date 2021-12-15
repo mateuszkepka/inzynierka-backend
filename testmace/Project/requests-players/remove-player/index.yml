@@ -5,17 +5,14 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: PUT
-    url: '${$env.url}/users/9'
+    method: DELETE
+    url: '${$env.url}/players/34'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "email": "abba@gmail.com"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -25,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: update-user (TODO)
+name: remove-player

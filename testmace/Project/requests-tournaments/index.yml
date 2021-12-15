@@ -8,9 +8,10 @@ children:
   - create-tournament
   - create-tournament-prize
   - create-tournament-admin
-  - create-participating-team (TODO)
-  - update-tournament (TODO)
-  - update-participating-team (TODO)
+  - create-participating-team
+  - update-tournament
+  - update-participating-team
+  - remove-tournament-admin (TODO)
 variablesArray: []
 type: Folder
 authData:

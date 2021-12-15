@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: DELETE
-    url: '${$env.url}/invitations/23'
+    url: '${$env.url}/users/1'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: remove-invitation (TODO)
+name: remove-user

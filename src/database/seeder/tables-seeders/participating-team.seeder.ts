@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ParticipatingTeam, Team, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { Roster } from 'src/modules/teams/interfaces/roster.interface';
 
 @Injectable()
 export class ParticipatingTeamSeeder {
@@ -25,17 +24,17 @@ export class ParticipatingTeamSeeder {
         const createdRosters = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const json: Roster = {
+            const json = {
                 "roster":
                     [
-                        { "username": `example${i + 1}`, "summonerName": `Broulyy${i + 1}` },
-                        { "username": `example${i + 2}`, "summonerName": `Nizashi${i + 1}` },
-                        { "username": `example${i + 3}`, "summonerName": `Bogul${i + 1}` }
+                        { "userId": i + 1, "playerId": i + 1 },
+                        { "userId": i + 2, "playerId": i + 2 },
+                        { "userId": i + 3, "playerId": i + 3 },
                     ],
                 "subs":
                     [
-                        { "username": `example${i + 4}`, "summonerName": `KreyVex${i + 1}` },
-                        { "username": `example${i + 5}`, "summonerName": `Brzyzu v2${i + 1}` }
+                        { "userId": i + 4, "playerId": i + 4 },
+                        { "userId": i + 5, "playerId": i + 5 },
                     ]
             }
             const roster: Partial<ParticipatingTeam> = {
@@ -43,8 +42,7 @@ export class ParticipatingTeamSeeder {
                 team: teams[i],
                 signDate: faker.datatype.datetime(),
                 isApproved: true,
-                approvalDate: faker.datatype.datetime(),
-                roster: json,
+                decisionDate: faker.datatype.datetime()
             };
             const newRoster = await this.rosterRepository.create(roster);
             createdRosters.push(newRoster);

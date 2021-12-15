@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: PATCH
-    url: '${$env.url}/tournaments'
+    method: DELETE
+    url: '${$env.url}/tournaments/1/admins/1'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: update-tournament (TODO)
+name: remove-tournament-admin (TODO)

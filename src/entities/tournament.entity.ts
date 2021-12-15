@@ -7,7 +7,6 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -24,47 +23,59 @@ export class Tournament {
     @PrimaryGeneratedColumn()
     tournamentId: number;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     name: string;
 
-    @Column()
     @Expose()
+    @Column()
     numberOfPlayers: number;
 
-    @Column()
     @Expose()
+    @Column()
     numberOfTeams: number;
 
-    @Column()
     @Expose()
+    @Column()
     registerStartDate: Date;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     registerEndDate: Date;
 
-    @Column()
     @Expose()
+    @Column()
     tournamentStartDate: Date;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     tournamentEndDate: Date;
 
-    @Column()
     @Expose()
+    @Column()
     description: string;
 
-    @Expose({ name: `gameId` })
-    @Transform(({ value }) => value.gameId, { toPlainOnly: true })
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.gameId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @Expose({ name: `organizerId` })
-    @Transform(({ value }) => value.userId, { toPlainOnly: true })
-    @ManyToOne(() => User, (user) => user.organizedTournaments)
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.userId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `organizerId` })
     organizer: User;
 
@@ -87,8 +98,8 @@ export class Tournament {
     @OneToMany(() => ParticipatingTeam, (roster) => roster.tournament)
     rosters: ParticipatingTeam[];
 
+    @Expose()
     @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true })
     @JoinColumn({ name: `prizeId` })
-    @Expose()
     prize: Prize;
 }

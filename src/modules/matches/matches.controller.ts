@@ -13,9 +13,9 @@ import { Role } from 'src/roles/roles.enum';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
-@Roles(Role.Player)
+
 @Controller(`matches`)
-@SerializeOptions({ strategy: `excludeAll` })
+@Roles(Role.Player)
 export class MatchesController {
     constructor(private readonly matchesService: MatchesService) {}
 

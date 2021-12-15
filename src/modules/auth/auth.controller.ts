@@ -13,7 +13,6 @@ export class AuthController {
         private readonly usersService: UsersService,
     ) { }
 
-    // TODO error handling
     @Public()
     @Post(`register`)
     async register(@Body() registrationData: RegisterDto) {
@@ -44,8 +43,8 @@ export class AuthController {
         return user;
     }
 
-    @UseGuards(JwtRefreshGuard)
     @Get(`refresh`)
+    @UseGuards(JwtRefreshGuard)
     refresh(@Req() request: RequestWithUser) {
         const { user } = request;
         const accessTokenCookie = this.authService.getCookieWithJwtToken(user.userId);

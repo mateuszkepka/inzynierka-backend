@@ -6,13 +6,17 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/players/11'
+    url: '${$env.url}/players/34'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "summonerName": ";p",
+        "region": "eune"
+      }
     xmlBody: ''
     textBody: ''
     formData: []

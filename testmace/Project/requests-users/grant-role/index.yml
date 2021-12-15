@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/1/teams'
+    url: '${$env.url}/users/16/roles/grant'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "teamId": 2
+        "role": "organizer"
       }
     xmlBody: ''
     textBody: ''
@@ -25,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-participating-team (TODO)
+name: grant-role

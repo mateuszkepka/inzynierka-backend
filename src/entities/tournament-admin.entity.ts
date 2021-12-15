@@ -11,7 +11,7 @@ export class TournamentAdmin {
 
     @Expose()
     @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins, {
-        cascade: true,
+        onDelete: `CASCADE`,
         eager: true
     })
     @JoinColumn({ name: `tournamentId` })
@@ -19,6 +19,7 @@ export class TournamentAdmin {
 
     @Expose()
     @ManyToOne(() => User, (user) => user.tournamentAdmins, {
+        onDelete: `CASCADE`,
         cascade: true,
         eager: true
     })

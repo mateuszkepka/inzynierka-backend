@@ -1,23 +1,15 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Put,
-    Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { GetTournamentsQuery } from './dto/get-tournaments.dto';
+import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller(`users`)
 @Roles(Role.User)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) { }
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
@@ -39,13 +31,25 @@ export class UsersController {
         return this.usersService.getById(id);
     }
 
+    @Post(`/:id/roles/grant`)
+    @Roles(Role.Admin)
+    async grantRole(@Param(`id`, ParseIntPipe) id: number, @Body() body: RolesDto) {
+        return this.usersService.grantRole(id, body);
+    }
+
+    @Patch(`/:id`)
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+        return this.usersService.update(id, body);
+    }
+
     @Delete(`/:id`)
     async remove(@Param(`id`, ParseIntPipe) id: number) {
         return this.usersService.remove(id);
     }
 
-    @Put(`/:id`)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
-        return this.usersService.update(id, body);
+    @Post(`/:id/roles/revoke`)
+    @Roles(Role.Admin)
+    async revokeRole(@Param(`id`, ParseIntPipe) id: number, @Body() body: RolesDto) {
+        return this.usersService.revokeRole(id, body);
     }
 }
