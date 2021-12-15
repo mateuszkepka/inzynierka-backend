@@ -1,15 +1,17 @@
 enabled: true
 children:
   - get-all-tournaments
-  - get-tournaments-by-id
-  - get-pending-teams (TODO)
-  - get-managened-tournaments (TODO)
+  - get-tournament-by-id
+  - get-tournament-teams
+  - get-tournament-admins
+  - get-tournament-matches
   - create-tournament
-  - create-tournament-prize (TODO)
-  - create-tournament-admin (TODO)
-  - create-participating-team (TODO)
-  - update-tournament (TODO)
-  - update-participating-team (TODO)
+  - create-tournament-prize
+  - create-tournament-admin
+  - create-participating-team
+  - update-tournament
+  - update-participating-team
+  - remove-tournament-admin (TODO)
 variablesArray: []
 type: Folder
 authData:

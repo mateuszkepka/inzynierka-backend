@@ -6,5 +6,5 @@ export class CreateTeamDto {
 
     @IsNotEmpty()
     @IsNumber()
-    captainId: number;
+    playerId: number;
 }

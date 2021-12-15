@@ -1,28 +1,21 @@
-import { Body, Controller, Get, HttpCode, Post, Req, SerializeOptions, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import RequestWithUser from './interfaces/request-with-user.interface';
-import JwtAuthGuard from './guards/jwt-auth.guard';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
 import { Public } from 'src/roles/public.decorator';
 
 @Controller(`auth`)
-@SerializeOptions({
-    strategy: `excludeAll`,
-})
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private readonly usersService: UsersService,
     ) { }
 
-    // TODO error handling
     @Public()
     @Post(`register`)
     async register(@Body() registrationData: RegisterDto) {
-        console.log(registrationData)
         return this.authService.register(registrationData);
     }
 
@@ -50,8 +43,8 @@ export class AuthController {
         return user;
     }
 
-    @UseGuards(JwtRefreshGuard)
     @Get(`refresh`)
+    @UseGuards(JwtRefreshGuard)
     refresh(@Req() request: RequestWithUser) {
         const { user } = request;
         const accessTokenCookie = this.authService.getCookieWithJwtToken(user.userId);

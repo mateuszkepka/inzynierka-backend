@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/players/create'
+    url: '${$env.url}/players'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "summonerName": "szefdfsff",
+        "summonerName": "XDDD",
         "gameId": 1,
         "region": "EUNE"
       }

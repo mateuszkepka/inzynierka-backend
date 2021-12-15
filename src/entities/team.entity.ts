@@ -1,17 +1,9 @@
-import {
-    BeforeInsert,
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
-
-import { Expose } from 'class-transformer';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
-import { Invitation } from '.';
+import { Game, Invitation } from '.';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Entity()
 export class Team {
@@ -25,7 +17,7 @@ export class Team {
     teamId: number;
 
     @Expose()
-    @Column({ unique: true })
+    @Column({ nullable: true, unique: true })
     teamName: string;
 
     @Expose()
@@ -33,13 +25,42 @@ export class Team {
     creationDate: Date;
 
     @Expose()
+    @Column({
+        type: `enum`,
+        enum: RegionsLoL,
+        default: null,
+        nullable: true
+    })
+    region: RegionsLoL;
+
+    @Expose({ name: `gameId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.gameId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Game)
+    @JoinColumn({ name: `gameId` })
+    game: Game;
+
+    @Expose({ name: `captainId` })
     @ManyToOne(() => Player, (player) => player.ownedTeams)
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.playerId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @JoinColumn({ name: `captainId` })
     captain: Player;
 
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
+    @Expose()
     @OneToMany(() => Invitation, (invitation) => invitation.team, { onDelete: `CASCADE` })
     members: Invitation[];
 }

@@ -1,18 +1,11 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 export class UpdatePlayerDto {
-    @IsString()
     @IsOptional()
-    PUUID: string;
+    @IsString()
+    summonerName: string;
 
-    @IsString()
     @IsOptional()
-    accountId: string;
-
-    @IsString()
-    @IsOptional()
-    summonerId: string;
-
-    @IsString()
-    @IsOptional()
-    region: string;
+    @IsEnum(RegionsLoL)
+    region: RegionsLoL;
 }

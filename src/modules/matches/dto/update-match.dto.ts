@@ -1,5 +1,5 @@
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { MatchStatus } from '../interfaces/match-status.enum';
+import { MatchStatus } from '../match-status.enum';
 
 export class UpdateMatchDto {
     @IsOptional()

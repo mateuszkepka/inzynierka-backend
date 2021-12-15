@@ -7,8 +7,7 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
 import { Ladder } from './ladder.entity';
@@ -20,53 +19,65 @@ import { ParticipatingTeam, TournamentAdmin } from '.';
 
 @Entity()
 export class Tournament {
-    @PrimaryGeneratedColumn()
     @Expose()
+    @PrimaryGeneratedColumn()
     tournamentId: number;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     name: string;
 
-    @Column()
     @Expose()
+    @Column()
     numberOfPlayers: number;
 
-    @Column()
     @Expose()
+    @Column()
     numberOfTeams: number;
 
-    @Column()
     @Expose()
+    @Column()
     registerStartDate: Date;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     registerEndDate: Date;
 
-    @Column()
     @Expose()
+    @Column()
     tournamentStartDate: Date;
 
-    @Column()
     @Expose()
+    @Column({ nullable: true })
     tournamentEndDate: Date;
 
-    @Column()
     @Expose()
+    @Column()
     description: string;
 
-    @OneToOne(() => Prize, (prize) => prize.tournament, {
-        eager: true,
-        onDelete: `CASCADE`,
-    })
-    @JoinColumn({ name: `prizeId` })
     @Expose()
-    prize: Prize;
-
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.gameId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
+
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.userId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
+    @JoinColumn({ name: `organizerId` })
+    organizer: User;
 
     @OneToMany(() => Group, (group) => group.tournament)
     groups: Group[];
@@ -84,11 +95,11 @@ export class Tournament {
     @JoinColumn({ name: `presetId` })
     preset: Preset;
 
-    @ManyToOne(() => User, (user) => user.organizedTournaments)
-    @JoinColumn({ name: `organizerId` })
-    @Expose()
-    organizer: User;
-
     @OneToMany(() => ParticipatingTeam, (roster) => roster.tournament)
     rosters: ParticipatingTeam[];
+
+    @Expose()
+    @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true })
+    @JoinColumn({ name: `prizeId` })
+    prize: Prize;
 }

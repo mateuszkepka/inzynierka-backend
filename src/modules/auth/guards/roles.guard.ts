@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY, shouldBypassAuth } from 'src/roles/public.decorator';
+import { shouldBypassAuth } from 'src/roles/public.decorator';
 import { ROLES_KEY } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 

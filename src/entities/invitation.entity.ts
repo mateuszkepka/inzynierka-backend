@@ -1,11 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Team } from './team.entity';
 import { Player } from './player.entity';
-import { Expose } from 'class-transformer';
-import {
-    InvitationStatus,
-    Status,
-} from 'src/modules/invitations/interfaces/invitation-status.enum';
+import { Expose, Transform } from 'class-transformer';
+import { InvitationStatus, Status, } from 'src/modules/invitations/interfaces/invitation-status.enum';
 
 @Entity()
 @Unique([`player`, `team`])
@@ -14,13 +11,25 @@ export class Invitation {
     @PrimaryGeneratedColumn()
     invitationId: number;
 
-    @Expose()
-    @ManyToOne(() => Player, (player) => player.teams)
+    @Expose({ name: `playerId` })
+    @Transform(({ value }) => {
+        if (value === undefined) {
+            return
+        }
+        return value.playerId;
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Player, (player) => player.teams, { nullable: true })
     @JoinColumn({ name: `playerId` })
     player: Player;
 
-    @Expose()
-    @ManyToOne(() => Team, (team) => team.members, { onDelete: `CASCADE` })
+    @Expose({ name: `teamId` })
+    @Transform(({ value }) => {
+        if (value === undefined) {
+            return
+        }
+        return value.teamId;
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Team, (team) => team.members, { nullable: true })
     @JoinColumn({ name: `teamId` })
     team: Team;
 

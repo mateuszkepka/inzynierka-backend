@@ -1,6 +1,7 @@
 enabled: true
 children:
-  - log-in
+  - log-in-user
+  - log-in-admin
   - log-out
   - register
   - authenticate

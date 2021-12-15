@@ -1,0 +1,36 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/tournaments/1/teams'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "teamId": 21,
+        "roster": [
+          "szefff",
+          "Spencer"
+        ],
+        "subs": [
+          "Kulas",
+          "szefdfsff"
+        ]
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: create-participating-team

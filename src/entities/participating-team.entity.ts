@@ -1,41 +1,44 @@
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsDateString } from 'class-validator';
-import { Roster } from 'src/modules/teams/interfaces/roster.interface';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team, Tournament } from '.';
 
 @Entity()
 export class ParticipatingTeam {
-    @PrimaryGeneratedColumn()
     @Expose()
+    @PrimaryGeneratedColumn()
     participatingTeamId: number;
 
+    @Expose()
     @ManyToOne(() => Tournament)
     @JoinColumn({ name: `tournamentId` })
-    @Expose()
     tournament: Tournament;
 
+    @Expose()
     @ManyToOne(() => Team)
     @JoinColumn({ name: `teamId` })
-    @Expose()
     team: Team;
 
-    @Column()
     @Expose()
+    @Column()
     @IsDateString()
     signDate: Date;
 
-    @Column()
     @Expose()
+    @Column(`bool`, { default: false })
     @IsBoolean()
     isApproved: boolean;
 
     @Expose()
-    @Column()
+    @Column({ default: null, nullable: true })
     @IsDateString()
-    approvalDate: Date;
+    decisionDate: Date;
 
     @Expose()
     @Column({ type: `json` })
-    roster: Roster;
+    roster: string[];
+
+    @Expose()
+    @Column({ type: `json`, nullable: true })
+    subs: string[];
 }

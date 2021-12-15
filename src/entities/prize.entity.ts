@@ -17,6 +17,6 @@ export class Prize {
     @Expose()
     distribution: string;
 
-    @OneToOne(() => Tournament, (tournament) => tournament.prize, { onDelete: `CASCADE` })
+    @OneToOne(() => Tournament, (tournament) => tournament.prize)
     tournament: Tournament;
 }

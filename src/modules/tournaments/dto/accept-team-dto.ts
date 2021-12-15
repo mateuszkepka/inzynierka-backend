@@ -1,6 +1,7 @@
-import { IsNumber } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class AcceptTeamDto {
-    @IsNumber()
-    participatingTeamId: number;
+    @IsNotEmpty()
+    @IsBoolean()
+    isApproved: boolean
 }

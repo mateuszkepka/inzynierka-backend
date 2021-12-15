@@ -1,9 +1,10 @@
 enabled: true
 children:
+  - get-invitation-by-id
   - get-invitations-filtered
   - create-invitation
   - update-invitation
-  - remove-invitation (TODO)
+  - remove-invitation
 variablesArray: []
 type: Folder
 authData:

@@ -1,0 +1,28 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/users/16/roles/grant'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "role": "organizer"
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: grant-role

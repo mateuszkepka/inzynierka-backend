@@ -1,0 +1,35 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: PATCH
+    url: '${$env.url}/tournaments/1'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "name": "xDDDDDDDDDD",
+        "numberOfPlayers": 5,
+        "numberOfTeams": 6,
+        "registerStartDate": "2005-12-16",
+        "registerEndDate": "2030-12-16",
+        "tournamentStartDate": "2005-12-16",
+        "tournamentEndDate": "2030-12-16",
+        "description": "Quibusdam magni ipsaet ui. Voluptates par"
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: update-tournament

@@ -1,28 +1,28 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsOptional, IsString } from 'class-validator';
+import { Role } from 'src/roles/roles.enum';
 
-// TODO add all properties
 export class UpdateUserDto {
-    @IsEmail()
     @IsOptional()
+    @IsEmail()
     email: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     password: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     username: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     country: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     university: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
     studentId: string;
 }

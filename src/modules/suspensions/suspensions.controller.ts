@@ -9,7 +9,6 @@ import {
     Post,
     Query,
     Req,
-    SerializeOptions,
 } from '@nestjs/common';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 import { Roles } from 'src/roles/roles.decorator';
@@ -21,9 +20,8 @@ import { SuspensionsService } from './suspensions.service';
 
 @Controller(`suspensions`)
 @Roles(Role.Admin)
-@SerializeOptions({ strategy: `excludeAll` })
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) {}
+    constructor(private readonly suspensionsService: SuspensionsService) { }
 
     @Get()
     async getFiltered(@Query(`userId`) userId: number, @Query(`status`) status: string) {
@@ -36,18 +34,12 @@ export class SuspensionsController {
     }
 
     @Post()
-    async create(
-        @Body(new DateValidationPipe()) body: CreateSuspensionDto,
-        @Req() { user }: RequestWithUser,
-    ) {
+    async create(@Body(new DateValidationPipe()) body: CreateSuspensionDto, @Req() { user }: RequestWithUser) {
         return await this.suspensionsService.create(body, user);
     }
 
     @Patch(`/:id`)
-    async update(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body(new DateValidationPipe()) body: UpdateSuspensionDto,
-    ) {
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body(new DateValidationPipe()) body: UpdateSuspensionDto) {
         return await this.suspensionsService.update(id, body);
     }
 

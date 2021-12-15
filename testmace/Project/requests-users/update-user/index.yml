@@ -1,0 +1,29 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: PATCH
+    url: '${$env.url}/users/9'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: Json
+    jsonBody: |-
+      {
+        "email": "abba@gmail.com",
+        "country": "Somalia"
+      }
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: update-user

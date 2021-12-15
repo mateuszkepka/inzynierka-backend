@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/suspensions/13'
+    url: '${$env.url}/suspensions/16'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "endDate": "2019-12-08T17:09:09+0000",
-        "reason": "za winnosc"
+        "endDate": "2022-12-10T20:09:09+0000",
+        "reason": "za xXDD"
       }
     xmlBody: ''
     textBody: ''

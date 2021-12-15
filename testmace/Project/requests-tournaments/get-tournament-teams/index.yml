@@ -1,0 +1,28 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: GET
+    url: '${$env.url}/tournaments/1/teams/?approved=true'
+  headers: []
+  disabledInheritedHeaders: []
+  params:
+    - name: approved
+      value: 'true'
+      isChecked: true
+  body:
+    type: Json
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData: []
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: get-tournament-teams

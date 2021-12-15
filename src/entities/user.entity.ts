@@ -3,8 +3,9 @@ import { Player } from './player.entity';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
+import { UserStatus } from 'src/modules/users/interfaces/user-status.enum';
 
 @Entity()
 @Unique([`university`, `studentId`])
@@ -14,34 +15,37 @@ export class User {
     userId: number;
 
     @Expose()
-    @Column({ unique: true })
+    @Column({ nullable: true, unique: true })
     username: string;
 
     @Expose()
-    @Column({ unique: true })
+    @Column({ nullable: true, unique: true })
     email: string;
 
-    @Column()
+    @Column({ nullable: true })
     password: string;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true })
     country: string;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true })
     university: string;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true })
     studentId: string;
 
-    @Expose()
-    @Column(`text`, {
-        array: true,
-        default: [`user`],
-    })
+    @Column(`text`, { array: true, default: [`user`], nullable: true })
     roles: Role[];
+
+    @Column({
+        type: `enum`,
+        enum: UserStatus,
+        default: UserStatus.Active,
+    })
+    status: UserStatus;
 
     @Column({ nullable: true })
     currentRefreshToken?: string;
@@ -55,7 +59,13 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
-    @Type(() => Player)
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value[0].playerId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 

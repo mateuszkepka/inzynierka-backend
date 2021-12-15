@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
+import { MatchStatus } from 'src/modules/matches/match-status.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';

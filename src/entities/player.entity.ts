@@ -1,9 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Game, Invitation } from '.';
-import { Expose, Transform, Type } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Performance } from './performance.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Entity()
 export class Player {
@@ -12,7 +13,7 @@ export class Player {
     playerId: number;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true, unique: true })
     summonerName: string;
 
     @Column({ nullable: true })
@@ -25,14 +26,25 @@ export class Player {
     summonerId: string;
 
     @Expose()
-    @Column()
-    region: string;
+    @Column({
+        type: `enum`,
+        enum: RegionsLoL
+    })
+    region: RegionsLoL;
 
-    @ManyToOne(() => User, (user) => user.accounts)
+    @Expose({ name: `userId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.userId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => User, (user) => user.accounts, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `userId` })
-    @Expose()
     user: User;
 
+    @Expose()
     @OneToMany(() => Performance, (performance) => performance.player)
     performances: Performance[];
 
@@ -41,11 +53,25 @@ export class Player {
     ownedTeams: Team[];
 
     @Expose({ name: `gameId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.gameId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @Expose()
+    @Expose({ name: `invitationId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value[0].invitationId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @OneToMany(() => Invitation, (invitation) => invitation.player)
     teams: Invitation[];
 }
