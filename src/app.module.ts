@@ -44,6 +44,9 @@ import { UsersModule } from './modules/users/users.module';
                     password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
                     logging: true,
+                    ssl: {
+                        rejectUnauthorized: false,
+                    },
                     entities: [
                         entities.Game,
                         entities.Group,
