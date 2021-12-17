@@ -2,12 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, ParticipatingTeam } from 'src/entities';
 import { Repository } from 'typeorm';
-import { GamesService } from '../games/games.service';
-import { TeamsService } from '../teams/teams.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
-import { UsersService } from '../users/users.service';
 import { CreateMatchDto } from './dto/create-match.dto';
-import { MatchQueryDto } from './dto/get-matches.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
 @Injectable()
@@ -16,9 +12,6 @@ export class MatchesService {
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(ParticipatingTeam) private readonly participatingTeamsRepository: Repository<ParticipatingTeam>,
         private readonly tournamentService: TournamentsService,
-        private readonly teamsService: TeamsService,
-        private readonly gamesService: GamesService,
-        private readonly usersService: UsersService
     ) { }
 
     async getById(id: number) {

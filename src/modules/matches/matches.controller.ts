@@ -27,8 +27,8 @@ export class MatchesController {
 
     @Post()
     @Roles(Role.Organizer)
-    async create(@Body() teamData: CreateMatchDto) {
-        return this.matchesService.create(teamData);
+    async create(@Body() matchData: CreateMatchDto) {
+        return await this.matchesService.create(matchData);
     }
 
     @Patch(`/:id`)

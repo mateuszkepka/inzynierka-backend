@@ -1,0 +1,16 @@
+enabled: true
+children:
+  - get-game-by-id
+  - get-all-games
+  - create-game
+  - update-game
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-games

@@ -1,22 +1,22 @@
 import * as Joi from 'joi';
 import * as entities from './entities';
 
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
-import { SuspensionsModule } from './modules/suspensions/suspensions.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './modules/users/users.module';
-import { TournamentsModule } from './modules/tournaments/tournaments.module';
-import { TeamsModule } from './modules/teams/teams.module';
-import { PlayersModule } from './modules/players/players.module';
 import { GamesModule } from './modules/games/games.module';
 import { InvitationsModule } from './modules/invitations/invitations.module';
-import { RolesGuard } from './modules/auth/guards/roles.guard';
-import { MatchesModule } from './modules/matches/matches.module';
 import JwtAuthGuard from './modules/auth/guards/jwt-auth.guard';
+import { MatchesModule } from './modules/matches/matches.module';
+import { PlayersModule } from './modules/players/players.module';
+import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { SuspensionsModule } from './modules/suspensions/suspensions.module';
+import { TeamsModule } from './modules/teams/teams.module';
+import { TournamentsModule } from './modules/tournaments/tournaments.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
     imports: [
@@ -37,12 +37,16 @@ import JwtAuthGuard from './modules/auth/guards/jwt-auth.guard';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
                 return {
+                    host: config.get<string>(`DB_HOST`),
                     type: `postgres`,
                     database: config.get<string>(`DB_NAME`),
                     username: config.get<string>(`DB_USER`),
                     password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
                     logging: true,
+                    ssl: {
+                        rejectUnauthorized: false,
+                    },
                     entities: [
                         entities.Game,
                         entities.Group,
@@ -83,7 +87,7 @@ import JwtAuthGuard from './modules/auth/guards/jwt-auth.guard';
             provide: APP_PIPE,
             useValue: new ValidationPipe({
                 whitelist: true,
-                forbidNonWhitelisted: true
+                forbidNonWhitelisted: true,
             }),
         },
         {
@@ -96,4 +100,4 @@ import JwtAuthGuard from './modules/auth/guards/jwt-auth.guard';
         },
     ],
 })
-export class AppModule { }
+export class AppModule {}
