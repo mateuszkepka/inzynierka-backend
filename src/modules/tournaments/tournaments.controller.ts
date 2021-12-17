@@ -1,25 +1,15 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, } from '@nestjs/common';
 import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { MatchStatusQuery } from './dto/get-matches.dto';
+import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 
@@ -34,16 +24,22 @@ export class TournamentsController {
         return this.tournamentsService.getAdmins(id, true);
     }
 
-    @Get(`/:id/teams`)
-    @Roles(Role.Organizer)
-    async getTeamsFiltered(@Param(`id`, ParseIntPipe) id: number, @Query('approved') approved: string) {
-        return this.tournamentsService.getTeamsFiltered(id, approved);
-    }
-
     @Get(`/:id/matches`)
     @Roles(Role.Organizer)
-    async getMatchesFiltered(@Param(`id`, ParseIntPipe) id: number, @Query() status: MatchStatusQuery) {
-        return this.tournamentsService.getMatchesFiltered(id, status);
+    async getMatchesByTournament(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Query() status: MatchQueryDto
+    ) {
+        return this.tournamentsService.getMatchesByTournament(id, status);
+    }
+
+    @Get(`/:id/teams`)
+    @Roles(Role.Organizer)
+    async getTeamsFiltered(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Query('approved') approved: string
+    ) {
+        return this.tournamentsService.getTeamsFiltered(id, approved);
     }
 
     @Get(`/:id`)
@@ -54,8 +50,8 @@ export class TournamentsController {
 
     @Get()
     @Public()
-    async getAll() {
-        return this.tournamentsService.getAllTournaments();
+    async getTournamentsFiltered(@Query() queryParams: TournamentQueryDto) {
+        return this.tournamentsService.getTournamentsFiltered(queryParams);
     }
 
     @Post()

@@ -93,7 +93,7 @@ export class InvitationsService {
         // TEAMS OF THE USER WHO SENDS REQUEST
         var teams = []
         try {
-            teams = await this.usersService.getTeams(user.userId);
+            teams = await this.usersService.getTeamsByUser(user.userId);
         } catch (ignore) {
             throw new ForbiddenException(`You are not a team member`);
         }

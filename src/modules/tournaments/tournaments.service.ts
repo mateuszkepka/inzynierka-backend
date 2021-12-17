@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension } from 'src/entities';
 import { Repository } from 'typeorm';
 import { GamesService } from '../games/games.service';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { PlayersService } from '../players/players.service';
 import { SuspensionsService } from '../suspensions/suspensions.service';
 import { TeamsService } from '../teams/teams.service';
@@ -12,15 +13,16 @@ import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { MatchStatusQuery } from './dto/get-matches.dto';
+import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { TournamentStatus } from './interfaces/tourrnament.status-enum';
 
 @Injectable()
 export class TournamentsService {
     constructor(
         @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(ParticipatingTeam) private readonly rostersRepository: Repository<ParticipatingTeam>,
-        @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+        @InjectRepository(TournamentAdmin) private readonly tournamentAdminsRepository: Repository<TournamentAdmin>,
         @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
@@ -31,8 +33,24 @@ export class TournamentsService {
         private readonly gamesService: GamesService
     ) { }
 
-    async getAllTournaments() {
-        const tournaments = await this.tournamentsRepository.find();
+    async getTournamentsFiltered(queryParams: TournamentQueryDto) {
+        const { status } = queryParams;
+        const queryBuilder = this.tournamentsRepository
+            .createQueryBuilder(`tournament`)
+            .where(`1=1`)
+        switch (status) {
+            case TournamentStatus.Finished:
+                queryBuilder.andWhere(`tournament.tournamentEndDate < :date`, { date: new Date() })
+                break;
+            case TournamentStatus.Ongoing:
+                queryBuilder.andWhere(`tournament.tournamentStartDate < :date1`, { date1: new Date() })
+                queryBuilder.andWhere(`tournament.tournamentEndDate > :date2`, { date2: new Date() })
+                break;
+            case TournamentStatus.Upcoming:
+                queryBuilder.andWhere(`tournament.tournamentStartDate > :date`, { date: new Date() })
+                break;
+        }
+        const tournaments = await queryBuilder.getMany();
         if (tournaments.length === 0) {
             throw new NotFoundException(`No tournaments found`);
         }
@@ -99,11 +117,11 @@ export class TournamentsService {
         return participatingteam;
     }
 
-    async getMatchesFiltered(tournamentId: number, query: MatchStatusQuery) {
-        const { status } = query;
+    async getMatchesByTournament(tournamentId: number, queryParams: MatchQueryDto) {
+        const { status } = queryParams;
         const tournament = await this.getById(tournamentId);
         const matches = await this.matchesRepository.find({
-            where: { matchStatus: status, tournament: tournament }
+            where: { status: status, tournament: tournament }
         })
         if (matches.length === 0) {
             throw new NotFoundException(`No matches with given status found`);
@@ -203,11 +221,11 @@ export class TournamentsService {
     async addAdmin(id: number, body: CreateAdminDto) {
         const tournament = await this.getById(id);
         const user = await this.usersService.getById(body.userId);
-        const admin = this.tournamentAdminRepository.create({
+        const admin = this.tournamentAdminsRepository.create({
             tournament: tournament,
             user: user
         });
-        return this.tournamentAdminRepository.save(admin);
+        return this.tournamentAdminsRepository.save(admin);
     }
 
     async addPrize(id: number, body: CreatePrizeDto) {

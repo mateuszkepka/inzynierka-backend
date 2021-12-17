@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Invitation, Player, Team, User } from 'src/entities';
+import { Invitation, Match, Player, Team, User } from 'src/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { PlayersService } from '../players/players.service';
-import { UsersService } from '../users/users.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 
@@ -14,40 +14,10 @@ export class TeamsService {
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
-        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
     ) { }
-
-    async getAvailablePlayers(teamId: number, user: User) {
-        const team = await this.getById(teamId);
-        const players = await this.playersRepository
-            .createQueryBuilder(`player`)
-            .innerJoin(`player.user`, `user`)
-            .innerJoin(`player.teams`, `invitation`)
-            .innerJoin(`invitation.team`, `team`)
-            .where(`user.userId != :userId`, { userId: user.userId })
-            .andWhere((qb) => {
-                const subQuery = qb
-                    .subQuery()
-                    .select(`player.playerId`)
-                    .from(Player, `player`)
-                    .innerJoin(`player.teams`, `invitation`)
-                    .innerJoin(`invitation.team`, `team`)
-                    .where(`team.teamId = :teamId`, { teamId: team.teamId })
-                    .andWhere(
-                        new Brackets((qb) => {
-                            qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
-                                .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending });
-                        }))
-                    .getQuery();
-                return `player.playerId NOT IN ` + subQuery;
-            }).getMany();
-        if (players.length === 0) {
-            throw new NotFoundException(`No players to invite found`)
-        }
-        return players;
-    }
 
     async getAll() {
         const teams = await this.teamsRepository.find({
@@ -94,6 +64,55 @@ export class TeamsService {
             throw new NotFoundException(`This team has no members`)
         }
         return members;
+    }
+
+    async getAvailablePlayers(teamId: number, user: User) {
+        const team = await this.getById(teamId);
+        const players = await this.playersRepository
+            .createQueryBuilder(`player`)
+            .innerJoin(`player.user`, `user`)
+            .innerJoin(`player.teams`, `invitation`)
+            .innerJoin(`invitation.team`, `team`)
+            .where(`user.userId != :userId`, { userId: user.userId })
+            .andWhere((qb) => {
+                const subQuery = qb
+                    .subQuery()
+                    .select(`player.playerId`)
+                    .from(Player, `player`)
+                    .innerJoin(`player.teams`, `invitation`)
+                    .innerJoin(`invitation.team`, `team`)
+                    .where(`team.teamId = :teamId`, { teamId: team.teamId })
+                    .andWhere(
+                        new Brackets((qb) => {
+                            qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
+                                .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending });
+                        }))
+                    .getQuery();
+                return `player.playerId NOT IN ` + subQuery;
+            }).getMany();
+        if (players.length === 0) {
+            throw new NotFoundException(`No players to invite found`)
+        }
+        return players;
+    }
+
+    async getMatchesByTeams(teamId: number, queryParams: MatchQueryDto) {
+        await this.getById(teamId);
+        const queryBuilder = this.matchesRepository
+            .createQueryBuilder(`match`)
+            .innerJoinAndSelect(`match.firstRoster`, `firstRoster`)
+            .innerJoinAndSelect(`match.secondRoster`, `secondRoster`)
+            .innerJoinAndSelect(`firstRoster.team`, `firstTeam`)
+            .innerJoinAndSelect(`secondRoster.team`, `secondTeam`)
+            .where(`firstTeam.teamId = :teamId OR secondTeam.teamId = :teamId`, { teamId: teamId })
+        if (queryParams?.status && queryParams.status !== null) {
+            queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
+        }
+        const matches = await queryBuilder.getMany();
+        if (matches.length === 0) {
+            throw new NotFoundException(`No matches found`)
+        }
+        return matches;
     }
 
     async create(createTeamDto: CreateTeamDto) {

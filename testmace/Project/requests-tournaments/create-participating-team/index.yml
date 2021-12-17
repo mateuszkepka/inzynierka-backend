@@ -16,8 +16,14 @@ requestData:
       {
         "teamId": 21,
         "roster": [
-          "szefff",
-          "Spencer"
+          {
+            "username": "Brouly",
+            "playerId": 10
+          },
+          {
+            "username": "Nizashi",
+            "playerId": 11
+          }
         ],
         "subs": [
           "Kulas",
