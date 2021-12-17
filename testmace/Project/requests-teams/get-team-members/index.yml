@@ -6,7 +6,11 @@ assignVariables: []
 requestData:
   request:
     method: GET
+<<<<<<< HEAD
     url: '${$env.url}/teams/26/members'
+=======
+    url: '${$env.url}/teams/17/members'
+>>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered)
   headers: []
   disabledInheritedHeaders: []
   params: []

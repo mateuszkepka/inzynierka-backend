@@ -17,11 +17,19 @@ requestData:
         "teamId": 26,
         "roster": [
           {
+<<<<<<< HEAD
             "username": "Admin",
             "playerId": 14
           },
           {
             "username": "Brouly",
+=======
+            "username": "Brouly",
+            "playerId": 10
+          },
+          {
+            "username": "Nizashi",
+>>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered)
             "playerId": 11
           }
         ],
