@@ -1,5 +1,5 @@
-import { Expose } from 'class-transformer';
-import { MatchStatus } from 'src/modules/matches/match-status.enum';
+import { Expose, Transform } from 'class-transformer';
+import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -29,7 +29,7 @@ export class Match {
         enum: MatchStatus,
         default: MatchStatus.Scheduled,
     })
-    matchStatus: MatchStatus;
+    status: MatchStatus;
 
     @Expose()
     @Column({ nullable: true })
@@ -39,17 +39,38 @@ export class Match {
     @Column({ nullable: true })
     numberOfMaps: number;
 
-    @Expose()
+    @Expose({ name: `tournamentId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.tournamentId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
-    @Expose()
+    @Expose({ name: `firstRosterId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.participatingTeamId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => ParticipatingTeam)
     @JoinColumn({ name: `firstRosterId` })
     firstRoster: ParticipatingTeam;
 
-    @Expose()
+    @Expose({ name: `secondRosterId` })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.participatingTeamId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => ParticipatingTeam)
     @JoinColumn({ name: `secondRosterId` })
     secondRoster: ParticipatingTeam;

@@ -6,21 +6,19 @@ import { Invitation, Match, ParticipatingTeam, Player, Team, Tournament, User } 
 import { UsersModule } from '../users/users.module';
 import { PlayersModule } from '../players/players.module';
 import { TournamentsModule } from '../tournaments/tournaments.module';
+import { TeamsModule } from '../teams/teams.module';
+import { GamesModule } from '../games/games.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             Match,
-            Team,
-            Player,
-            Invitation,
-            User,
-            Tournament,
             ParticipatingTeam,
         ]),
-        PlayersModule,
-        UsersModule,
         TournamentsModule,
+        UsersModule,
+        GamesModule,
+        TeamsModule,
     ],
     providers: [MatchesService],
     exports: [MatchesService],

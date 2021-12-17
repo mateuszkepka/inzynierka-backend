@@ -6,37 +6,33 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    SerializeOptions,
+    Query,
 } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { CreateMatchDto } from './dto/create-match.dto';
+import { MatchQueryDto } from './dto/get-matches.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
 
 @Controller(`matches`)
 @Roles(Role.Player)
 export class MatchesController {
-    constructor(private readonly matchesService: MatchesService) {}
+    constructor(private readonly matchesService: MatchesService) { }
 
     @Get(`/:id`)
-    async get(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.matchesService.getById(id);
-    }
-
-    @Get()
-    async getAll() {
-        return await this.matchesService.getAll();
+    async getById(@Param(`id`, ParseIntPipe) id: number) {
+        return this.matchesService.getById(id);
     }
 
     @Post()
     @Roles(Role.Organizer)
     async create(@Body() teamData: CreateMatchDto) {
-        return await this.matchesService.create(teamData);
+        return this.matchesService.create(teamData);
     }
 
     @Patch(`/:id`)
     async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateMatchDto) {
-        return await this.matchesService.update(id, body);
+        return this.matchesService.update(id, body);
     }
 }

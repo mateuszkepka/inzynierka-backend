@@ -1,23 +1,26 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, Team, Tournament, User } from 'src/entities';
+import { Match, Player, Team, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { TournamentStatus } from '../tournaments/interfaces/tourrnament.status-enum';
 import { Role } from 'src/roles/roles.enum';
-import { GetTournamentsQuery } from './dto/get-tournaments.dto';
+import { GetUsersTournamentsQuery } from './dto/get-tournaments.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
+import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>
+        @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
     ) { }
 
     async getById(userId: number) {
@@ -51,7 +54,32 @@ export class UsersService {
         return accounts;
     }
 
-    async getTeams(userId: number) {
+    async getMatchesByUser(userId: number, queryParams: MatchQueryDto) {
+        await this.getById(userId);
+        const queryBuilder = this.matchesRepository
+            .createQueryBuilder(`match`)
+            .innerJoinAndSelect(`match.firstRoster`, `firstRoster`)
+            .innerJoinAndSelect(`match.secondRoster`, `secondRoster`)
+            .innerJoinAndSelect(`firstRoster.team`, `firstTeam`)
+            .innerJoinAndSelect(`secondRoster.team`, `secondTeam`)
+            .innerJoinAndSelect(`firstTeam.members`, `firstInvitation`)
+            .innerJoinAndSelect(`secondTeam.members`, `secondInvitation`)
+            .innerJoinAndSelect(`firstInvitation.player`, `firstPlayer`)
+            .innerJoinAndSelect(`secondInvitation.player`, `secondPlayer`)
+            .innerJoinAndSelect(`firstPlayer.user`, `firstUser`)
+            .innerJoinAndSelect(`secondPlayer.user`, `secondUser`)
+            .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId })
+        if (queryParams?.status && queryParams.status !== null) {
+            queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
+        }
+        const matches = await queryBuilder.getMany();
+        if (matches.length === 0) {
+            throw new NotFoundException(`No matches found`)
+        }
+        return matches;
+    }
+
+    async getTeamsByUser(userId: number) {
         await this.getById(userId);
         const teams = await this.teamsRepository
             .createQueryBuilder(`team`)
@@ -68,7 +96,7 @@ export class UsersService {
         return teams;
     }
 
-    async getTournaments(userId: number, queryParams: GetTournamentsQuery) {
+    async getTournamentsByUser(userId: number, queryParams: GetUsersTournamentsQuery) {
         await this.getById(userId);
         const queryBuilder = this.tournamentsRepository
             .createQueryBuilder(`tournament`)
@@ -89,11 +117,9 @@ export class UsersService {
             case Role.Organizer:
                 queryBuilder.innerJoin(`tournament.organizer`, `user`)
                 break;
-            default:
-                break;
         }
         switch (status) {
-            case TournamentStatus.Past:
+            case TournamentStatus.Finished:
                 queryBuilder.andWhere(`tournament.tournamentEndDate < :date`, { date: new Date() })
                 break;
             case TournamentStatus.Ongoing:
@@ -102,8 +128,6 @@ export class UsersService {
                 break;
             case TournamentStatus.Upcoming:
                 queryBuilder.andWhere(`tournament.tournamentStartDate > :date`, { date: new Date() })
-                break;
-            default:
                 break;
         }
         const tournaments = await queryBuilder.getMany();
@@ -147,12 +171,12 @@ export class UsersService {
 
     async remove(userId: number) {
         const user = await this.getById(userId);
-        const queryParams = new GetTournamentsQuery();
+        const queryParams = new GetUsersTournamentsQuery();
         queryParams.status = TournamentStatus.Ongoing;
         queryParams.role = Role.Organizer;
         var tournaments = [];
         try {
-            tournaments = await this.getTournaments(userId, queryParams);
+            tournaments = await this.getTournamentsByUser(userId, queryParams);
         } catch (ignore) { }
         if (tournaments.length !== 0) {
             throw new ForbiddenException(`You can not delete your account when you have ongoing tournaments`);

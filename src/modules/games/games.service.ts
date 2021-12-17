@@ -7,9 +7,9 @@ import { Repository } from 'typeorm';
 export class GamesService {
     constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
 
-    getById(gameId: number) {
-        const game = this.gamesRepository.findOne(gameId);
-        if (!gameId) {
+    async getById(gameId: number) {
+        const game = await this.gamesRepository.findOne(gameId);
+        if (!game) {
             throw new NotFoundException(`Game with given id does not exist`);
         }
         return game;

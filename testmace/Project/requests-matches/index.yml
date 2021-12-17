@@ -1,7 +1,6 @@
 enabled: true
 children:
   - get-match-by-id
-  - get-all-matches
   - create-match
   - update-match
 variablesArray: []

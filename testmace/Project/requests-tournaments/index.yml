@@ -1,6 +1,6 @@
 enabled: true
 children:
-  - get-all-tournaments
+  - get-tournaments-filtered
   - get-tournament-by-id
   - get-tournament-teams
   - get-tournament-admins

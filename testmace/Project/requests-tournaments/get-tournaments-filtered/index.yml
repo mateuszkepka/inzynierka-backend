@@ -6,10 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/teams/17/members'
+    url: '${$env.url}/tournaments/?status=finished'
   headers: []
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - isChecked: true
+      name: status
+      value: finished
   body:
     type: Json
     jsonBody: ''
@@ -22,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-team-members
+name: get-tournaments-filtered
