@@ -37,16 +37,12 @@ import { UsersModule } from './modules/users/users.module';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
                 return {
-                    host: config.get<string>(`DB_HOST`),
                     type: `postgres`,
                     database: config.get<string>(`DB_NAME`),
                     username: config.get<string>(`DB_USER`),
                     password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
                     logging: true,
-                    ssl: {
-                        rejectUnauthorized: false,
-                    },
                     entities: [
                         entities.Game,
                         entities.Group,
