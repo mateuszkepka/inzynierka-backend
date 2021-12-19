@@ -32,21 +32,17 @@ export class Player {
     })
     region: RegionsLoL;
 
-    @Expose({ name: `userId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.userId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Expose()
+    // @Transform(({ value }) => {
+    //     if (value !== undefined) {
+    //         return value.userId;
+    //     } else {
+    //         return
+    //     }
+    // }, { toPlainOnly: true })
     @ManyToOne(() => User, (user) => user.accounts, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `userId` })
     user: User;
-
-    @Expose()
-    @OneToMany(() => Performance, (performance) => performance.player)
-    performances: Performance[];
 
     @Expose()
     @OneToMany(() => Team, (team) => team.captain)

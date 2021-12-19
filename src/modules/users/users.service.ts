@@ -10,7 +10,6 @@ import { Role } from 'src/roles/roles.enum';
 import { GetUsersTournamentsQuery } from './dto/get-tournaments.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
-import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 
 @Injectable()
@@ -29,6 +28,16 @@ export class UsersService {
         });
         if (!user) {
             throw new NotFoundException(`User with this id does not exist`);
+        }
+        return user;
+    }
+
+    async getByUsername(username: string) {
+        const user = await this.usersRepository.findOne({
+            where: { username: username }
+        });
+        if (!user) {
+            throw new NotFoundException(`User with this username does not exist`);
         }
         return user;
     }

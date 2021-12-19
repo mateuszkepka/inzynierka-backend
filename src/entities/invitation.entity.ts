@@ -12,12 +12,12 @@ export class Invitation {
     invitationId: number;
 
     @Expose({ name: `playerId` })
-    @Transform(({ value }) => {
-        if (value === undefined) {
-            return
-        }
-        return value.playerId;
-    }, { toPlainOnly: true })
+    // @Transform(({ value }) => {
+    //     if (value === undefined) {
+    //         return
+    //     }
+    //     return value.playerId;
+    // }, { toPlainOnly: true })
     @ManyToOne(() => Player, (player) => player.teams, { nullable: true })
     @JoinColumn({ name: `playerId` })
     player: Player;
@@ -29,7 +29,7 @@ export class Invitation {
         }
         return value.teamId;
     }, { toPlainOnly: true })
-    @ManyToOne(() => Team, (team) => team.members, { nullable: true })
+    @ManyToOne(() => Team, (team) => team.members, { nullable: true, onDelete: `CASCADE` })
     @JoinColumn({ name: `teamId` })
     team: Team;
 

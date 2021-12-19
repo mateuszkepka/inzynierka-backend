@@ -18,10 +18,19 @@ import { TournamentsService } from './tournaments.service';
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
+    @Get(`/:id/admins/available`)
+    @Roles(Role.Organizer)
+    async getAvailableAdmins(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Req() { user }: RequestWithUser
+    ) {
+        return this.tournamentsService.getAvailableAdmins(id, user);
+    }
+
     @Get(`/:id/admins`)
     @Roles(Role.Organizer)
     async getAdmins(@Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.getAdmins(id, true);
+        return this.tournamentsService.getAdmins(id);
     }
 
     @Get(`/:id/matches`)
@@ -35,11 +44,11 @@ export class TournamentsController {
 
     @Get(`/:id/teams`)
     @Roles(Role.Organizer)
-    async getTeamsFiltered(
+    async getTeamsByTournament(
         @Param(`id`, ParseIntPipe) id: number,
         @Query('approved') approved: string
     ) {
-        return this.tournamentsService.getTeamsFiltered(id, approved);
+        return this.tournamentsService.getTeamsByTournament(id, approved);
     }
 
     @Get(`/:id`)

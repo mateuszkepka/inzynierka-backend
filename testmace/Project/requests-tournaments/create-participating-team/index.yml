@@ -14,20 +14,26 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "teamId": 21,
+        "teamId": 26,
         "roster": [
           {
-            "username": "Brouly",
-            "playerId": 10
+            "username": "Admin",
+            "playerId": 14
           },
           {
-            "username": "Nizashi",
+            "username": "Brouly",
             "playerId": 11
           }
         ],
         "subs": [
-          "Kulas",
-          "szefdfsff"
+          {
+            "username": "Bogul",
+            "playerId": 1
+          },
+          {
+            "username": "Wadol",
+            "playerId": 35
+          }
         ]
       }
     xmlBody: ''

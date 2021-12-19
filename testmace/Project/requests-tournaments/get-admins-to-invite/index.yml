@@ -6,13 +6,10 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/1/teams/?approved=false'
+    url: '${$env.url}/tournaments/1/admins/available'
   headers: []
   disabledInheritedHeaders: []
-  params:
-    - name: approved
-      value: 'false'
-      isChecked: true
+  params: []
   body:
     type: Json
     jsonBody: ''
@@ -25,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-tournament-teams
+name: get-admins-to-invite

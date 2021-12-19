@@ -16,7 +16,8 @@ export class MatchesService {
 
     async getById(id: number) {
         const match = await this.matchesRepository.findOne({
-            relations: [`maps`, `tournament`, `firstRoster`, `secondRoster`],
+            relations: [`maps`, `tournament`, `firstRoster`, `secondRoster`,
+                `firstRoster.team`, `secondRoster.team`, `maps.performances`, `maps.performances.user`],
             where: { matchId: id },
         });
         if (!match) {
@@ -27,25 +28,28 @@ export class MatchesService {
 
     async create(createMatchDto: CreateMatchDto) {
         const tournament = await this.tournamentService.getById(createMatchDto.tournamentId);
-        const firstRoster = await this.tournamentService.getParticipatingTeam(
-            createMatchDto.firstRosterId,
-        );
-        const secondRoster = await this.tournamentService.getParticipatingTeam(
-            createMatchDto.secondRosterId,
-        );
-        if (firstRoster.tournament.tournamentId !== secondRoster.tournament.tournamentId) {
-            throw new BadRequestException(`This two teams are not in the same Tournament`);
+        const { firstRosterId, secondRosterId } = createMatchDto;
+        var firstRoster: ParticipatingTeam = null;
+        var secondRoster: ParticipatingTeam = null;
+        if (firstRosterId) {
+            firstRoster = await this.tournamentService.getParticipatingTeam(
+                createMatchDto.firstRosterId,
+            );
         }
-        const match = new Match();
-        match.tournament = tournament;
-        match.firstRoster = firstRoster;
-        match.secondRoster = secondRoster;
-        match.tournamentStage = createMatchDto.tournamentStage;
-        match.matchStartDate = createMatchDto.matchStartDate;
-        match.matchEndDate = null;
-        match.matchResult = null;
-        match.numberOfMaps = null;
-        match.numberOfMaps = createMatchDto.numberOfMaps;
+        if (secondRosterId) {
+            secondRoster = await this.tournamentService.getParticipatingTeam(
+                createMatchDto.secondRosterId,
+            );
+        }
+        if (firstRoster && secondRoster && (firstRoster.tournament.tournamentId !== secondRoster.tournament.tournamentId)) {
+            throw new BadRequestException(`These two teams are not in the same tournament`);
+        }
+        const match = this.matchesRepository.create({
+            tournament: tournament,
+            firstRoster: firstRoster,
+            secondRoster: secondRoster,
+            ...createMatchDto
+        })
         return await this.matchesRepository.save(match);
     }
 
@@ -55,7 +59,6 @@ export class MatchesService {
         if (attrs.firstRosterId) {
             firstRoster = await this.tournamentService.getParticipatingTeam(attrs.firstRosterId);
         }
-        console.log(firstRoster);
         let secondRoster = null;
         if (attrs.secondRosterId) {
             secondRoster = await this.tournamentService.getParticipatingTeam(attrs.secondRosterId);

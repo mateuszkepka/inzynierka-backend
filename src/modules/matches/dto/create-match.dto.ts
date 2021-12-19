@@ -1,4 +1,5 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, NotEquals } from 'class-validator';
 
 export class CreateMatchDto {
     @IsNotEmpty()
@@ -13,11 +14,11 @@ export class CreateMatchDto {
     @IsString()
     tournamentStage: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     firstRosterId: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     secondRosterId: number;
 

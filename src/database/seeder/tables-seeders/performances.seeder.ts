@@ -28,7 +28,6 @@ export class PerformancesSeeder {
                 kills: faker.datatype.number(),
                 deaths: faker.datatype.number(),
                 assists: faker.datatype.number(),
-                player: players[i],
                 map: maps[i],
             };
             const newPerformance = await this.performancesRepository.create(performance);

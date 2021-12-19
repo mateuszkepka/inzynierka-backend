@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension } from 'src/entities';
+import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension, Player } from 'src/entities';
 import { Repository } from 'typeorm';
 import { GamesService } from '../games/games.service';
 import { MatchQueryDto } from '../matches/dto/get-matches.dto';
@@ -10,7 +10,7 @@ import { TeamsService } from '../teams/teams.service';
 import { UsersService } from '../users/users.service';
 import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
-import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
+import { CreateParticipatingTeamDto, RosterMember } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
@@ -76,29 +76,75 @@ export class TournamentsService {
         return tournament;
     }
 
-    async getTeamsFiltered(tournamentId: number, approved: string) {
+    async getTeamsByTournament(tournamentId: number, approved: string) {
         await this.getById(tournamentId);
         const response = this.rostersRepository
             .createQueryBuilder(`participating_team`)
+            .addSelect(`team.teamId`)
+            .addSelect(`team.teamName`)
             .innerJoin(`participating_team.tournament`, `tournament`)
-            .where(`1=1`)
+            .innerJoin(`participating_team.team`, `team`)
+            .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
         if (approved === `true` || approved === `false`) {
             response.andWhere(`participating_team.isApproved = :approved`, { approved })
         }
         const teams = await response.getMany()
+        console.log(teams[0].roster)
         if (teams.length === 0) {
             throw new NotFoundException(`No teams found with given status found`)
         }
-        return response.getMany();
+        return teams;
     }
 
-    async getAdmins(tournamentId: number, accepted: boolean) {
+    async getMatchesByTournament(tournamentId: number, queryParams: MatchQueryDto) {
+        await this.getById(tournamentId);
+        const { status } = queryParams;
+        const matches = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .addSelect([`firstRoster.team`, `secondRoster.team`])
+            .addSelect([`firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`])
+            .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
+            .innerJoin(`match.firstRoster`, `firstRoster`)
+            .innerJoin(`match.secondRoster`, `secondRoster`)
+            .innerJoin(`firstRoster.team`, `firstTeam`)
+            .innerJoin(`secondRoster.team`, `secondTeam`)
+            .where(`match.status = :status`, { status: status })
+            .andWhere(`match.tournamentId = :tournamentId`, { tournamentId: tournamentId })
+            .getMany();
+        if (matches.length === 0) {
+            throw new NotFoundException(`No matches with given status found`);
+        }
+        return matches;
+    }
+
+    async getAvailableAdmins(tournamentId: number, user: User) {
+        const tournament = await this.getById(tournamentId);
+        const players = await this.userRepository
+            .createQueryBuilder(`user`)
+            .where(`user.userId != :userId`, { userId: user.userId })
+            .andWhere((qb) => {
+                const subQuery = qb
+                    .subQuery()
+                    .select(`user.userId`)
+                    .from(User, `user`)
+                    .innerJoin(`user.tournamentAdmins`, `admin`)
+                    .innerJoin(`admin.tournament`, `tournament`)
+                    .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournament.tournamentId })
+                    .getQuery();
+                return `user.userId NOT IN ` + subQuery;
+            }).orderBy(`user.userId`).getMany();
+        if (players.length === 0) {
+            throw new NotFoundException(`No admins to invite found`)
+        }
+        return players;
+    }
+
+    async getAdmins(tournamentId: number) {
         const admins = await this.userRepository
             .createQueryBuilder(`user`)
             .innerJoin(`user.tournamentAdmins`, `admins`)
             .innerJoin(`admins.tournament`, `tournament`)
             .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
-            .andWhere(`admins.isAccepted = :accepted`, { accepted: accepted })
             .getMany()
         if (admins.length === 0) {
             throw new NotFoundException(`No admins found for this tournament`);
@@ -117,18 +163,6 @@ export class TournamentsService {
         return participatingteam;
     }
 
-    async getMatchesByTournament(tournamentId: number, queryParams: MatchQueryDto) {
-        const { status } = queryParams;
-        const tournament = await this.getById(tournamentId);
-        const matches = await this.matchesRepository.find({
-            where: { status: status, tournament: tournament }
-        })
-        if (matches.length === 0) {
-            throw new NotFoundException(`No matches with given status found`);
-        }
-        return matches;
-    }
-
     async verifyTeam(tournamentId: number, teamId: number, body: AcceptTeamDto) {
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
@@ -138,9 +172,9 @@ export class TournamentsService {
         if (!participatingTeam) {
             throw new BadRequestException(`This team is not participating in the tournament`);
         }
-        const teams = await this.getTeamsFiltered(tournamentId, `true`);
+        const teams = await this.getTeamsByTournament(tournamentId, `true`);
         if (teams.length + 1 >= tournament.numberOfTeams) {
-            throw new NotFoundException(`Maximum numer of accepted teams have been reached`);
+            throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
         }
         participatingTeam.decisionDate = new Date();
         participatingTeam.isApproved = body.isApproved;
@@ -186,34 +220,46 @@ export class TournamentsService {
         if (ifParticipating) {
             throw new NotFoundException(`This team is already signed up for this tournament`);
         }
-        return this.rostersRepository.save({
+        const participatingTeam = this.rostersRepository.create({
             tournament: tournament,
             team: team,
             signDate: new Date(),
             roster: roster,
             subs: subs
-        })
+        });
+        return this.rostersRepository.save(participatingTeam);
     }
 
-    async validateRoster(team: Team, roster: string[]) {
+    async validateRoster(team: Team, roster: RosterMember[]) {
         const exceptions = [];
-        for (const nickname of roster) {
-            const player = await this.playersService.getByNickname(nickname);
-            if (!player) {
-                exceptions.push(`Player with nickname ${nickname} does not exist`);
-                continue;
-            }
-            const owner = await this.playersService.getOwner(player.playerId);
-            const members = await this.teamsService.getMembers(team.teamId);
-            if (!(members.some((member) => member.playerId === player.playerId))) {
-                exceptions.push(`${player.summonerName} is not a member of team ${team.teamName}`);
+        for (const member of roster) {
+            var user: User;
+            var player: Player;
+            try {
+                user = await this.usersService.getByUsername(member.username);
+            } catch (ignore) {
+                exceptions.push(`User with username ${member.username} does not exist`);
             }
             try {
-                const suspensions = await this.suspensionsService.getFiltered(owner.userId, `active`);
-                if (suspensions.length !== 0) {
-                    exceptions.push(`${player.summonerName} has an active suspension`)
+                player = await this.playersService.getById(member.playerId);
+            } catch (ignore) {
+                exceptions.push(`Player with id ${member.playerId} does not exist`);
+            }
+            if (user && player) {
+                if (player.user.userId !== user.userId) {
+                    exceptions.push(`Username ${member.username} and playerId ${member.playerId} mismatch`);
                 }
-            } catch (ignore) { }
+                const members = await this.teamsService.getMembers(team.teamId);
+                if (!(members.some((member) => member.playerId === player.playerId))) {
+                    exceptions.push(`${player.summonerName} is not a member of team ${team.teamName}`);
+                }
+                try {
+                    const suspensions = await this.suspensionsService.getFiltered(user.userId, `active`);
+                    if (suspensions.length !== 0) {
+                        exceptions.push(`${player.summonerName} has an active suspension`)
+                    }
+                } catch (ignore) { }
+            }
         }
         return exceptions;
     }

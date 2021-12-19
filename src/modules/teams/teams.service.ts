@@ -40,23 +40,16 @@ export class TeamsService {
         return team;
     }
 
-    async getByName(teamName: string) {
-        const team = await this.teamsRepository.findOne({
-            where: { teamName: teamName },
-        });
-        if (!team) {
-            throw new NotFoundException(`Team with given name does not exist`);
-        }
-        return team;
-    }
-
     async getMembers(teamId: number) {
+        await this.getById(teamId);
         const members = await this.playersRepository
             .createQueryBuilder(`player`)
+            .addSelect(`user.userId`)
+            .addSelect(`user.username`)
             .innerJoinAndSelect(`player.teams`, `invitation`)
             .innerJoinAndSelect(`invitation.team`, `team`)
             .innerJoinAndSelect(`team.game`, `game`)
-            .innerJoinAndSelect(`player.user`, `user`)
+            .innerJoin(`player.user`, `user`)
             .where(`team.teamId = :id`, { id: teamId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
             .getMany()
@@ -100,10 +93,13 @@ export class TeamsService {
         await this.getById(teamId);
         const queryBuilder = this.matchesRepository
             .createQueryBuilder(`match`)
-            .innerJoinAndSelect(`match.firstRoster`, `firstRoster`)
-            .innerJoinAndSelect(`match.secondRoster`, `secondRoster`)
-            .innerJoinAndSelect(`firstRoster.team`, `firstTeam`)
-            .innerJoinAndSelect(`secondRoster.team`, `secondTeam`)
+            .addSelect([`firstRoster.team`, `secondRoster.team`])
+            .addSelect([`firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`])
+            .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
+            .innerJoin(`match.firstRoster`, `firstRoster`)
+            .innerJoin(`match.secondRoster`, `secondRoster`)
+            .innerJoin(`firstRoster.team`, `firstTeam`)
+            .innerJoin(`secondRoster.team`, `secondTeam`)
             .where(`firstTeam.teamId = :teamId OR secondTeam.teamId = :teamId`, { teamId: teamId })
         if (queryParams?.status && queryParams.status !== null) {
             queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
@@ -117,10 +113,17 @@ export class TeamsService {
 
     async create(createTeamDto: CreateTeamDto) {
         const captain = await this.playersService.getById(createTeamDto.playerId);
+        const ifExists = await this.teamsRepository.findOne({
+            where: { teamName: createTeamDto.teamName },
+        });
+        if (ifExists) {
+            throw new BadRequestException(`This team name is already taken`);
+        }
         const team = this.teamsRepository.create({
             teamName: createTeamDto.teamName,
             captain: captain,
-            region: captain.region
+            region: captain.region,
+            game: captain.game
         });
         await this.connection.transaction(async manager => {
             await manager.save(team);

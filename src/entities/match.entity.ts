@@ -16,7 +16,7 @@ export class Match {
     matchStartDate: Date;
 
     @Expose()
-    @Column({ nullable: true })
+    @Column({ default: null, nullable: true })
     matchEndDate: Date;
 
     @Expose()
@@ -32,8 +32,8 @@ export class Match {
     status: MatchStatus;
 
     @Expose()
-    @Column({ nullable: true })
-    matchResult: string;
+    @Column({ default: null, nullable: true })
+    winner: number;
 
     @Expose()
     @Column({ nullable: true })
@@ -51,27 +51,13 @@ export class Match {
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
-    @Expose({ name: `firstRosterId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.participatingTeamId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
-    @ManyToOne(() => ParticipatingTeam)
+    @Expose()
+    @ManyToOne(() => ParticipatingTeam, { nullable: true })
     @JoinColumn({ name: `firstRosterId` })
     firstRoster: ParticipatingTeam;
 
-    @Expose({ name: `secondRosterId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.participatingTeamId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
-    @ManyToOne(() => ParticipatingTeam)
+    @Expose()
+    @ManyToOne(() => ParticipatingTeam, { nullable: true })
     @JoinColumn({ name: `secondRosterId` })
     secondRoster: ParticipatingTeam;
 

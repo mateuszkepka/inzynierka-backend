@@ -27,7 +27,7 @@ export class MatchesSeeder {
                 matchStartDate: faker.datatype.datetime(),
                 matchEndDate: faker.datatype.datetime(),
                 tournamentStage: faker.hacker.verb(),
-                matchResult: faker.hacker.adjective(),
+                //matchResult: faker.hacker.adjective(),
                 tournament: tournaments[i],
                 firstRoster: rosters[rand],
                 secondRoster: rosters[rand2],

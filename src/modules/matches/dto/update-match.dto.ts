@@ -19,8 +19,8 @@ export class UpdateMatchDto {
     tournamentStage: string;
 
     @IsOptional()
-    @IsString()
-    matchResult: string;
+    @IsNumber()
+    winner: number;
 
     @IsOptional()
     @IsNotEmpty()

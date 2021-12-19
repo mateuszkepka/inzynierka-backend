@@ -61,6 +61,6 @@ export class Team {
     rosters: ParticipatingTeam[];
 
     @Expose()
-    @OneToMany(() => Invitation, (invitation) => invitation.team, { onDelete: `CASCADE` })
+    @OneToMany(() => Invitation, (invitation) => invitation.team)
     members: Invitation[];
 }
