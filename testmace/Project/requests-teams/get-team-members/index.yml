@@ -7,10 +7,14 @@ requestData:
   request:
     method: GET
 <<<<<<< HEAD
+<<<<<<< HEAD
     url: '${$env.url}/teams/26/members'
 =======
     url: '${$env.url}/teams/17/members'
 >>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered)
+=======
+    url: '${$env.url}/teams/26/members'
+>>>>>>> fc46b45 (feat: add game lobby endpoint)
   headers: []
   disabledInheritedHeaders: []
   params: []

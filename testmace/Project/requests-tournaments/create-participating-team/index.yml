@@ -18,6 +18,7 @@ requestData:
         "roster": [
           {
 <<<<<<< HEAD
+<<<<<<< HEAD
             "username": "Admin",
             "playerId": 14
           },
@@ -30,6 +31,13 @@ requestData:
           {
             "username": "Nizashi",
 >>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered)
+=======
+            "username": "Admin",
+            "playerId": 14
+          },
+          {
+            "username": "Brouly",
+>>>>>>> fc46b45 (feat: add game lobby endpoint)
             "playerId": 11
           }
         ],
