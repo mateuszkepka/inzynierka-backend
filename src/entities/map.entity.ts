@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { Max, Min } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Match } from './match.entity';
@@ -11,8 +12,10 @@ export class Map {
     mapId: number;
 
     @Expose()
-    @Column()
-    mapResult: string;
+    @Column({ nullable: true })
+    @Min(1)
+    @Max(2)
+    mapWinner: number;
 
     @Expose()
     @OneToMany(() => Performance, (performance) => performance.map)

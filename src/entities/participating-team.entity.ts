@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDateString } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsInstance, Validate, ValidateNested, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team, Tournament } from '.';
@@ -44,11 +44,15 @@ export class ParticipatingTeam {
 
     @Expose()
     @Column({ type: `json`, nullable: true })
+    @IsArray()
+    @ValidateNested({ each: true })
     @Type(() => RosterMember)
     roster: RosterMember[];
 
     @Expose()
     @Column({ type: `json`, nullable: true })
+    @IsArray()
+    @ValidateNested({ each: true })
     @Type(() => RosterMember)
     subs: RosterMember[];
 }

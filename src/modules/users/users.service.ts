@@ -67,16 +67,30 @@ export class UsersService {
         await this.getById(userId);
         const queryBuilder = this.matchesRepository
             .createQueryBuilder(`match`)
-            .innerJoinAndSelect(`match.firstRoster`, `firstRoster`)
-            .innerJoinAndSelect(`match.secondRoster`, `secondRoster`)
-            .innerJoinAndSelect(`firstRoster.team`, `firstTeam`)
-            .innerJoinAndSelect(`secondRoster.team`, `secondTeam`)
-            .innerJoinAndSelect(`firstTeam.members`, `firstInvitation`)
-            .innerJoinAndSelect(`secondTeam.members`, `secondInvitation`)
-            .innerJoinAndSelect(`firstInvitation.player`, `firstPlayer`)
-            .innerJoinAndSelect(`secondInvitation.player`, `secondPlayer`)
-            .innerJoinAndSelect(`firstPlayer.user`, `firstUser`)
-            .innerJoinAndSelect(`secondPlayer.user`, `secondUser`)
+            .select([
+                `match.matchId`, `match.matchStartDate`, `match.status`,
+                `match.winner`, `match.numberOfMaps`,
+                `match.firstRoster`, `match.secondRoster`
+            ])
+            .addSelect([
+                `firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`,
+                `firstRoster.team`, `secondRoster.team`,
+                `firstRoster.roster`, `secondRoster.roster`
+            ])
+            .addSelect([
+                `firstTeam.teamId`, `firstTeam.teamName`,
+                `secondTeam.teamId`, `secondTeam.teamName`
+            ])
+            .innerJoin(`match.firstRoster`, `firstRoster`)
+            .innerJoin(`match.secondRoster`, `secondRoster`)
+            .innerJoin(`firstRoster.team`, `firstTeam`)
+            .innerJoin(`secondRoster.team`, `secondTeam`)
+            .innerJoin(`firstTeam.members`, `firstInvitation`)
+            .innerJoin(`secondTeam.members`, `secondInvitation`)
+            .innerJoin(`firstInvitation.player`, `firstPlayer`)
+            .innerJoin(`secondInvitation.player`, `secondPlayer`)
+            .innerJoin(`firstPlayer.user`, `firstUser`)
+            .innerJoin(`secondPlayer.user`, `secondUser`)
             .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId })
         if (queryParams?.status && queryParams.status !== null) {
             queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })

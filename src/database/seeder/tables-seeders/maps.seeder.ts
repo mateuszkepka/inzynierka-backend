@@ -21,7 +21,7 @@ export class MapSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const map: Partial<Map> = {
-                mapResult: `1st team win`,
+                //mapResult: `1st team win`,
                 match: matches[i],
             };
             const newMap = await this.mapRepository.create(map);

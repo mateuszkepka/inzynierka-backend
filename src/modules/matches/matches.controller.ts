@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
+import { RosterMember } from '../tournaments/dto/create-participating-team.dto';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
@@ -12,13 +13,15 @@ export class MatchesController {
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return this.matchesService.getById(id);
+        const match = await this.matchesService.getById(id);
+        console.log(match.secondRoster.roster[0] instanceof RosterMember)
+        return match;
     }
 
     @Post()
     @Roles(Role.Organizer)
     async create(@Body() matchData: CreateMatchDto) {
-        return await this.matchesService.create(matchData);
+        return this.matchesService.create(matchData);
     }
 
     @Patch(`/:id`)

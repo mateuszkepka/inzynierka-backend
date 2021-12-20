@@ -20,10 +20,6 @@ export class Match {
     matchEndDate: Date;
 
     @Expose()
-    @Column()
-    tournamentStage: string;
-
-    @Expose()
     @Column({
         type: `enum`,
         enum: MatchStatus,

@@ -79,7 +79,6 @@ export class PlayersService {
                 await manager.save(user);
             }
             await manager.save(player);
-
         });
         return this.getByNickname(summonerName);
     }

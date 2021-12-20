@@ -5,7 +5,6 @@ import { User } from './user.entity';
 
 @Entity()
 export class Performance {
-    @Expose()
     @PrimaryGeneratedColumn()
     performanceId: number;
 

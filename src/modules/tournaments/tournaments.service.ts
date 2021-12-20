@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { classToPlain } from 'class-transformer';
 import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension, Player } from 'src/entities';
 import { Repository } from 'typeorm';
 import { GamesService } from '../games/games.service';
@@ -88,8 +89,8 @@ export class TournamentsService {
         if (approved === `true` || approved === `false`) {
             response.andWhere(`participating_team.isApproved = :approved`, { approved })
         }
-        const teams = await response.getMany()
-        console.log(teams[0].roster)
+        const teams = await response.getMany();
+        console.log(classToPlain(teams))
         if (teams.length === 0) {
             throw new NotFoundException(`No teams found with given status found`)
         }

@@ -26,7 +26,7 @@ export class MatchesSeeder {
             const match: Partial<Match> = {
                 matchStartDate: faker.datatype.datetime(),
                 matchEndDate: faker.datatype.datetime(),
-                tournamentStage: faker.hacker.verb(),
+                //tournamentStage: faker.hacker.verb(),
                 //matchResult: faker.hacker.adjective(),
                 tournament: tournaments[i],
                 firstRoster: rosters[rand],
