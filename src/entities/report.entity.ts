@@ -38,5 +38,4 @@ export class Report {
     @ManyToOne(() => User, (user) => user.reportsReceived, { eager: true })
     @JoinColumn({ name: `reportedId` })
     reportedUser: User;
-
 }
