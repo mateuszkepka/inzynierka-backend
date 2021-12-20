@@ -90,7 +90,6 @@ export class TournamentsService {
             response.andWhere(`participating_team.isApproved = :approved`, { approved })
         }
         const teams = await response.getMany();
-        console.log(classToPlain(teams))
         if (teams.length === 0) {
             throw new NotFoundException(`No teams found with given status found`)
         }

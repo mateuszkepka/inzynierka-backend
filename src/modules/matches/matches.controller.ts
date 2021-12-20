@@ -13,9 +13,7 @@ export class MatchesController {
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {
-        const match = await this.matchesService.getById(id);
-        console.log(match.secondRoster.roster[0] instanceof RosterMember)
-        return match;
+        return this.matchesService.getById(id);
     }
 
     @Post()
