@@ -1,18 +1,10 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
 import { Ladder } from './ladder.entity';
 import { Match } from './match.entity';
-import { Preset } from './preset.entity';
+import { Format } from './format.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
 import { ParticipatingTeam, TournamentAdmin } from '.';
@@ -91,9 +83,9 @@ export class Tournament {
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
     tournamentAdmins: TournamentAdmin[];
 
-    @OneToOne(() => Preset)
-    @JoinColumn({ name: `presetId` })
-    preset: Preset;
+    @OneToOne(() => Format, { nullable: true })
+    @JoinColumn({ name: `formatId` })
+    format: Format;
 
     @OneToMany(() => ParticipatingTeam, (roster) => roster.tournament)
     rosters: ParticipatingTeam[];

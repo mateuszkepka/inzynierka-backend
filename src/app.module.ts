@@ -54,7 +54,7 @@ import { ReportsModule } from './modules/reports/reports.module';
                         entities.Performance,
                         entities.ParticipatingTeam,
                         entities.Player,
-                        entities.Preset,
+                        entities.Format,
                         entities.Prize,
                         entities.Suspension,
                         entities.Team,

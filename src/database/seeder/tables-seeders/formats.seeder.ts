@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Preset } from 'src/entities';
+import { Format } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
 @Injectable()
 export class PresetsSeeder {
-    constructor(@InjectRepository(Preset) private readonly presetsRepository: Repository<Preset>) {}
+    constructor(@InjectRepository(Format) private readonly presetsRepository: Repository<Format>) {}
 
     async seed(numberOfRows: number) {
         const isSeeded = await this.presetsRepository.findOne();
@@ -22,10 +22,10 @@ export class PresetsSeeder {
         const createdPresets = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const preset: Partial<Preset> = {
-                mapName: faker.name.findName(),
-                pickRules: faker.lorem.sentences(5),
-                spectatorRules: faker.lorem.sentences(5),
+            const preset: Partial<Format> = {
+                // mapName: faker.name.findName(),
+                // pickRules: faker.lorem.sentences(5),
+                // spectatorRules: faker.lorem.sentences(5),
             };
             const newPreset = await this.presetsRepository.create(preset);
             createdPresets.push(newPreset);

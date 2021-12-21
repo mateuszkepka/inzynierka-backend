@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, Preset, Prize, Tournament, User } from 'src/entities';
+import { Game, Format, Prize, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
@@ -14,7 +14,7 @@ export class TournamentsSeeder {
     async seed(
         numberOfRows: number,
         prizes: Prize[],
-        presets: Preset[],
+        presets: Format[],
         users: User[],
         game: Game,
     ) {
@@ -42,7 +42,7 @@ export class TournamentsSeeder {
                 tournamentEndDate: faker.date.future(0, tournamentStartDate),
                 description: faker.lorem.sentences(5),
                 prize: prizes[i],
-                preset: presets[i],
+                format: presets[i],
                 organizer: users[i],
                 game: game,
             };

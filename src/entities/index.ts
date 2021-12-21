@@ -9,7 +9,7 @@ export * from './match.entity';
 export * from './participating-team.entity';
 export * from './performance.entity';
 export * from './player.entity';
-export * from './preset.entity';
+export * from './format.entity';
 export * from './prize.entity';
 export * from './suspension.entity';
 export * from './team.entity';

@@ -4,7 +4,7 @@ export * from './groups.seeder';
 export * from './matches.seeder';
 export * from './performances.seeder';
 export * from './players.seeder';
-export * from './presets.seeder';
+export * from './formats.seeder';
 export * from './prizes.seeder';
 export * from './suspensions.seeder';
 export * from './teams.seeder';

@@ -13,7 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             entities.Match,
             entities.Performance,
             entities.Player,
-            entities.Preset,
+            entities.Format,
             entities.Prize,
             entities.Suspension,
             entities.Team,
