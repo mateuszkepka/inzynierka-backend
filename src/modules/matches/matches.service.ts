@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Map, Match, ParticipatingTeam, Performance } from 'src/entities';
-import { Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { UsersService } from '../users/users.service';
 import { CreateMatchDto } from './dto/create-match.dto';
