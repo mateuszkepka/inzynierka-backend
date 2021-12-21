@@ -6,11 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-<<<<<<< HEAD:testmace/Project/requests-games/get-all-games/index.yml
     url: '${$env.url}/games/'
-=======
-    url: '${$env.url}/teams/1/matches?status=scheduled'
->>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered):testmace/Project/requests-teams/get-team-matches/index.yml
   headers: []
   disabledInheritedHeaders: []
   params:
@@ -29,8 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-<<<<<<< HEAD:testmace/Project/requests-games/get-all-games/index.yml
 name: get-all-games
-=======
-name: get-team-matches
->>>>>>> 8ee5f7b (feat: add matches by users, teams, tournaments and get all tournaments is filtered):testmace/Project/requests-teams/get-team-matches/index.yml

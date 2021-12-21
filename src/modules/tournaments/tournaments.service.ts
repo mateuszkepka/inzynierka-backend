@@ -253,7 +253,7 @@ export class TournamentsService {
                 }
                 const members = await this.teamsService.getMembers(team.teamId);
                 if (!(members.some((member) => member.playerId === player.playerId))) {
-                    exceptions.push(`${player.summonerName} is not a member of team ${team.teamName}`);
+                    exceptions.push(`Player with id ${player.playerId} is not a member of team ${team.teamName}`);
                 }
                 try {
                     const suspensions = await this.suspensionsService.getFiltered(user.userId, `active`);
