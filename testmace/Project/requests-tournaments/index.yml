@@ -1,10 +1,11 @@
 enabled: true
 children:
-  - get-all-tournaments
+  - get-tournaments-filtered
   - get-tournament-by-id
   - get-tournament-teams
   - get-tournament-admins
   - get-tournament-matches
+  - get-admins-to-invite
   - create-tournament
   - create-tournament-prize
   - create-tournament-admin

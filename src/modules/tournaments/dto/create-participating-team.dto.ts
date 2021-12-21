@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class CreateParticipatingTeamDto {
     @IsNotEmpty()
@@ -6,10 +7,26 @@ export class CreateParticipatingTeamDto {
     teamId: number;
 
     @IsNotEmpty()
-    @IsString({ each: true })
-    roster: string[]
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => RosterMember)
+    roster: RosterMember[]
 
     @IsOptional()
-    @IsString({ each: true })
-    subs: string[]
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => RosterMember)
+    subs: RosterMember[]
+}
+
+export class RosterMember {
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
+    username: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsNumber()
+    playerId: number;
 }

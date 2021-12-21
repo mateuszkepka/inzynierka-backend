@@ -55,7 +55,7 @@ export class Tournament {
     @Column()
     description: string;
 
-    @Expose()
+    @Expose({ name: `gameId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
             return value.gameId;
@@ -67,7 +67,7 @@ export class Tournament {
     @JoinColumn({ name: `gameId` })
     game: Game;
 
-    @Expose()
+    @Expose({ name: `organizerId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
             return value.userId;

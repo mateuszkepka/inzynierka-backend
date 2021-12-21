@@ -6,6 +6,7 @@ import { TournamentAdmin } from './tournament-admin.entity';
 import { Expose, Transform } from 'class-transformer';
 import { Role } from 'src/roles/roles.enum';
 import { UserStatus } from 'src/modules/users/interfaces/user-status.enum';
+import { Performance, Report } from '.';
 
 @Entity()
 @Unique([`university`, `studentId`])
@@ -51,6 +52,10 @@ export class User {
     currentRefreshToken?: string;
 
     @Expose()
+    @OneToMany(() => Performance, (performance) => performance.user)
+    performances: Performance[];
+
+    @Expose()
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
     organizedTournaments: Tournament[];
 
@@ -72,4 +77,12 @@ export class User {
     @Expose()
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.user)
     tournamentAdmins: TournamentAdmin[];
+
+    @Expose()
+    @OneToMany(() => Report, (report) => report.reportedUser)
+    reportsReceived: Report[];
+
+    @Expose()
+    @OneToMany(() => Report, (report) => report.reportingUser)
+    reportsSent: Report[];
 }

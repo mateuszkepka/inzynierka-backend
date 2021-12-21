@@ -1,10 +1,8 @@
 import * as Joi from 'joi';
 import * as entities from './entities';
-
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
-
 import { AuthModule } from './modules/auth/auth.module';
 import { GamesModule } from './modules/games/games.module';
 import { InvitationsModule } from './modules/invitations/invitations.module';
@@ -17,6 +15,7 @@ import { TeamsModule } from './modules/teams/teams.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
     imports: [
@@ -64,6 +63,7 @@ import { UsersModule } from './modules/users/users.module';
                         entities.Tournament,
                         entities.TournamentAdmin,
                         entities.User,
+                        entities.Report,
                     ],
                 };
             },
@@ -77,6 +77,7 @@ import { UsersModule } from './modules/users/users.module';
         GamesModule,
         InvitationsModule,
         MatchesModule,
+        ReportsModule,
     ],
     providers: [
         {
@@ -96,4 +97,4 @@ import { UsersModule } from './modules/users/users.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule { }

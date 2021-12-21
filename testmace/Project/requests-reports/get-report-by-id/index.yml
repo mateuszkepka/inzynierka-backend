@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/matches'
+    url: '${$env.url}/reports/2'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-all-matches
+name: get-report-by-id

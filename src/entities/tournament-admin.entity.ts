@@ -25,8 +25,4 @@ export class TournamentAdmin {
     })
     @JoinColumn({ name: `userId` })
     user: User;
-
-    @Expose()
-    @Column(`boolean`, { default: false })
-    isAccepted: boolean;
 }

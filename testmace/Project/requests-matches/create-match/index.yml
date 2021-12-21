@@ -18,7 +18,7 @@ requestData:
         "matchStartDate": "2030-12-16",
         "tournamentStage": "cus",
         "firstRosterId": 1,
-        "secondRosterId": 3,
+        "secondRosterId": 1,
         "numberOfMaps": 1
       }
     xmlBody: ''

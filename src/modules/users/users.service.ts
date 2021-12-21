@@ -1,23 +1,25 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, Team, Tournament, User } from 'src/entities';
+import { Match, Player, Team, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { TournamentStatus } from '../tournaments/interfaces/tourrnament.status-enum';
 import { Role } from 'src/roles/roles.enum';
-import { GetTournamentsQuery } from './dto/get-tournaments.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
+import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>
+        @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
     ) { }
 
     async getById(userId: number) {
@@ -26,6 +28,16 @@ export class UsersService {
         });
         if (!user) {
             throw new NotFoundException(`User with this id does not exist`);
+        }
+        return user;
+    }
+
+    async getByUsername(username: string) {
+        const user = await this.usersRepository.findOne({
+            where: { username: username }
+        });
+        if (!user) {
+            throw new NotFoundException(`User with this username does not exist`);
         }
         return user;
     }
@@ -51,7 +63,46 @@ export class UsersService {
         return accounts;
     }
 
-    async getTeams(userId: number) {
+    async getMatchesByUser(userId: number, queryParams: MatchQueryDto) {
+        await this.getById(userId);
+        const queryBuilder = this.matchesRepository
+            .createQueryBuilder(`match`)
+            .select([
+                `match.matchId`, `match.matchStartDate`, `match.status`,
+                `match.winner`, `match.numberOfMaps`,
+                `match.firstRoster`, `match.secondRoster`
+            ])
+            .addSelect([
+                `firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`,
+                `firstRoster.team`, `secondRoster.team`,
+                `firstRoster.roster`, `secondRoster.roster`
+            ])
+            .addSelect([
+                `firstTeam.teamId`, `firstTeam.teamName`,
+                `secondTeam.teamId`, `secondTeam.teamName`
+            ])
+            .innerJoin(`match.firstRoster`, `firstRoster`)
+            .innerJoin(`match.secondRoster`, `secondRoster`)
+            .innerJoin(`firstRoster.team`, `firstTeam`)
+            .innerJoin(`secondRoster.team`, `secondTeam`)
+            .innerJoin(`firstTeam.members`, `firstInvitation`)
+            .innerJoin(`secondTeam.members`, `secondInvitation`)
+            .innerJoin(`firstInvitation.player`, `firstPlayer`)
+            .innerJoin(`secondInvitation.player`, `secondPlayer`)
+            .innerJoin(`firstPlayer.user`, `firstUser`)
+            .innerJoin(`secondPlayer.user`, `secondUser`)
+            .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId })
+        if (queryParams?.status && queryParams.status !== null) {
+            queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
+        }
+        const matches = await queryBuilder.getMany();
+        if (matches.length === 0) {
+            throw new NotFoundException(`No matches found`)
+        }
+        return matches;
+    }
+
+    async getTeamsByUser(userId: number) {
         await this.getById(userId);
         const teams = await this.teamsRepository
             .createQueryBuilder(`team`)
@@ -68,7 +119,7 @@ export class UsersService {
         return teams;
     }
 
-    async getTournaments(userId: number, queryParams: GetTournamentsQuery) {
+    async getTournamentsByUser(userId: number, queryParams: GetUsersTournamentsQuery) {
         await this.getById(userId);
         const queryBuilder = this.tournamentsRepository
             .createQueryBuilder(`tournament`)
@@ -89,11 +140,9 @@ export class UsersService {
             case Role.Organizer:
                 queryBuilder.innerJoin(`tournament.organizer`, `user`)
                 break;
-            default:
-                break;
         }
         switch (status) {
-            case TournamentStatus.Past:
+            case TournamentStatus.Finished:
                 queryBuilder.andWhere(`tournament.tournamentEndDate < :date`, { date: new Date() })
                 break;
             case TournamentStatus.Ongoing:
@@ -102,8 +151,6 @@ export class UsersService {
                 break;
             case TournamentStatus.Upcoming:
                 queryBuilder.andWhere(`tournament.tournamentStartDate > :date`, { date: new Date() })
-                break;
-            default:
                 break;
         }
         const tournaments = await queryBuilder.getMany();
@@ -147,12 +194,12 @@ export class UsersService {
 
     async remove(userId: number) {
         const user = await this.getById(userId);
-        const queryParams = new GetTournamentsQuery();
+        const queryParams = new GetUsersTournamentsQuery();
         queryParams.status = TournamentStatus.Ongoing;
         queryParams.role = Role.Organizer;
         var tournaments = [];
         try {
-            tournaments = await this.getTournaments(userId, queryParams);
+            tournaments = await this.getTournamentsByUser(userId, queryParams);
         } catch (ignore) { }
         if (tournaments.length !== 0) {
             throw new ForbiddenException(`You can not delete your account when you have ongoing tournaments`);

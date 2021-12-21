@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
-import { GetTournamentsQuery } from './dto/get-tournaments.dto';
+import { MatchQueryDto } from '../matches/dto/get-matches.dto';
+import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -16,14 +17,19 @@ export class UsersController {
         return this.usersService.getAccounts(id);
     }
 
-    @Get(`/:id/teams`)
-    async getTeams(@Param(`id`, ParseIntPipe) id: number) {
-        return this.usersService.getTeams(id);
+    @Get(`/:id/tournaments`)
+    async getTournaments(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: GetUsersTournamentsQuery) {
+        return this.usersService.getTournamentsByUser(id, queryParams);
     }
 
-    @Get(`/:id/tournaments`)
-    async getTournaments(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: GetTournamentsQuery) {
-        return this.usersService.getTournaments(id, queryParams);
+    @Get(`/:id/matches`)
+    async getMatches(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: MatchQueryDto) {
+        return this.usersService.getMatchesByUser(id, queryParams);
+    }
+
+    @Get(`/:id/teams`)
+    async getTeams(@Param(`id`, ParseIntPipe) id: number) {
+        return this.usersService.getTeamsByUser(id);
     }
 
     @Get(`/:id`)

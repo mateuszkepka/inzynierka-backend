@@ -6,12 +6,12 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/1/teams/?approved=true'
+    url: '${$env.url}/tournaments/1/teams/?approved=false'
   headers: []
   disabledInheritedHeaders: []
   params:
     - name: approved
-      value: 'true'
+      value: 'false'
       isChecked: true
   body:
     type: Json

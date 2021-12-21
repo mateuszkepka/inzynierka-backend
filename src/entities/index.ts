@@ -18,3 +18,4 @@ export * from './tournament-admin.entity';
 export * from './tournament.entity';
 export * from './user.entity';
 export * from './invitation.entity';
+export * from './report.entity';

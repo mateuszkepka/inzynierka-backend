@@ -1,5 +1,5 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { MatchStatus } from '../match-status.enum';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { MatchStatus } from '../interfaces/match-status.enum';
 
 export class UpdateMatchDto {
     @IsOptional()
@@ -19,8 +19,10 @@ export class UpdateMatchDto {
     tournamentStage: string;
 
     @IsOptional()
-    @IsString()
-    matchResult: string;
+    @IsNumber()
+    @Min(0)
+    @Max(2)
+    winner: number;
 
     @IsOptional()
     @IsNotEmpty()

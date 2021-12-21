@@ -1,0 +1,16 @@
+enabled: true
+children:
+  - get-report-by-id
+  - get-reports-filtered
+  - create-report
+  - update-report
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-reports
