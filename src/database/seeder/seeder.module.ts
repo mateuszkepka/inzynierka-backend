@@ -27,7 +27,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                         entities.Game,
                         entities.Group,
                         entities.GroupRule,
-                        entities.GroupStanding,
                         entities.Ladder,
                         entities.LadderStanding,
                         entities.Map,

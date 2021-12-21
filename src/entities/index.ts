@@ -1,6 +1,5 @@
 export * from './game.entity';
 export * from './group-rule.entity';
-export * from './group-standing.entity';
 export * from './group.entity';
 export * from './ladder.entity';
 export * from './ladder-standing.entity';

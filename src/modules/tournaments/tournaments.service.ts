@@ -16,6 +16,7 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentStatus } from './interfaces/tourrnament.status-enum';
+import { SchedulingService } from './scheduling.service';
 
 @Injectable()
 export class TournamentsService {
@@ -27,11 +28,31 @@ export class TournamentsService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly suspensionsService: SuspensionsService,
+        private readonly schedulingService: SchedulingService,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
         private readonly gamesService: GamesService
     ) { }
+
+    async getById(tournamentId: number) {
+        const tournament = await this.tournamentsRepository.findOne({
+            where: { tournamentId: tournamentId },
+            relations: [`organizer`, `game`, `format`]
+        });
+        if (!tournament) {
+            throw new NotFoundException(`Tournament with this id does not exist`);
+        }
+        return tournament;
+    }
+
+    async getByName(name: string) {
+        const tournament = await this.tournamentsRepository.findOne({
+            where: { name: name },
+            relations: [`organizer`, `game`]
+        });
+        return tournament;
+    }
 
     async getTournamentsFiltered(queryParams: TournamentQueryDto) {
         const { status } = queryParams;
@@ -58,25 +79,6 @@ export class TournamentsService {
             throw new NotFoundException(`No tournaments found`);
         }
         return tournaments;
-    }
-
-    async getById(tournamentId: number) {
-        const tournament = await this.tournamentsRepository.findOne({
-            where: { tournamentId: tournamentId },
-            relations: [`organizer`, `game`]
-        });
-        if (!tournament) {
-            throw new NotFoundException(`Tournament with this id does not exist`);
-        }
-        return tournament;
-    }
-
-    async getByName(name: string) {
-        const tournament = await this.tournamentsRepository.findOne({
-            where: { name: name },
-            relations: [`organizer`, `game`]
-        });
-        return tournament;
     }
 
     async getTeamsByTournament(tournamentId: number, approved: string) {
@@ -194,6 +196,7 @@ export class TournamentsService {
             game: game,
             organizer: user
         });
+        this.schedulingService.startTournament(tournament);
         return this.tournamentsRepository.save(tournament);
     }
 

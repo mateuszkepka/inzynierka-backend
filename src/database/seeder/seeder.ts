@@ -1,8 +1,6 @@
 import {
     GamesSeeder,
     GroupRuleSeeder,
-    GroupStandingSeeder,
-    GroupsSeeder,
     LadderSeeder,
     LadderStandingSeeder,
     MapSeeder,
@@ -28,7 +26,6 @@ export class Seeder {
     constructor(
         private readonly usersSeeder: UsersSeeder,
         private readonly gamesSeeder: GamesSeeder,
-        private readonly groupsSeeder: GroupsSeeder,
         private readonly matchesSeeder: MatchesSeeder,
         private readonly performancesSeeder: PerformancesSeeder,
         private readonly playersSeeder: PlayersSeeder,
@@ -40,7 +37,6 @@ export class Seeder {
         private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         private readonly mapSeeder: MapSeeder,
         private readonly groupRuleSeeder: GroupRuleSeeder,
-        private readonly groupStandingSeeder: GroupStandingSeeder,
         private readonly ladderStandingSeeder: LadderStandingSeeder,
         private readonly ladderSeeder: LadderSeeder,
         private readonly tiebreakerRuleSeeder: TiebreakerRuleSeeder,
@@ -76,7 +72,6 @@ export class Seeder {
             createdTournaments,
         );
         const createdMaps = await this.mapSeeder.seed(10, createdMatches);
-        const createdGroups = await this.groupsSeeder.seed(10, createdTournaments);
         const createdTiebreakerRules = await this.tiebreakerRuleSeeder.seed(10);
 
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
@@ -84,8 +79,6 @@ export class Seeder {
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);
         await this.performancesSeeder.seed(10, createdPlayers, createdMaps);
         await this.suspensionsSeeder.seed(10, createdUsers);
-        await this.groupStandingSeeder.seed(10, createdTeams, createdGroups);
-        await this.groupRuleSeeder.seed(10, createdGroups, createdTiebreakerRules);
         await this.ladderStandingSeeder.seed(10, createdTeams, createdLadders);
     }
 }

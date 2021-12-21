@@ -5,7 +5,7 @@ import { TiebreakerRule } from './tiebreaker-rule.entity';
 
 @Entity()
 export class GroupRule {
-    @ManyToOne(() => Group, (group) => group.groupRules, { primary: true })
+    @ManyToOne(() => Group, (group) => group.groupId, { primary: true })
     @JoinColumn({ name: `groupId` })
     group: Group;
 

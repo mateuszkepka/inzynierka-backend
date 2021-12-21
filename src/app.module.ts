@@ -16,6 +16,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { ReportsModule } from './modules/reports/reports.module';
                 JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
             }),
         }),
+        ScheduleModule.forRoot(),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
@@ -46,7 +48,6 @@ import { ReportsModule } from './modules/reports/reports.module';
                         entities.Game,
                         entities.Group,
                         entities.GroupRule,
-                        entities.GroupStanding,
                         entities.Ladder,
                         entities.LadderStanding,
                         entities.Map,

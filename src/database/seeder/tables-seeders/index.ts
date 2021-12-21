@@ -1,6 +1,5 @@
 export * from './games.seeder';
 export * from './users.seeder';
-export * from './groups.seeder';
 export * from './matches.seeder';
 export * from './performances.seeder';
 export * from './players.seeder';
@@ -13,7 +12,6 @@ export * from './maps.seeder';
 export * from './participating-team.seeder';
 export * from './tournament-admins.seeder';
 export * from './group-rules.seeder';
-export * from './group-standings.seeder';
 export * from './ladder-standings.seeder';
 export * from './ladders.seeder';
 export * from './tiebreaker-rules.seeder';

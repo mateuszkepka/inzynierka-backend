@@ -1,27 +1,28 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { GroupRule } from './group-rule.entity';
-import { GroupStanding } from './group-standing.entity';
+import { Expose, Transform, Type } from 'class-transformer';
+import { StandingsDto } from 'src/modules/tournaments/dto/standings-dto';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Group {
+    @Expose()
     @PrimaryGeneratedColumn()
     groupId: number;
 
-    @Column()
-    numberOfTeams: number;
-
-    @Column()
-    numberOfQualifying: number;
-
-    @OneToMany(() => GroupRule, (groupRule) => groupRule.group)
-    groupRules: GroupRule[];
-
-    @OneToMany(() => GroupStanding, (groupStanding) => groupStanding.group)
-    groupStandings: GroupStanding[];
-
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.tournamentId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Tournament, (tournament) => tournament.groups)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
+
+    @Expose()
+    @Column({ type: `json`, nullable: true })
+    @Type(() => StandingsDto)
+    standings: StandingsDto[]
 }

@@ -4,9 +4,10 @@ import { Match, ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, Use
 import { GamesModule } from '../games/games.module';
 import { PlayersModule } from '../players/players.module';
 import { SuspensionsModule } from '../suspensions/suspensions.module';
-import { SuspensionsService } from '../suspensions/suspensions.service';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
+import { GroupsService } from './groups.service';
+import { SchedulingService } from './scheduling.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 
@@ -26,7 +27,7 @@ import { TournamentsService } from './tournaments.service';
         PlayersModule,
         SuspensionsModule
     ],
-    providers: [TournamentsService],
+    providers: [TournamentsService, SchedulingService, GroupsService],
     exports: [TournamentsService],
     controllers: [TournamentsController],
 })

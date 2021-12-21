@@ -83,7 +83,15 @@ export class Tournament {
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
     tournamentAdmins: TournamentAdmin[];
 
-    @OneToOne(() => Format, { nullable: true })
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.name;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Format, { nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;
 
