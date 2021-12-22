@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Match, ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, User } from 'src/entities';
+import { Match, ParticipatingTeam, Prize, Tournament, TournamentAdmin, User } from 'src/entities';
 import { FormatsModule } from '../formats/formats.module';
 import { GamesModule } from '../games/games.module';
 import { PlayersModule } from '../players/players.module';
@@ -8,7 +8,6 @@ import { SuspensionsModule } from '../suspensions/suspensions.module';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
 import { GroupsService } from './groups.service';
-import { SchedulingService } from './scheduling.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 
@@ -27,9 +26,9 @@ import { TournamentsService } from './tournaments.service';
         GamesModule,
         PlayersModule,
         SuspensionsModule,
-        FormatsModule
+        FormatsModule,
     ],
-    providers: [TournamentsService, SchedulingService, GroupsService],
+    providers: [TournamentsService, GroupsService],
     exports: [TournamentsService],
     controllers: [TournamentsController],
 })

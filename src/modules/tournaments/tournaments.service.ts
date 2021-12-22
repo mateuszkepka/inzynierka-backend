@@ -17,7 +17,9 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentStatus } from './dto/tourrnament.status-enum';
-import { SchedulingService } from './scheduling.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { TournamentFormat } from '../formats/dto/tournament-format-enum';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class TournamentsService {
@@ -29,7 +31,7 @@ export class TournamentsService {
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly suspensionsService: SuspensionsService,
-        private readonly schedulingService: SchedulingService,
+        private readonly schedulerRegistry: SchedulerRegistry,
         private readonly formatsService: FormatsService,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
@@ -200,7 +202,7 @@ export class TournamentsService {
             format: format,
             organizer: user
         });
-        this.schedulingService.startTournament(tournament);
+        this.startTournament(tournament);
         return this.tournamentsRepository.save(tournament);
     }
 
@@ -239,7 +241,31 @@ export class TournamentsService {
         return this.rostersRepository.save(participatingTeam);
     }
 
-    async validateRoster(team: Team, roster: RosterMember[]) {
+    async addAdmin(id: number, body: CreateAdminDto) {
+        const tournament = await this.getById(id);
+        const user = await this.usersService.getById(body.userId);
+        const admin = this.tournamentAdminsRepository.create({
+            tournament: tournament,
+            user: user
+        });
+        return this.tournamentAdminsRepository.save(admin);
+    }
+
+    async addPrize(id: number, body: CreatePrizeDto) {
+        const tournament = await this.getById(id);
+        const prize = this.prizeRepository.create({
+            ...body,
+            tournament: tournament
+        });
+        return this.prizeRepository.save(prize);
+    }
+
+    async remove(id: number) {
+        const tournament = await this.getById(id);
+        return this.tournamentsRepository.remove(tournament);
+    }
+
+    private async validateRoster(team: Team, roster: RosterMember[]) {
         const exceptions = [];
         for (const member of roster) {
             var user: User;
@@ -273,27 +299,38 @@ export class TournamentsService {
         return exceptions;
     }
 
-    async addAdmin(id: number, body: CreateAdminDto) {
-        const tournament = await this.getById(id);
-        const user = await this.usersService.getById(body.userId);
-        const admin = this.tournamentAdminsRepository.create({
-            tournament: tournament,
-            user: user
-        });
-        return this.tournamentAdminsRepository.save(admin);
+    private async startTournament(tournament: Tournament) {
+        const format = tournament.format.name;
+        console.log(format)
+        switch (format) {
+            case TournamentFormat.SingleRoundRobin:
+                this.scheduleGroupDraw(tournament);
+                break;
+            case TournamentFormat.DoubleRoundRobin:
+                // TODO execute proper method
+                break;
+            case TournamentFormat.SingleEliminationLadder:
+                // TODO execute proper method
+                break;
+            case TournamentFormat.DoubleEliminationLadder:
+                // TODO execute proper method
+                break;
+        }
     }
 
-    async addPrize(id: number, body: CreatePrizeDto) {
-        const tournament = await this.getById(id);
-        const prize = this.prizeRepository.create({
-            ...body,
-            tournament: tournament
-        });
-        return this.prizeRepository.save(prize);
-    }
+    private async scheduleGroupDraw(tournament: Tournament) {
+        // TODO GET THE DATES FROM TOURNAMENTS
+        let date = new Date();
+        let newDate = new Date();
+        newDate.setMinutes(date.getSeconds() + 30);
+        console.log(newDate);
+        const { tournamentId } = tournament;
+        const jobName = `tournament${tournament.tournamentId}`;
+        const job = new CronJob(newDate, () => {
+            const teams = this.getTeamsByTournament(tournamentId, `true`);
+        })
 
-    async remove(id: number) {
-        const tournament = await this.getById(id);
-        return this.tournamentsRepository.remove(tournament);
+        this.schedulerRegistry.addCronJob(jobName, job)
+        job.start();
     }
 }
