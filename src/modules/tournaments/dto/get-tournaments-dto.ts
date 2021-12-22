@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional } from "class-validator";
-import { TournamentStatus } from "../interfaces/tourrnament.status-enum";
+import { TournamentStatus } from "./tourrnament.status-enum";
 
 export class TournamentQueryDto {
     @IsOptional()

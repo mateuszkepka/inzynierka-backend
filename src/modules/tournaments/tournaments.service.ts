@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension, Player } from 'src/entities';
 import { Repository } from 'typeorm';
+import { FormatsService } from '../formats/formats.service';
 import { GamesService } from '../games/games.service';
 import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { PlayersService } from '../players/players.service';
@@ -15,7 +16,7 @@ import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
-import { TournamentStatus } from './interfaces/tourrnament.status-enum';
+import { TournamentStatus } from './dto/tourrnament.status-enum';
 import { SchedulingService } from './scheduling.service';
 
 @Injectable()
@@ -29,6 +30,7 @@ export class TournamentsService {
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly suspensionsService: SuspensionsService,
         private readonly schedulingService: SchedulingService,
+        private readonly formatsService: FormatsService,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
@@ -191,9 +193,11 @@ export class TournamentsService {
             throw new BadRequestException(`This tournament name is already taken!`)
         }
         const game = await this.gamesService.getById(body.gameId);
+        const format = await this.formatsService.getByName(body.format)
         const tournament = this.tournamentsRepository.create({
             ...body,
             game: game,
+            format: format,
             organizer: user
         });
         this.schedulingService.startTournament(tournament);

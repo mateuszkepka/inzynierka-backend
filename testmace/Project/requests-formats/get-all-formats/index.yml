@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/teams'
+    url: '${$env.url}/formats'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-all-teams
+name: get-all-formats

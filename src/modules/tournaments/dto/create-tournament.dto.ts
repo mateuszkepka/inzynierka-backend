@@ -1,9 +1,14 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TournamentFormat } from '../../formats/dto/tournament-format-enum';
 
 export class CreateTournamentDto {
     @IsNotEmpty()
     @IsNumber()
-    gameId: number
+    gameId: number;
+
+    @IsNotEmpty()
+    @IsEnum(TournamentFormat)
+    format: TournamentFormat;
 
     @IsNotEmpty()
     @IsString()

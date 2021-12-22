@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { TournamentStatus } from '../tournaments/interfaces/tourrnament.status-enum';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status-enum';
 import { Role } from 'src/roles/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';

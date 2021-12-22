@@ -1,0 +1,14 @@
+enabled: true
+children:
+  - get-format-by-id
+  - get-all-formats
+variablesArray: []
+type: Folder
+authData:
+  type: inherit
+requestData:
+  headers: []
+  disabledInheritedHeaders: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+name: requests-formats

@@ -15,9 +15,10 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "tessst",
-        "numberOfPlayers": 1,
-        "numberOfTeams": 6,
+        "name": "test_tournament",
+        "format": "Single Round Robin",
+        "numberOfPlayers": 5,
+        "numberOfTeams": 16,
         "registerStartDate": "2021-12-11T14:54:25+0000",
         "registerEndDate": "2021-12-13T14:54:25+0000",
         "tournamentStartDate": "2021-12-15T14:54:25+0000",

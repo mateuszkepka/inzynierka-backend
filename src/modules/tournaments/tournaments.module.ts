@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Match, ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, User } from 'src/entities';
+import { FormatsModule } from '../formats/formats.module';
 import { GamesModule } from '../games/games.module';
 import { PlayersModule } from '../players/players.module';
 import { SuspensionsModule } from '../suspensions/suspensions.module';
@@ -25,7 +26,8 @@ import { TournamentsService } from './tournaments.service';
         TeamsModule,
         GamesModule,
         PlayersModule,
-        SuspensionsModule
+        SuspensionsModule,
+        FormatsModule
     ],
     providers: [TournamentsService, SchedulingService, GroupsService],
     exports: [TournamentsService],

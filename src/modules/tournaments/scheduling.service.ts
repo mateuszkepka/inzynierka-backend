@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { CronJob } from "cron";
 import { Tournament } from "src/entities";
-import { TournamentFormat } from "./interfaces/tournament-format-enum";
+import { TournamentFormat } from "../formats/dto/tournament-format-enum";
 
 @Injectable()
 export class SchedulingService {
@@ -10,17 +10,22 @@ export class SchedulingService {
 
     async startTournament(tournament: Tournament) {
         const format = tournament.format.name;
+        console.log(format)
         switch (format) {
             case TournamentFormat.SingleRoundRobin:
-                // TODO execute proper method
+                let date = new Date();
+                let newDate = new Date();
+                newDate.setMinutes(date.getSeconds() + 30);
+                console.log(newDate);
+                this.scheduleGroupDraw(`test`, newDate)
                 break;
             case TournamentFormat.DoubleRoundRobin:
                 // TODO execute proper method
                 break;
-            case TournamentFormat.SingleElimLadder:
+            case TournamentFormat.SingleEliminationLadder:
                 // TODO execute proper method
                 break;
-            case TournamentFormat.DoubleElimLadder:
+            case TournamentFormat.DoubleEliminationLadder:
                 // TODO execute proper method
                 break;
         }

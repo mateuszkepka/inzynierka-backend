@@ -17,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { FormatsModule } from './modules/formats/formats.module';
 
 @Module({
     imports: [
@@ -79,6 +80,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         InvitationsModule,
         MatchesModule,
         ReportsModule,
+        FormatsModule,
     ],
     providers: [
         {

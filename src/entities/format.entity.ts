@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { TournamentFormat } from 'src/modules/tournaments/interfaces/tournament-format-enum';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format-enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
