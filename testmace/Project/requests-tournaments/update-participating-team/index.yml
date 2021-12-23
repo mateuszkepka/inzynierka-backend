@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "isApproved": true
+        "status": "verified"
       }
     xmlBody: ''
     textBody: ''

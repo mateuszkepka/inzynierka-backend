@@ -3,15 +3,17 @@ import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { MatchQueryDto } from '../matches/dto/get-matches.dto';
-import { AcceptTeamDto } from './dto/accept-team-dto';
+import { MatchQuery } from '../matches/dto/get-matches.dto';
+import { VerifyTeamDto } from './dto/verify-team.dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { ParticipatingTeamQuery } from './dto/get-participating-team.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
+import { ParticipationStatus } from '../teams/participation-status';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -37,7 +39,7 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getMatchesByTournament(
         @Param(`id`, ParseIntPipe) id: number,
-        @Query() status: MatchQueryDto
+        @Query() { status }: MatchQuery
     ) {
         return this.tournamentsService.getMatchesByTournament(id, status);
     }
@@ -46,9 +48,9 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getTeamsByTournament(
         @Param(`id`, ParseIntPipe) id: number,
-        @Query('approved') approved: string
+        @Query() { status }: ParticipatingTeamQuery
     ) {
-        return this.tournamentsService.getTeamsByTournament(id, approved);
+        return this.tournamentsService.getTeamsByTournament(id, status);
     }
 
     @Get(`/:id`)
@@ -99,6 +101,15 @@ export class TournamentsController {
         return this.tournamentsService.addTeam(id, body);
     }
 
+    @Post(`/:id/teams/:teamId`)
+    // TODO GUARD FOR A TEAM'S CAPTAIN
+    async checkIn(
+        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
+    ) {
+        return this.tournamentsService.changeStatus(tournamentId, teamId, ParticipationStatus.CheckedIn);
+    }
+
     @Patch(`/:id`)
     @Roles(Role.Organizer)
     async update(
@@ -113,9 +124,9 @@ export class TournamentsController {
     async verifyTeam(
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
-        @Body() body: AcceptTeamDto
+        @Body() { status }: VerifyTeamDto
     ) {
-        return this.tournamentsService.verifyTeam(tournamentId, teamId, body);
+        return this.tournamentsService.changeStatus(tournamentId, teamId, status);
     }
 
     @Delete(`/:id`)

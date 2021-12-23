@@ -1,5 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { IsBoolean, IsDateString } from 'class-validator';
+import { ParticipationStatus } from 'src/modules/teams/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team, Tournament } from '.';
@@ -29,18 +30,23 @@ export class ParticipatingTeam {
 
     @Expose()
     @Column()
-    @IsDateString()
     signDate: Date;
 
     @Expose()
-    @Column({ type: `bool`, default: false })
-    @IsBoolean()
-    isApproved: boolean;
+    @Column({ default: null, nullable: true })
+    verificationDate: Date;
 
     @Expose()
     @Column({ default: null, nullable: true })
-    @IsDateString()
-    decisionDate: Date;
+    checkInDate: Date;
+
+    @Expose()
+    @Column({
+        type: `enum`,
+        enum: ParticipationStatus,
+        default: ParticipationStatus.Signed
+    })
+    status: ParticipationStatus;
 
     @Expose()
     @Column({ type: `json`, nullable: true })

@@ -41,8 +41,8 @@ export class ParticipatingTeamSeeder {
                 tournament: tournaments[i],
                 team: teams[i],
                 signDate: faker.datatype.datetime(),
-                isApproved: true,
-                decisionDate: faker.datatype.datetime()
+                //isApproved: true,
+                //decisionDate: faker.datatype.datetime()
             };
             const newRoster = await this.rosterRepository.create(roster);
             createdRosters.push(newRoster);

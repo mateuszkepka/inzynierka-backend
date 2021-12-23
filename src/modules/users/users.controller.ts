@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
-import { MatchQueryDto } from '../matches/dto/get-matches.dto';
+import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,8 +23,8 @@ export class UsersController {
     }
 
     @Get(`/:id/matches`)
-    async getMatches(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: MatchQueryDto) {
-        return this.usersService.getMatchesByUser(id, queryParams);
+    async getMatches(@Param(`id`, ParseIntPipe) id: number, @Query() { status }: MatchQuery) {
+        return this.usersService.getMatchesByUser(id, status);
     }
 
     @Get(`/:id/teams`)

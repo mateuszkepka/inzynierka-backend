@@ -1,15 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Suspension, Player } from 'src/entities';
 import { Repository } from 'typeorm';
 import { FormatsService } from '../formats/formats.service';
 import { GamesService } from '../games/games.service';
-import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { PlayersService } from '../players/players.service';
 import { SuspensionsService } from '../suspensions/suspensions.service';
 import { TeamsService } from '../teams/teams.service';
 import { UsersService } from '../users/users.service';
-import { AcceptTeamDto } from './dto/accept-team-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto, RosterMember } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
@@ -20,6 +18,8 @@ import { TournamentStatus } from './dto/tourrnament.status-enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { TournamentFormat } from '../formats/dto/tournament-format-enum';
 import { CronJob } from 'cron';
+import { ParticipationStatus } from '../teams/participation-status';
+import { MatchStatus } from '../matches/interfaces/match-status.enum';
 
 @Injectable()
 export class TournamentsService {
@@ -85,7 +85,7 @@ export class TournamentsService {
         return tournaments;
     }
 
-    async getTeamsByTournament(tournamentId: number, approved: string) {
+    async getTeamsByTournament(tournamentId: number, status: ParticipationStatus) {
         await this.getById(tournamentId);
         const response = this.rostersRepository
             .createQueryBuilder(`participating_team`)
@@ -94,8 +94,8 @@ export class TournamentsService {
             .innerJoin(`participating_team.tournament`, `tournament`)
             .innerJoin(`participating_team.team`, `team`)
             .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
-        if (approved === `true` || approved === `false`) {
-            response.andWhere(`participating_team.isApproved = :approved`, { approved })
+        if (status) {
+            response.andWhere(`participating_team.status = :status`, { status })
         }
         const teams = await response.getMany();
         if (teams.length === 0) {
@@ -104,9 +104,8 @@ export class TournamentsService {
         return teams;
     }
 
-    async getMatchesByTournament(tournamentId: number, queryParams: MatchQueryDto) {
+    async getMatchesByTournament(tournamentId: number, status: MatchStatus) {
         await this.getById(tournamentId);
-        const { status } = queryParams;
         const matches = await this.matchesRepository
             .createQueryBuilder(`match`)
             .addSelect([`firstRoster.team`, `secondRoster.team`])
@@ -171,7 +170,7 @@ export class TournamentsService {
         return participatingteam;
     }
 
-    async verifyTeam(tournamentId: number, teamId: number, body: AcceptTeamDto) {
+    async changeStatus(tournamentId: number, teamId: number, status: ParticipationStatus) {
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
         const participatingTeam = await this.rostersRepository.findOne({
@@ -180,12 +179,20 @@ export class TournamentsService {
         if (!participatingTeam) {
             throw new BadRequestException(`This team is not participating in the tournament`);
         }
-        const teams = await this.getTeamsByTournament(tournamentId, `true`);
+        if (participatingTeam.status !== ParticipationStatus.Verified && status === ParticipationStatus.CheckedIn) {
+            throw new ForbiddenException(`You are not allowed to check in to this tournament`);
+        }
+        const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed);
         if (teams.length + 1 >= tournament.numberOfTeams) {
             throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
         }
-        participatingTeam.decisionDate = new Date();
-        participatingTeam.isApproved = body.isApproved;
+        if (status === ParticipationStatus.Verified || status === ParticipationStatus.Unverified) {
+            participatingTeam.verificationDate = new Date();
+        }
+        if (status === ParticipationStatus.CheckedIn) {
+            participatingTeam.checkInDate = new Date();
+        }
+        participatingTeam.status = status;
         return this.rostersRepository.save(participatingTeam);
     }
 
@@ -327,7 +334,7 @@ export class TournamentsService {
         const { tournamentId } = tournament;
         const jobName = `tournament${tournament.tournamentId}`;
         const job = new CronJob(newDate, () => {
-            const teams = this.getTeamsByTournament(tournamentId, `true`);
+            const teams = this.getTeamsByTournament(tournamentId, ParticipationStatus.CheckedIn);
         })
 
         this.schedulerRegistry.addCronJob(jobName, job)

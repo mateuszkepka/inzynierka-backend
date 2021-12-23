@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, Match, Player, Team, User } from 'src/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { MatchQueryDto } from '../matches/dto/get-matches.dto';
+import { MatchQuery } from '../matches/dto/get-matches.dto';
+import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { PlayersService } from '../players/players.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
@@ -89,7 +90,7 @@ export class TeamsService {
         return players;
     }
 
-    async getMatchesByTeams(teamId: number, queryParams: MatchQueryDto) {
+    async getMatchesByTeams(teamId: number, status: MatchStatus) {
         await this.getById(teamId);
         const queryBuilder = this.matchesRepository
             .createQueryBuilder(`match`)
@@ -101,8 +102,8 @@ export class TeamsService {
             .innerJoin(`firstRoster.team`, `firstTeam`)
             .innerJoin(`secondRoster.team`, `secondTeam`)
             .where(`firstTeam.teamId = :teamId OR secondTeam.teamId = :teamId`, { teamId: teamId })
-        if (queryParams?.status && queryParams.status !== null) {
-            queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
+        if (status && status !== null) {
+            queryBuilder.andWhere(`match.status = :status`, { status: status })
         }
         const matches = await queryBuilder.getMany();
         if (matches.length === 0) {

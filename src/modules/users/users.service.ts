@@ -9,8 +9,8 @@ import { TournamentStatus } from '../tournaments/dto/tourrnament.status-enum';
 import { Role } from 'src/roles/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
-import { MatchQueryDto } from '../matches/dto/get-matches.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
+import { MatchStatus } from '../matches/interfaces/match-status.enum';
 
 @Injectable()
 export class UsersService {
@@ -63,7 +63,7 @@ export class UsersService {
         return accounts;
     }
 
-    async getMatchesByUser(userId: number, queryParams: MatchQueryDto) {
+    async getMatchesByUser(userId: number, status: MatchStatus) {
         await this.getById(userId);
         const queryBuilder = this.matchesRepository
             .createQueryBuilder(`match`)
@@ -92,8 +92,8 @@ export class UsersService {
             .innerJoin(`firstPlayer.user`, `firstUser`)
             .innerJoin(`secondPlayer.user`, `secondUser`)
             .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId })
-        if (queryParams?.status && queryParams.status !== null) {
-            queryBuilder.andWhere(`match.status = :status`, { status: queryParams.status })
+        if (status && status !== null) {
+            queryBuilder.andWhere(`match.status = :status`, { status: status })
         }
         const matches = await queryBuilder.getMany();
         if (matches.length === 0) {

@@ -10,6 +10,7 @@ children:
   - create-tournament-prize
   - create-tournament-admin
   - create-participating-team
+  - check-in
   - update-tournament
   - update-participating-team
   - remove-tournament-admin (TODO)
