@@ -20,6 +20,7 @@ import { TournamentFormat } from '../formats/dto/tournament-format-enum';
 import { CronJob } from 'cron';
 import { ParticipationStatus } from '../teams/participation-status';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { GroupsService } from './groups.service';
 
 @Injectable()
 export class TournamentsService {
@@ -34,6 +35,7 @@ export class TournamentsService {
         private readonly schedulerRegistry: SchedulerRegistry,
         private readonly formatsService: FormatsService,
         private readonly playersService: PlayersService,
+        private readonly groupsService: GroupsService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
         private readonly gamesService: GamesService
@@ -99,7 +101,7 @@ export class TournamentsService {
         }
         const teams = await response.getMany();
         if (teams.length === 0) {
-            throw new NotFoundException(`No teams found with given status found`)
+            throw new NotFoundException(`No teams with given status found`)
         }
         return teams;
     }
@@ -180,9 +182,9 @@ export class TournamentsService {
             throw new BadRequestException(`This team is not participating in the tournament`);
         }
         if (participatingTeam.status !== ParticipationStatus.Verified && status === ParticipationStatus.CheckedIn) {
-            throw new ForbiddenException(`You are not allowed to check in to this tournament`);
+            throw new ForbiddenException(`Only verified teams can check in`);
         }
-        const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed);
+        const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed).catch((ignore) => ignore);
         if (teams.length + 1 >= tournament.numberOfTeams) {
             throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
         }
@@ -209,8 +211,9 @@ export class TournamentsService {
             format: format,
             organizer: user
         });
+        await this.tournamentsRepository.save(tournament);
         this.startTournament(tournament);
-        return this.tournamentsRepository.save(tournament);
+        return tournament;
     }
 
     async update(id: number, attributes: Partial<UpdateTournamentDto>) {
@@ -308,7 +311,6 @@ export class TournamentsService {
 
     private async startTournament(tournament: Tournament) {
         const format = tournament.format.name;
-        console.log(format)
         switch (format) {
             case TournamentFormat.SingleRoundRobin:
                 this.scheduleGroupDraw(tournament);
@@ -329,12 +331,12 @@ export class TournamentsService {
         // TODO GET THE DATES FROM TOURNAMENTS
         let date = new Date();
         let newDate = new Date();
-        newDate.setMinutes(date.getSeconds() + 30);
-        console.log(newDate);
+        newDate.setSeconds(date.getSeconds() + 15);
         const { tournamentId } = tournament;
         const jobName = `tournament${tournament.tournamentId}`;
-        const job = new CronJob(newDate, () => {
-            const teams = this.getTeamsByTournament(tournamentId, ParticipationStatus.CheckedIn);
+        const job = new CronJob(newDate, async () => {
+            const teams = await this.getTeamsByTournament(tournamentId, undefined);
+            await this.groupsService.drawGroups(tournament, teams);
         })
 
         this.schedulerRegistry.addCronJob(jobName, job)

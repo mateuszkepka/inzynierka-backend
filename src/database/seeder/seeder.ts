@@ -1,6 +1,5 @@
 import {
     GamesSeeder,
-    GroupRuleSeeder,
     LadderSeeder,
     LadderStandingSeeder,
     MapSeeder,
@@ -12,7 +11,6 @@ import {
     PrizesSeeder,
     SuspensionsSeeder,
     TeamsSeeder,
-    TiebreakerRuleSeeder,
     TournamentsSeeder,
     UsersSeeder,
     TournamentAdminSeeder,
@@ -36,10 +34,8 @@ export class Seeder {
         private readonly suspensionsSeeder: SuspensionsSeeder,
         private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         private readonly mapSeeder: MapSeeder,
-        private readonly groupRuleSeeder: GroupRuleSeeder,
         private readonly ladderStandingSeeder: LadderStandingSeeder,
         private readonly ladderSeeder: LadderSeeder,
-        private readonly tiebreakerRuleSeeder: TiebreakerRuleSeeder,
         private readonly rosterSeeder: ParticipatingTeamSeeder,
         private readonly invitationsSeeder: InvitationsSeeder,
     ) { }
@@ -72,8 +68,6 @@ export class Seeder {
             createdTournaments,
         );
         const createdMaps = await this.mapSeeder.seed(10, createdMatches);
-        const createdTiebreakerRules = await this.tiebreakerRuleSeeder.seed(10);
-
         const createdLadders = await this.ladderSeeder.seed(10, createdTournaments);
         await this.invitationsSeeder.seed(10, createdPlayers, createdTeams);
         await this.tournamentAdminSeeder.seed(10, createdTournaments, createdUsers);

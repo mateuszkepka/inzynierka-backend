@@ -15,11 +15,11 @@ export class UserIsCaptainGuard implements CanActivate {
             return true;
         }
         let teamId = undefined;
-        if (request.method === `GET` || request.method === `PUT` || request.method === `DELETE`) {
-            teamId = Number(request.params.id);
+        if (request.params.teamId) {
+            teamId = request.params.teamId;
         }
-        if (request.method === 'POST') {
-            teamId = Number(request.body.teamId);
+        if (request.body.teamId) {
+            teamId = request.body.teamId;
         }
         if (teamId === undefined) {
             return false;
@@ -27,10 +27,6 @@ export class UserIsCaptainGuard implements CanActivate {
         const user = request.user;
         const accountList = await this.usersService.getAccounts(user.userId);
         const team = await this.teamsService.getById(teamId);
-        // TODO temporary solution
-        if (accountList.length === 0) {
-            return false;
-        }
         if (accountList.find(player => player.playerId === team.captain.playerId)) {
             return true;
         }

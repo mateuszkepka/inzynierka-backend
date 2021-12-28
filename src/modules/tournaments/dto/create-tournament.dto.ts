@@ -22,6 +22,10 @@ export class CreateTournamentDto {
     @IsNumber()
     numberOfTeams: number;
 
+    @IsOptional()
+    @IsNumber()
+    numberOfGroups: number;
+
     @IsNotEmpty()
     @IsDateString()
     registerStartDate: Date;

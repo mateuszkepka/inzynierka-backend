@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, Match, Player, Team, User } from 'src/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { PlayersService } from '../players/players.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -115,13 +114,13 @@ export class TeamsService {
     async create(createTeamDto: CreateTeamDto) {
         const captain = await this.playersService.getById(createTeamDto.playerId);
         const ifExists = await this.teamsRepository.findOne({
-            where: { teamName: createTeamDto.teamName },
+            where: { teamName: createTeamDto.name },
         });
         if (ifExists) {
             throw new BadRequestException(`This team name is already taken`);
         }
         const team = this.teamsRepository.create({
-            teamName: createTeamDto.teamName,
+            teamName: createTeamDto.name,
             captain: captain,
             region: captain.region,
             game: captain.game
@@ -152,7 +151,7 @@ export class TeamsService {
         }
         Object.assign(team, attrs);
         return this.teamsRepository.update(teamId, {
-            teamName: attrs.teamName,
+            teamName: attrs.name,
             captain: captain
         });
     }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards, UsePipes, } from '@nestjs/common';
 import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
@@ -14,6 +14,8 @@ import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
 import { ParticipationStatus } from '../teams/participation-status';
+import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
+import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -67,6 +69,7 @@ export class TournamentsController {
 
     @Post()
     @Roles(Role.Organizer)
+    @UsePipes(DateValidationPipe)
     async create(
         @Body() body: CreateTournamentDto,
         @Req() { user }: RequestWithUser
@@ -93,7 +96,7 @@ export class TournamentsController {
     }
 
     @Post(`/:id/teams`)
-    // TODO GUARD FOR A TEAM'S CAPTAIN
+    @UseGuards(UserIsCaptainGuard)
     async addTeam(
         @Param(`id`, ParseIntPipe) id: number,
         @Body() body: CreateParticipatingTeamDto
@@ -102,21 +105,12 @@ export class TournamentsController {
     }
 
     @Post(`/:id/teams/:teamId`)
-    // TODO GUARD FOR A TEAM'S CAPTAIN
+    @UseGuards(UserIsCaptainGuard)
     async checkIn(
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
         return this.tournamentsService.changeStatus(tournamentId, teamId, ParticipationStatus.CheckedIn);
-    }
-
-    @Patch(`/:id`)
-    @Roles(Role.Organizer)
-    async update(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: UpdateTournamentDto
-    ) {
-        return this.tournamentsService.update(id, body);
     }
 
     @Patch(`/:id/teams/:teamId`)
@@ -127,6 +121,16 @@ export class TournamentsController {
         @Body() { status }: VerifyTeamDto
     ) {
         return this.tournamentsService.changeStatus(tournamentId, teamId, status);
+    }
+
+    @Patch(`/:id`)
+    @Roles(Role.Organizer)
+    @UsePipes(DateValidationPipe)
+    async update(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: UpdateTournamentDto
+    ) {
+        return this.tournamentsService.update(id, body);
     }
 
     @Delete(`/:id`)

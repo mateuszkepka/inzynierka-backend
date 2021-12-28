@@ -28,6 +28,10 @@ export class Tournament {
     numberOfTeams: number;
 
     @Expose()
+    @Column({ nullable: true })
+    numberOfGroups: number;
+
+    @Expose()
     @Column()
     registerStartDate: Date;
 

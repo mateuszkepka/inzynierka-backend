@@ -1,5 +1,4 @@
 export * from './game.entity';
-export * from './group-rule.entity';
 export * from './group.entity';
 export * from './ladder.entity';
 export * from './ladder-standing.entity';
@@ -12,7 +11,6 @@ export * from './format.entity';
 export * from './prize.entity';
 export * from './suspension.entity';
 export * from './team.entity';
-export * from './tiebreaker-rule.entity';
 export * from './tournament-admin.entity';
 export * from './tournament.entity';
 export * from './user.entity';

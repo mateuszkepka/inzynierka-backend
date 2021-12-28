@@ -51,17 +51,17 @@ export class TeamsController {
         return this.teamsService.create(teamData);
     }
 
-    @Patch(`/:id`)
+    @Patch(`/:teamId`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateTeamDto) {
+    async update(@Param(`teamId`, ParseIntPipe) id: number, @Body() body: UpdateTeamDto) {
         return this.teamsService.update(id, body);
     }
 
-    @Delete(`/:id`)
+    @Delete(`/:teamId`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async remove(@Param(`id`, ParseIntPipe) id: number) {
+    async remove(@Param(`teamId`, ParseIntPipe) id: number) {
         return this.teamsService.remove(id);
     }
 }

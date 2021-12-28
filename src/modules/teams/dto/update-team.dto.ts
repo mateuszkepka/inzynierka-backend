@@ -3,7 +3,7 @@ import { IsString, IsNumber, IsOptional } from 'class-validator';
 export class UpdateTeamDto {
     @IsOptional()
     @IsString()
-    teamName: string;
+    name: string;
 
     @IsOptional()
     @IsNumber()

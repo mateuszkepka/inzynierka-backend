@@ -1,5 +1,4 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsBoolean, IsDateString } from 'class-validator';
 import { ParticipationStatus } from 'src/modules/teams/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -19,7 +18,7 @@ export class ParticipatingTeam {
             return
         }
     }, { toPlainOnly: true })
-    @ManyToOne(() => Tournament)
+    @ManyToOne(() => Tournament, { onDelete: `CASCADE` })
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 

@@ -15,14 +15,15 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "test_tournament",
+        "name": "test",
         "format": "Single Round Robin",
         "numberOfPlayers": 5,
         "numberOfTeams": 16,
-        "registerStartDate": "2021-12-11T14:54:25+0000",
-        "registerEndDate": "2021-12-13T14:54:25+0000",
-        "tournamentStartDate": "2021-12-15T14:54:25+0000",
-        "tournamentEndDate": "2021-12-16T14:54:25+0000",
+        "numberOfGroups": 4,
+        "registerStartDate": "2022-12-11T14:54:25+0000",
+        "registerEndDate": "2022-12-13T14:54:25+0000",
+        "tournamentStartDate": "2022-12-15T14:54:25+0000",
+        "tournamentEndDate": "2022-12-16T14:54:25+0000",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''
