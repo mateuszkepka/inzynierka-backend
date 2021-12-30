@@ -2,7 +2,7 @@ import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, Primary
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
-import { Game, Invitation } from '.';
+import { Game, GroupStanding, Invitation } from '.';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Entity()

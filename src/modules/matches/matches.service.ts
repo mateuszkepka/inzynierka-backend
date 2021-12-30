@@ -111,7 +111,7 @@ export class MatchesService {
     }
 
     async createPerformance(mapId: number, stats: CreateStatsDto) {
-        const map = await this.mapsRepository.findOneOrFail({ where: { mapId: mapId } });
+        const map = await this.mapsRepository.findOne({ where: { mapId: mapId } });
         if (!map) {
             throw new NotFoundException(`Map with given id does not exist`);
         }

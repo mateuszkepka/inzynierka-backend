@@ -181,17 +181,16 @@ export class TournamentsService {
         if (!participatingTeam) {
             throw new BadRequestException(`This team is not participating in the tournament`);
         }
-        if (participatingTeam.status !== ParticipationStatus.Verified && status === ParticipationStatus.CheckedIn) {
-            throw new ForbiddenException(`Only verified teams can check in`);
-        }
-        const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed).catch((ignore) => ignore);
-        if (teams.length + 1 >= tournament.numberOfTeams) {
-            throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
-        }
         if (status === ParticipationStatus.Verified || status === ParticipationStatus.Unverified) {
             participatingTeam.verificationDate = new Date();
         }
         if (status === ParticipationStatus.CheckedIn) {
+            if (participatingTeam.status !== ParticipationStatus.Verified) {
+                throw new ForbiddenException(`Only verified teams can check in`);
+            }
+            if (tournament.checkInCloseDate <= new Date()) {
+                throw new BadRequestException(`Check in time for this tournament is over`)
+            }
             participatingTeam.checkInDate = new Date();
         }
         participatingTeam.status = status;
@@ -226,8 +225,15 @@ export class TournamentsService {
         const { teamId, roster, subs } = body;
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
+        if (tournament.registerStartDate > new Date()) {
+            throw new BadRequestException(`Registration for this tournament is not open yet`);
+        }
         if (tournament.registerEndDate <= new Date()) {
             throw new BadRequestException(`Registration time for this tournament is over`);
+        }
+        const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed).catch((ignore) => ignore);
+        if (teams.length + 1 >= tournament.numberOfTeams) {
+            throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
         }
         const rosterExceptions = await this.validateRoster(team, roster);
         const subsExceptions = await this.validateRoster(team, subs);
@@ -328,17 +334,13 @@ export class TournamentsService {
     }
 
     private async scheduleGroupDraw(tournament: Tournament) {
-        // TODO GET THE DATES FROM TOURNAMENTS
-        let date = new Date();
-        let newDate = new Date();
-        newDate.setSeconds(date.getSeconds() + 15);
+        console.log(`Check in closes at ${tournament.checkInCloseDate}`)
         const { tournamentId } = tournament;
         const jobName = `tournament${tournament.tournamentId}`;
-        const job = new CronJob(newDate, async () => {
+        const job = new CronJob(tournament.checkInCloseDate, async () => {
             const teams = await this.getTeamsByTournament(tournamentId, undefined);
             await this.groupsService.drawGroups(tournament, teams);
         })
-
         this.schedulerRegistry.addCronJob(jobName, job)
         job.start();
     }

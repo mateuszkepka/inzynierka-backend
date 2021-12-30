@@ -48,6 +48,7 @@ import { FormatsModule } from './modules/formats/formats.module';
                     entities: [
                         entities.Game,
                         entities.Group,
+                        entities.GroupStanding,
                         entities.Ladder,
                         entities.LadderStanding,
                         entities.Map,

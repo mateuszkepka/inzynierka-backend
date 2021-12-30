@@ -14,6 +14,7 @@ children:
   - update-tournament
   - update-participating-team
   - remove-tournament-admin (TODO)
+  - (test) get groups
 variablesArray: []
 type: Folder
 authData:

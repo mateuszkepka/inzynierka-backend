@@ -1,8 +1,8 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { ParticipationStatus } from 'src/modules/teams/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Team, Tournament } from '.';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { GroupStanding, Team, Tournament } from '.';
 
 @Entity()
 export class ParticipatingTeam {
@@ -56,4 +56,8 @@ export class ParticipatingTeam {
     @Column({ type: `json`, nullable: true })
     @Type(() => RosterMember)
     subs: RosterMember[];
+
+    @Expose()
+    @OneToMany(() => GroupStanding, (standing) => standing.roster)
+    groups: GroupStanding[]
 }

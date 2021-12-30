@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -11,12 +11,18 @@ import { ParticipatingTeam, TournamentAdmin } from '.';
 
 @Entity()
 export class Tournament {
+    @BeforeInsert()
+    setCheckInDate() {
+        this.checkInCloseDate = new Date(this.tournamentStartDate);
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 15);
+    }
+
     @Expose()
     @PrimaryGeneratedColumn()
     tournamentId: number;
 
     @Expose()
-    @Column({ nullable: true })
+    @Column()
     name: string;
 
     @Expose()
@@ -28,7 +34,7 @@ export class Tournament {
     numberOfTeams: number;
 
     @Expose()
-    @Column({ nullable: true })
+    @Column()
     numberOfGroups: number;
 
     @Expose()
@@ -46,6 +52,9 @@ export class Tournament {
     @Expose()
     @Column({ nullable: true })
     tournamentEndDate: Date;
+
+    @Column({ nullable: true })
+    checkInCloseDate: Date;
 
     @Expose()
     @Column()
@@ -103,7 +112,7 @@ export class Tournament {
     rosters: ParticipatingTeam[];
 
     @Expose()
-    @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true })
+    @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true, nullable: true })
     @JoinColumn({ name: `prizeId` })
     prize: Prize;
 }
