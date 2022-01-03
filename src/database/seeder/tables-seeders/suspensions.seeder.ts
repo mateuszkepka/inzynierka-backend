@@ -29,6 +29,7 @@ export class SuspensionsSeeder {
                 endDate: faker.datatype.datetime(),
                 reason: faker.lorem.sentences(5),
                 user: users[i],
+                admin: users[users.length - i - 1],
             };
             const newSuspension = await this.suspensionsRepository.create(suspension);
             createdSuspensions.push(newSuspension);

@@ -18,9 +18,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    database: config.get<string>(`DB_NAME`),
-                    username: config.get<string>(`DB_USER`),
-                    password: config.get<string>(`DB_PASSWORD`),
+                    // URL is needed for docker purposes
+                    url: process.env.DATABASE_URL,
+                    // database: config.get<string>(`DB_NAME`),
+                    // username: config.get<string>(`DB_USER`),
+                    // password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
                     logging: true,
                     entities: [
@@ -44,6 +46,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                         entities.Tournament,
                         entities.TournamentAdmin,
                         entities.User,
+                        entities.Report,
                     ],
                 };
             },

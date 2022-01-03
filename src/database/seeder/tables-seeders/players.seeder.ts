@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game, Player, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Injectable()
 export class PlayersSeeder {
@@ -26,7 +27,7 @@ export class PlayersSeeder {
                 PUUID: faker.datatype.uuid(),
                 accountId: faker.datatype.number(),
                 summonerId: faker.datatype.number(),
-                region: faker.address.country(),
+                region: RegionsLoL.EUNE,
                 user: users[i],
                 game: game,
             };
