@@ -52,9 +52,6 @@ export class PlayersService {
             .innerJoin(`user.accounts`, `player`)
             .where(`player.playerId = :playerId`, { playerId: playerId })
             .getOne();
-        if (!owner) {
-            throw new NotFoundException(`Could not find this player's owner`)
-        }
         return owner;
     }
 

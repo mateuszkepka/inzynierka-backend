@@ -13,6 +13,11 @@ import { MatchQuery } from '../matches/dto/get-matches.dto';
 export class TeamsController {
     constructor(private readonly teamsService: TeamsService) { }
 
+    @Get(`/test`)
+    async test() {
+        return this.teamsService.getByParticipatingTeam(1);
+    }
+
     @Get(`/:id/players/available`)
     async getAvailablePlayers(
         @Param(`id`, ParseIntPipe) id: number,

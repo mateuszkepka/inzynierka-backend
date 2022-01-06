@@ -1,4 +1,5 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsGreaterThan } from 'src/decorators/is-greater-than.validator';
 import { TournamentFormat } from '../../formats/dto/tournament-format-enum';
 
 export class CreateTournamentDto {
@@ -27,6 +28,11 @@ export class CreateTournamentDto {
     numberOfGroups: number;
 
     @IsNotEmpty()
+    @IsNumber()
+    @IsIn([1, 3, 5])
+    numberOfMaps: number;
+
+    @IsNotEmpty()
     @IsDateString()
     registerStartDate: Date;
 
@@ -38,9 +44,17 @@ export class CreateTournamentDto {
     @IsDateString()
     tournamentStartDate: Date;
 
-    @IsOptional()
-    @IsDateString()
-    tournamentEndDate: Date;
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    @Max(24)
+    endingHour: number
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    @Max(59)
+    endingMinutes: number
 
     @IsNotEmpty()
     @IsString()

@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
-import { RosterMember } from '../tournaments/dto/create-participating-team.dto';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
@@ -16,11 +16,17 @@ export class MatchesController {
         return this.matchesService.getById(id);
     }
 
-    @Post()
-    @Roles(Role.Organizer)
-    async create(@Body() matchData: CreateMatchDto) {
-        return this.matchesService.create(matchData);
+    @Post(`/:id/results`)
+    @UseInterceptors(FilesInterceptor(`results`))
+    async sendResults(@Param(`id`, ParseIntPipe) id: number, @UploadedFiles() results: Array<Express.Multer.File>) {
+        return this.matchesService.resolveMatch(id, results);
     }
+
+    // @Post()
+    // @Roles(Role.Organizer)
+    // async create(@Body() matchData: CreateMatchDto) {
+    //     return this.matchesService.create(matchData);
+    // }
 
     @Patch(`/:id`)
     async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateMatchDto) {

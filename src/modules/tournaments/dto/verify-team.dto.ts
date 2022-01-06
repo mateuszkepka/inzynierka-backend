@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ParticipationStatus } from 'src/modules/teams/participation-status';
+import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
 
 export class VerifyTeamDto {
     @IsNotEmpty()

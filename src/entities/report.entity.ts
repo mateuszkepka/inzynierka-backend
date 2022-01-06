@@ -5,8 +5,8 @@ import { User } from '.';
 
 @Entity()
 export class Report {
-    @PrimaryGeneratedColumn()
     @Expose()
+    @PrimaryGeneratedColumn()
     reportId: number;
 
     @Expose()

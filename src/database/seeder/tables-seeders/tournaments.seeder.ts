@@ -39,7 +39,7 @@ export class TournamentsSeeder {
                 registerStartDate: registerStartDate,
                 registerEndDate: faker.date.future(0, registerStartDate),
                 tournamentStartDate: tournamentStartDate,
-                tournamentEndDate: faker.date.future(0, tournamentStartDate),
+                //tournamentEndDate: faker.date.future(0, tournamentStartDate),
                 description: faker.lorem.sentences(5),
                 prize: prizes[i],
                 format: presets[i],

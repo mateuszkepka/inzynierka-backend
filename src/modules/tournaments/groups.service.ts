@@ -1,9 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
+import { Group, GroupStanding, Match, ParticipatingTeam, Tournament } from "src/entities";
 import { Repository } from "typeorm";
 import { TournamentFormat } from "../formats/dto/tournament-format-enum";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
+import { TeamsService } from "../teams/teams.service";
+import { shuffle } from "./tournaments.service";
 
 @Injectable()
 export class GroupsService {
@@ -12,11 +14,12 @@ export class GroupsService {
         @InjectRepository(GroupStanding) private readonly standingsRepository: Repository<GroupStanding>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Group) private readonly groupsRepository: Repository<Group>,
+        private readonly teamsService: TeamsService
     ) { }
 
     async drawGroups(tournament: Tournament, teams: ParticipatingTeam[]) {
         // shuffling teams array
-        teams = this.shuffle(teams);
+        teams = shuffle(teams);
 
         // creating group names for the tournament
         for (let i = 0; i < tournament.numberOfGroups; i++) {
@@ -29,11 +32,13 @@ export class GroupsService {
         // assigning teams to particular groups
         groups.forEach(async (group) => {
             if (teams.length > 0) {
+                const roster = teams.pop();
                 await this.standingsRepository.save({
                     place: 0,
                     points: 0,
                     group: group,
-                    team: teams.pop()
+                    team: roster.team,
+                    roster: roster
                 })
             }
         })
@@ -50,7 +55,7 @@ export class GroupsService {
         })
     }
 
-    async getGroupsByTournament(tournament: Tournament) {
+    private async getGroupsByTournament(tournament: Tournament) {
         const groups = await this.groupsRepository.find({
             where: { tournament: tournament }
         })
@@ -60,26 +65,7 @@ export class GroupsService {
         return groups;
     }
 
-    async getById(groupId: number) {
-        const group = await this.groupsRepository.findOne({ where: { groupId: groupId } });
-        if (!group) {
-            throw new NotFoundException(`Group with given id doest not exist!`);
-        }
-        return group;
-    }
-
-    async getTeamsInGroup(groupId: number) {
-        const teams = await this.rostersRepository
-            .createQueryBuilder(`participatingteam`)
-            .innerJoinAndSelect(`participatingteam.team`, `team`)
-            .innerJoin(`participatingteam.groups`, `standing`)
-            .innerJoin(`standing.group`, `group`)
-            .where(`group.groupId = :groupId`, { groupId: groupId })
-            .getMany()
-        return teams
-    }
-
-    async makeRoundRobinPairings(tournament: Tournament, group: Group, numberOfGames: number) {
+    private async makeRoundRobinPairings(tournament: Tournament, group: Group, numberOfGames: number) {
         const teams = await this.getTeamsInGroup(group.groupId);
         if (teams.length % 2 == 1) {
             teams.push(null);
@@ -89,37 +75,54 @@ export class GroupsService {
         const half = numberOfTeams / 2;
         const matches = [];
         const indexes = teams.map((_, i) => i).slice(1);
+        const startDate = tournament.tournamentStartDate;
+        const endDate = startDate;
+        const hour = startDate;
+        endDate.setHours(tournament.endingHour);
+        endDate.setMinutes(tournament.endingMinutes);
         for (let round = 0; round < rounds; round++) {
             const newIndexes = [0].concat(indexes);
             const firstHalf = newIndexes.slice(0, half);
             const secondHalf = newIndexes.slice(half, numberOfTeams).reverse();
-            const startDate = tournament.tournamentStartDate;
-            const endDate = startDate.setHours(startDate.getHours() + 1);
             for (let i = 0; i < firstHalf.length; i++) {
+                const firstRoster = teams[firstHalf[i]];
+                const secondRoster = teams[secondHalf[i]];
+                const firstTeam = await this.teamsService.getByParticipatingTeam(firstRoster.participatingTeamId);
+                const secondTeam = await this.teamsService.getByParticipatingTeam(secondRoster.participatingTeamId);
                 const match = this.matchesRepository.create({
                     matchStartDate: startDate,
-                    matchEndDate: endDate,
                     status: MatchStatus.Scheduled,
-                    numberOfMaps: 1,
+                    numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     group: group,
-                    firstRoster: teams[firstHalf[i]],
-                    secondRoster: teams[secondHalf[i]],
+                    firstRoster: firstRoster,
+                    secondRoster: secondRoster,
+                    firstTeam: firstTeam,
+                    secondTeam: secondTeam,
                     maps: []
                 })
-                //console.log(`MATCH BETWEEN ${match.firstRoster.team.teamName} AND ${match.secondRoster.team.teamName} SCHEDULED FOR ${match.matchStartDate.toLocaleString()}`)
+                if (hour < endDate) {
+                    hour.setHours(hour.getHours() + tournament.numberOfMaps)
+                } else {
+                    hour.setHours(hour.getDate() + 1)
+                    hour.setHours(startDate.getHours());
+                    hour.setMinutes(startDate.getMinutes());
+                }
                 matches.push(match);
             }
             indexes.push(indexes.shift());
         }
-        return this.matchesRepository.save(matches);
+        await this.matchesRepository.save(matches);
     }
 
-    shuffle(array: any[]) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+    private async getTeamsInGroup(groupId: number) {
+        const teams = await this.rostersRepository
+            .createQueryBuilder(`participatingteam`)
+            .innerJoinAndSelect(`participatingteam.team`, `team`)
+            .innerJoin(`participatingteam.groups`, `standing`)
+            .innerJoin(`standing.group`, `group`)
+            .where(`group.groupId = :groupId`, { groupId: groupId })
+            .getMany()
+        return teams
     }
 }

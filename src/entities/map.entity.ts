@@ -1,7 +1,6 @@
 import { Expose } from 'class-transformer';
 import { Max, Min } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
 import { Match } from './match.entity';
 import { Performance } from './performance.entity';
 

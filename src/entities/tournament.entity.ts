@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -12,9 +12,11 @@ import { ParticipatingTeam, TournamentAdmin } from '.';
 @Entity()
 export class Tournament {
     @BeforeInsert()
-    setCheckInDate() {
+    setDates() {
         this.checkInCloseDate = new Date(this.tournamentStartDate);
-        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 15);
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
+        this.checkInOpenDate = new Date(this.checkInCloseDate);
+        this.checkInOpenDate.setMinutes(this.checkInCloseDate.getMinutes() - 50);
     }
 
     @Expose()
@@ -34,8 +36,12 @@ export class Tournament {
     numberOfTeams: number;
 
     @Expose()
-    @Column()
+    @Column({ nullable: true })
     numberOfGroups: number;
+
+    @Expose()
+    @Column()
+    numberOfMaps: number
 
     @Expose()
     @Column()
@@ -49,12 +55,17 @@ export class Tournament {
     @Column()
     tournamentStartDate: Date;
 
-    @Expose()
-    @Column({ nullable: true })
-    tournamentEndDate: Date;
+    @Column()
+    checkInOpenDate: Date;
 
-    @Column({ nullable: true })
+    @Column()
     checkInCloseDate: Date;
+
+    @Column()
+    endingHour: number;
+
+    @Column()
+    endingMinutes: number;
 
     @Expose()
     @Column()

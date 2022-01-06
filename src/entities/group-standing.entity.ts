@@ -1,11 +1,12 @@
 import { Expose } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ParticipatingTeam } from '.';
+import { ParticipatingTeam, Team } from '.';
 
 import { Group } from './group.entity';
 
 @Entity()
 export class GroupStanding {
+    @Expose()
     @PrimaryGeneratedColumn()
     groupStandingId: number;
 
@@ -21,6 +22,11 @@ export class GroupStanding {
     @ManyToOne(() => Group)
     @JoinColumn({ name: `groupId` })
     group: Group;
+
+    @Expose()
+    @ManyToOne(() => Team)
+    @JoinColumn({ name: `teamId` })
+    team: Team;
 
     @Expose()
     @ManyToOne(() => ParticipatingTeam)

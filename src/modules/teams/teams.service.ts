@@ -40,6 +40,18 @@ export class TeamsService {
         return team;
     }
 
+    async getByParticipatingTeam(participatingId: number) {
+        const team = await this.teamsRepository
+            .createQueryBuilder(`team`)
+            .innerJoin(`team.rosters`, `roster`)
+            .where(`roster.participatingTeamId = :participatingId`, { participatingId: participatingId })
+            .getOne();
+        if (!team) {
+            throw new NotFoundException(`Team with given participation id was not found`);
+        }
+        return team;
+    }
+
     async getMembers(teamId: number) {
         await this.getById(teamId);
         const members = await this.playersRepository

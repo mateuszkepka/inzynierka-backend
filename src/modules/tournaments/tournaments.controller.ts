@@ -13,7 +13,7 @@ import { ParticipatingTeamQuery } from './dto/get-participating-team.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { TournamentsService } from './tournaments.service';
-import { ParticipationStatus } from '../teams/participation-status';
+import { ParticipationStatus } from '../teams/dto/participation-status';
 import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 
@@ -31,6 +31,12 @@ export class TournamentsController {
         return this.tournamentsService.getAvailableAdmins(id, user);
     }
 
+    @Get(`/:id/standings`)
+    @Roles(Role.Organizer)
+    async getTournamentStandings(@Param(`id`, ParseIntPipe) id: number) {
+        return this.tournamentsService.getStandingsByTournament(id);
+    }
+
     @Get(`/:id/admins`)
     @Roles(Role.Organizer)
     async getAdmins(@Param(`id`, ParseIntPipe) id: number) {
@@ -39,7 +45,7 @@ export class TournamentsController {
 
     @Get(`/:id/matches`)
     @Roles(Role.Organizer)
-    async getMatchesByTournament(
+    async getTournamentMatches(
         @Param(`id`, ParseIntPipe) id: number,
         @Query() { status }: MatchQuery
     ) {
@@ -48,7 +54,7 @@ export class TournamentsController {
 
     @Get(`/:id/teams`)
     @Roles(Role.Organizer)
-    async getTeamsByTournament(
+    async getTournamentTeams(
         @Param(`id`, ParseIntPipe) id: number,
         @Query() { status }: ParticipatingTeamQuery
     ) {

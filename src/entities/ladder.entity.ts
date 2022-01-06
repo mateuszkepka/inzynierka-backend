@@ -1,21 +1,31 @@
-import { Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Match } from '.';
-
-import { LadderStanding } from './ladder-standing.entity';
+import { Expose, Transform } from 'class-transformer';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { LadderStanding } from '.';
 import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Ladder {
+    @Expose()
     @PrimaryGeneratedColumn()
     ladderId: number;
 
-    @OneToMany(() => LadderStanding, (ladderStanding) => ladderStanding.team)
-    ladderStandings: LadderStanding[];
+    @Expose()
+    @Column()
+    isLosers: boolean;
 
-    @ManyToOne(() => Tournament, (tournament) => tournament.ladders)
+    @Expose()
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.tournamentId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Tournament, (tournament) => tournament.groups, { onDelete: `CASCADE` })
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
-    @OneToMany(() => Match, (match) => match.ladder)
-    matches: Match[]
+    @Expose()
+    @OneToMany(() => LadderStanding, (standing) => standing.ladder)
+    standings: LadderStanding[]
 }

@@ -5,6 +5,7 @@ children:
   - get-tournament-teams
   - get-tournament-admins
   - get-tournament-matches
+  - get-tournament-standings
   - get-admins-to-invite
   - create-tournament
   - create-tournament-prize
@@ -14,7 +15,7 @@ children:
   - update-tournament
   - update-participating-team
   - remove-tournament-admin (TODO)
-  - (test) get groups
+  - (test)
 variablesArray: []
 type: Folder
 authData:

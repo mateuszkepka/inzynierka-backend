@@ -12,9 +12,8 @@ export class DateValidationPipe implements PipeTransform {
             const registerStartDate = new Date(tournamentDto.registerStartDate);
             const registerEndDate = new Date(tournamentDto.registerEndDate);
             const startDate = new Date(tournamentDto.tournamentStartDate);
-            const endDate = new Date(tournamentDto.tournamentEndDate);
             const breakDate = new Date(registerEndDate);
-            breakDate.setMinutes(breakDate.getMinutes() + 30);
+            breakDate.setHours(breakDate.getHours() + 1);
             if (registerStartDate < new Date()) {
                 throw new BadRequestException(`Registration start date cannot be in the past`);
             }
@@ -24,11 +23,8 @@ export class DateValidationPipe implements PipeTransform {
             if (startDate < new Date()) {
                 throw new BadRequestException(`Tournament start date cannot be in the past`);
             }
-            if (startDate > endDate) {
-                throw new BadRequestException(`Tournament end date must be after it's beginning`);
-            }
             if (breakDate > startDate) {
-                throw new BadRequestException(`Registration must end at least 30 minutes before the start of tournament`);
+                throw new BadRequestException(`Registration must end at least 1 hour before the start of tournament`);
             }
         }
         if (metatype === CreateSuspensionDto) {

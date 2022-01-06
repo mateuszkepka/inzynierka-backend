@@ -9,10 +9,6 @@ export class CreateMatchDto {
     @IsDateString()
     matchStartDate: Date;
 
-    @IsNotEmpty()
-    @IsString()
-    tournamentStage: string;
-
     @IsOptional()
     @IsNumber()
     firstRosterId: number;

@@ -5,14 +5,21 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: GET
-    url: '${$env.url}/tournaments/44/groups/55'
+    method: POST
+    url: '${$env.url}/matches/'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "tournamentId": 53,
+        "matchStartDate": "2030-12-16",
+        "firstRosterId": 47,
+        "secondRosterId": 1,
+        "numberOfMaps": 1
+      }
     xmlBody: ''
     textBody: ''
     formData: []
@@ -22,4 +29,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: (test) get groups
+name: (TO DELETE) create-match

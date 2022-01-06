@@ -15,10 +15,6 @@ export class UpdateMatchDto {
     matchEndDate: Date;
 
     @IsOptional()
-    @IsString()
-    tournamentStage: string;
-
-    @IsOptional()
     @IsNumber()
     @Min(0)
     @Max(2)

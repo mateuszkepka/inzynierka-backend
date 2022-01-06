@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Map, Match, ParticipatingTeam, Performance } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Ladder, Map, Match, ParticipatingTeam, Performance, Team, Tournament } from 'src/entities';
+import { Brackets, Repository } from 'typeorm';
+import { TournamentFormat } from '../formats/dto/tournament-format-enum';
+import { PlayersService } from '../players/players.service';
+import { TeamsService } from '../teams/teams.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
-import { UsersService } from '../users/users.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { CreateStatsDto } from './dto/create-stats.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
@@ -14,8 +16,9 @@ export class MatchesService {
         @InjectRepository(Performance) private readonly performanceRepository: Repository<Performance>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Map) private readonly mapsRepository: Repository<Map>,
-        private readonly tournamentService: TournamentsService,
-        private readonly usersService: UsersService,
+        private readonly tournamentsService: TournamentsService,
+        private readonly playersService: PlayersService,
+        private readonly teamsService: TeamsService,
     ) { }
 
     async getById(id: number) {
@@ -35,14 +38,14 @@ export class MatchesService {
                 `firstTeam.teamId`, `firstTeam.teamName`,
                 `secondTeam.teamId`, `secondTeam.teamName`, `performance.user`
             ])
-            .innerJoin(`match.tournament`, `tournament`)
-            .innerJoin(`match.firstRoster`, `firstRoster`)
-            .innerJoin(`match.secondRoster`, `secondRoster`)
-            .innerJoin(`firstRoster.team`, `firstTeam`)
-            .innerJoin(`secondRoster.team`, `secondTeam`)
-            .innerJoinAndSelect(`match.maps`, `map`)
-            .innerJoinAndSelect(`map.performances`, `performance`)
-            .innerJoinAndSelect(`performance.user`, `user`)
+            .leftJoin(`match.tournament`, `tournament`)
+            .leftJoin(`match.firstRoster`, `firstRoster`)
+            .leftJoin(`match.secondRoster`, `secondRoster`)
+            .leftJoin(`firstRoster.team`, `firstTeam`)
+            .leftJoin(`secondRoster.team`, `secondTeam`)
+            .leftJoinAndSelect(`match.maps`, `map`)
+            .leftJoinAndSelect(`map.performances`, `performance`)
+            .leftJoinAndSelect(`performance.user`, `user`)
             .where(`match.matchId = :matchId`, { matchId: id })
             .getOne()
         if (!match) {
@@ -51,20 +54,39 @@ export class MatchesService {
         return match;
     }
 
+    async getHeadToHead(firstRoster: ParticipatingTeam, secondRoster: ParticipatingTeam) {
+        const matches = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .where(
+                new Brackets((qb) => {
+                    qb.where(`match.firstRoster = :firstRoster`, { firstRoster: firstRoster })
+                        .andWhere(`match.secondRoster = :secondRoster`, { secondRoster: secondRoster });
+                }))
+            .orWhere(
+                new Brackets((qb) => {
+                    qb.where(`match.firstRoster = :secondRoster`, { secondRoster: secondRoster })
+                        .andWhere(`match.secondRoster = :firstRoster`, { firstRoster: firstRoster });
+                }))
+            .getMany();
+        return matches;
+    }
+
     async create(createMatchDto: CreateMatchDto) {
-        const tournament = await this.tournamentService.getById(createMatchDto.tournamentId);
+        const tournament = await this.tournamentsService.getById(createMatchDto.tournamentId);
         const { firstRosterId, secondRosterId } = createMatchDto;
-        var firstRoster: ParticipatingTeam = null;
-        var secondRoster: ParticipatingTeam = null;
+        var firstTeam: Team, secondTeam: Team = null;
+        var firstRoster: ParticipatingTeam = null, secondRoster: ParticipatingTeam = null;
         if (firstRosterId) {
-            firstRoster = await this.tournamentService.getParticipatingTeam(
+            firstRoster = await this.tournamentsService.getParticipatingTeamById(
                 createMatchDto.firstRosterId,
             );
+            firstTeam = await this.teamsService.getByParticipatingTeam(firstRoster.participatingTeamId);
         }
         if (secondRosterId) {
-            secondRoster = await this.tournamentService.getParticipatingTeam(
+            secondRoster = await this.tournamentsService.getParticipatingTeamById(
                 createMatchDto.secondRosterId,
             );
+            secondTeam = await this.teamsService.getByParticipatingTeam(secondRoster.participatingTeamId);
         }
         if (firstRoster && secondRoster && (firstRoster.tournament.tournamentId !== secondRoster.tournament.tournamentId)) {
             throw new BadRequestException(`These two teams are not in the same tournament`);
@@ -73,6 +95,8 @@ export class MatchesService {
             tournament: tournament,
             firstRoster: firstRoster,
             secondRoster: secondRoster,
+            firstTeam: firstTeam,
+            secondTeam: secondTeam,
             ...createMatchDto
         })
         return await this.matchesRepository.save(match);
@@ -82,11 +106,11 @@ export class MatchesService {
         const match = await this.getById(id);
         let firstRoster = null;
         if (attrs.firstRosterId) {
-            firstRoster = await this.tournamentService.getParticipatingTeam(attrs.firstRosterId);
+            firstRoster = await this.tournamentsService.getParticipatingTeamById(attrs.firstRosterId);
         }
         let secondRoster = null;
         if (attrs.secondRosterId) {
-            secondRoster = await this.tournamentService.getParticipatingTeam(attrs.secondRosterId);
+            secondRoster = await this.tournamentsService.getParticipatingTeamById(attrs.secondRosterId);
         }
         Object.assign(match, attrs);
         if (firstRoster) {
@@ -98,8 +122,20 @@ export class MatchesService {
         return this.matchesRepository.save(match);
     }
 
-    async createMap(matchId: number, mapWinner: number) {
+    async createMap(matchId: number, mapWinner: number, rawPerformances: CreateStatsDto[]) {
         const match = await this.getById(matchId);
+        rawPerformances.forEach(async (raw) => {
+            // TODO error handling
+            const player = await this.playersService.getByNickname(raw.summonerName);
+            const user = await this.playersService.getOwner(player.playerId);
+            const performance = this.performanceRepository.create({
+                user: user,
+                kills: raw.kills,
+                deaths: raw.deaths,
+                assists: raw.assists
+            })
+            return this.performanceRepository.save(performance);
+        })
         if (match.maps.length + 1 >= match.numberOfMaps) {
             return;
         }
@@ -110,17 +146,83 @@ export class MatchesService {
         return this.mapsRepository.save(map);
     }
 
-    async createPerformance(mapId: number, stats: CreateStatsDto) {
-        const map = await this.mapsRepository.findOne({ where: { mapId: mapId } });
-        if (!map) {
-            throw new NotFoundException(`Map with given id does not exist`);
+    async resolveMatch(matchId: number, files: Array<Express.Multer.File>) {
+        await this.parseResults(files);
+        const match = await this.getById(matchId);
+        const format = match.tournament.format.name;
+        if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleEliminationLadder) {
+            const firstRoster = match.group.standings.find(standing => standing.roster === match.firstRoster);
+            const secondRoster = match.group.standings.find(standing => standing.roster === match.secondRoster);
+            if (match.winner === 0) {
+                firstRoster.points += 1;
+                secondRoster.points += 1;
+            }
+            if (match.winner === 1) {
+                firstRoster.points += 3;
+                secondRoster.points += 0;
+            }
+            if (match.winner === 2) {
+                firstRoster.points += 0;
+                secondRoster.points += 3;
+            }
+            const standings = match.group.standings;
+            standings.sort((a, b) => {
+                if (a.points > b.points) {
+                    return 1;
+                }
+                if (a.points < b.points) {
+                    return -1;
+                }
+                return 0;
+            })
+            standings.forEach((standing, index) => {
+                standing.place = index;
+            })
+            // TODO tiebreaking system
+            const lookForTies = standings.reduce((previous, current) => {
+                previous[current.points] = ++previous[current.points] || 0;
+                return previous;
+            }, {})
+            const ties = standings.filter(e => lookForTies[e.points]);
         }
-        const user = await this.usersService.getById(stats.userId);
-        const performance = this.performanceRepository.create({
-            user: user,
-            map: map,
-            ...stats
-        })
-        return this.performanceRepository.save(performance);
+        if (format === TournamentFormat.SingleEliminationLadder) {
+            let winningRoster = null;
+            if (match.winner === 1) {
+                winningRoster = match.firstRoster;
+            }
+            if (match.winner === 2) {
+                winningRoster = match.secondRoster;
+            }
+            const ladder = match.tournament.ladders.find((ladder) => ladder.isLosers = false);
+            const standings = await this.tournamentsService.getStandingsByMatch(match);
+            const nextRound = standings.round - 1;
+            if (nextRound > 0) {
+                const nextPosition = standings.position / 2;
+                const nextMatch = await this.getMatchByPosition(ladder, nextRound, nextPosition);
+                if (nextMatch.firstRoster === null) {
+                    nextMatch.firstRoster === winningRoster;
+                }
+                if (nextMatch.secondRoster === null) {
+                    nextMatch.secondRoster === winningRoster;
+                }
+                await this.matchesRepository.save(nextMatch);
+            }
+        }
+    }
+
+    async getMatchByPosition(ladder: Ladder, round: number, position: number) {
+        const match = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .innerJoin(`match.standings`, `standing`)
+            .innerJoin(`standing.ladder`, `ladder`)
+            .where(`ladder.ladderId = :ladderId`, { ladderId: ladder.ladderId })
+            .andWhere(`standing.position = :position`, { position: position })
+            .andWhere(`standing.round = :round`, { round: round })
+            .getOne()
+        return match;
+    }
+
+    async parseResults(files: Array<Express.Multer.File>) {
+        // TODO
     }
 }

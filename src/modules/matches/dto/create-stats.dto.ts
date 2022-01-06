@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateStatsDto {
     @IsNotEmpty()
-    @IsNumber()
-    userId: number;
+    @IsString()
+    summonerName: string;
 
     @IsNotEmpty()
     @IsNumber()

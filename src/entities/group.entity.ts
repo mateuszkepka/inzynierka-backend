@@ -1,5 +1,4 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { StandingsDto } from 'src/modules/tournaments/dto/standings-dto';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Match } from '.';
 import { GroupStanding } from './group-standing.entity';
@@ -28,7 +27,7 @@ export class Group {
     tournament: Tournament;
 
     @Expose()
-    @OneToMany(() => GroupStanding, (standing) => standing.group)
+    @OneToMany(() => GroupStanding, (standing) => standing.group, { eager: true })
     standings: GroupStanding[]
 
     @OneToMany(() => Match, (match) => match.group)

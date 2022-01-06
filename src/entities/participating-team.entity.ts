@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { ParticipationStatus } from 'src/modules/teams/participation-status';
+import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GroupStanding, Team, Tournament } from '.';

@@ -33,13 +33,6 @@ export class Player {
     region: RegionsLoL;
 
     @Expose()
-    // @Transform(({ value }) => {
-    //     if (value !== undefined) {
-    //         return value.userId;
-    //     } else {
-    //         return
-    //     }
-    // }, { toPlainOnly: true })
     @ManyToOne(() => User, (user) => user.accounts, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `userId` })
     user: User;

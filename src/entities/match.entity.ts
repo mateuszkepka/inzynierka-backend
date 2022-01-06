@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Group, Ladder } from '.';
+import { Group, LadderStanding, Team } from '.';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Tournament } from './tournament.entity';
@@ -59,16 +59,9 @@ export class Match {
     @ManyToOne(() => Group, (group) => group.matches, { nullable: true })
     group: Group;
 
-    @Expose({ name: `ladderId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.ladderId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
-    @ManyToOne(() => Ladder, (ladder) => ladder.matches, { nullable: true })
-    ladder: Ladder;
+    @Expose()
+    @OneToMany(() => LadderStanding, (standing) => standing.match, { nullable: true })
+    standings: LadderStanding[];
 
     @Expose()
     @ManyToOne(() => ParticipatingTeam, { nullable: true })
@@ -79,6 +72,16 @@ export class Match {
     @ManyToOne(() => ParticipatingTeam, { nullable: true })
     @JoinColumn({ name: `secondRosterId` })
     secondRoster: ParticipatingTeam;
+
+    @Expose()
+    @ManyToOne(() => Team, { nullable: true })
+    @JoinColumn({ name: `firstTeamId` })
+    firstTeam: Team;
+
+    @Expose()
+    @ManyToOne(() => Team, { nullable: true })
+    @JoinColumn({ name: `secondTeamId` })
+    secondTeam: Team;
 
     @Expose()
     @OneToMany(() => Map, (map) => map.match)

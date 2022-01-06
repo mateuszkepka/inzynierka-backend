@@ -25,8 +25,8 @@ export class LadderStandingSeeder {
 
         for (let i = 0; i < numberOfRows; ++i) {
             const ladderStanding: Partial<LadderStanding> = {
-                stage: faker.lorem.word(1),
-                team: teams[i],
+                //stage: faker.lorem.word(1),
+                //team: teams[i],
                 ladder: ladders[i],
             };
             const newLadderStanding = await this.ladderStandingRepository.create(ladderStanding);
