@@ -1,5 +1,4 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-
 import { Expose } from 'class-transformer';
 import { Tournament } from '.';
 

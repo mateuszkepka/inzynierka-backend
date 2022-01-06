@@ -12,12 +12,6 @@ export class Invitation {
     invitationId: number;
 
     @Expose({ name: `playerId` })
-    // @Transform(({ value }) => {
-    //     if (value === undefined) {
-    //         return
-    //     }
-    //     return value.playerId;
-    // }, { toPlainOnly: true })
     @ManyToOne(() => Player, (player) => player.teams, { nullable: true })
     @JoinColumn({ name: `playerId` })
     player: Player;

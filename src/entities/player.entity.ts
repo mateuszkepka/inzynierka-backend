@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Game, Invitation } from '.';
 import { Expose, Transform } from 'class-transformer';
-import { Performance } from './performance.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';

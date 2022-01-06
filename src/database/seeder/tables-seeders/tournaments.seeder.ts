@@ -3,54 +3,50 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game, Format, Prize, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
+import { getRandom } from 'src/util';
+import { Role } from 'src/roles/roles.enum';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format-enum';
 
 @Injectable()
 export class TournamentsSeeder {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
-    ) {}
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+    ) { }
 
-    async seed(
-        numberOfRows: number,
-        prizes: Prize[],
-        presets: Format[],
-        users: User[],
-        game: Game,
-    ) {
-        const isSeeded = await this.tournamentsRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Tournament" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "Tournament" table...`);
+    async seed(numberOfRows: number, prizes: Prize[], formats: Format[], users: User[], game: Game,) {
         const createdTournaments = [];
-
-        for (let i = 0; i < numberOfRows; ++i) {
+        const organizers = users.filter((user) => user.roles.includes(Role.Organizer));
+        for (let i = 0; i < numberOfRows; i++) {
+            const numberOfPlayers = getRandom([0.15, 0.15, 0.05, 0.05, 0.6], [1, 2, 3, 4, 5]);
+            const numberOfTeams = getRandom([0.1, 0.2, 0.2, 0.2, 0.3], [4, 8, 16, 32, 64]);
+            const format = formats[Math.floor(Math.random() * formats.length)];
+            let numberOfGroups = null;
+            if (format.name === TournamentFormat.SingleRoundRobin || format.name === TournamentFormat.DoubleRoundRobin) {
+                
+            }
+            const numberOfMaps = getRandom([0.7, 0.2, 0.1], [1, 3, 5]);
             const registerStartDate = faker.datatype.datetime();
             const tournamentStartDate = faker.datatype.datetime();
-            const tournament: Partial<Tournament> = {
+            const tournament = this.tournamentsRepository.create({
                 name: faker.internet.userName(),
-                numberOfPlayers: faker.datatype.number(),
-                numberOfTeams: faker.datatype.number(),
+                numberOfPlayers: numberOfPlayers,
+                numberOfTeams: numberOfTeams,
+                numberOfGroups: numberOfGroups,
+                numberOfMaps: numberOfMaps,
                 registerStartDate: registerStartDate,
                 registerEndDate: faker.date.future(0, registerStartDate),
                 tournamentStartDate: tournamentStartDate,
-                //tournamentEndDate: faker.date.future(0, tournamentStartDate),
+                endingHour: 22,
+                endingMinutes: 0,
                 description: faker.lorem.sentences(5),
-                prize: prizes[i],
-                format: presets[i],
-                organizer: users[i],
+                prize: prizes[Math.floor(Math.random() * prizes.length)],
+                format: format,
+                organizer: organizers[Math.floor(Math.random() * organizers.length)],
                 game: game,
-            };
-            const newTournament = await this.tournamentsRepository.create(tournament);
-            createdTournaments.push(newTournament);
-            await this.tournamentsRepository.save(newTournament);
+            });
+            createdTournaments.push(tournament);
         }
 
-        return createdTournaments;
+        return this.tournamentsRepository.save(createdTournaments);
     }
 }

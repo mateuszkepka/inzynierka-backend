@@ -6,34 +6,23 @@ import * as faker from 'faker';
 
 @Injectable()
 export class SuspensionsSeeder {
-    constructor(
-        @InjectRepository(Suspension)
-        private readonly suspensionsRepository: Repository<Suspension>,
-    ) {}
+    constructor(@InjectRepository(Suspension) private readonly suspensionsRepository: Repository<Suspension>,) { }
 
-    async seed(numberOfRows: number, users: User[]) {
-        const isSeeded = await this.suspensionsRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Suspension" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "Suspension" table...`);
+    async seed(users: User[]) {
         const createdSuspensions = [];
-
-        for (let i = 0; i < numberOfRows; ++i) {
-            const suspension: Partial<Suspension> = {
-                startDate: faker.datatype.datetime(),
-                endDate: faker.datatype.datetime(),
-                reason: faker.lorem.sentences(5),
-                user: users[i],
-            };
-            const newSuspension = await this.suspensionsRepository.create(suspension);
-            createdSuspensions.push(newSuspension);
-            await this.suspensionsRepository.save(newSuspension);
+        for (let i = 0; i < users.length; ++i) {
+            const admin = users.find((user) => user.username === `admin`);
+            const ifBanned = Math.random() < 0.1 ? true : false;
+            if (ifBanned) {
+                const suspension = this.suspensionsRepository.create({
+                    endDate: faker.date.soon(10),
+                    reason: faker.lorem.sentences(2),
+                    user: users[i],
+                    admin: admin
+                });
+                createdSuspensions.push(suspension);
+            }
         }
-        return createdSuspensions;
+        return this.suspensionsRepository.save(createdSuspensions);;
     }
 }
