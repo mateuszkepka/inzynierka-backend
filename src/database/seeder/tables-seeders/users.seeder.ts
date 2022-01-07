@@ -20,9 +20,9 @@ export class UsersSeeder {
             email: `admin@admin.com`,
             username: `admin`,
             password: adminPassword,
-            country: `Poland`
+            country: `Poland`,
+            roles: [Role.User, Role.Admin]
         });
-        admin.roles.push(Role.Admin);
         createdUsers.push(admin);
 
         for (let i = 0; i < 5; i++) {
@@ -34,8 +34,8 @@ export class UsersSeeder {
                 username: faker.internet.userName(),
                 password: password,
                 country: `Poland`,
+                roles: [Role.User, Role.Organizer]
             });
-            organizer.roles.push(Role.Organizer);
             createdUsers.push(organizer);
         }
 

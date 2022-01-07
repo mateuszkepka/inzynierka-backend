@@ -23,11 +23,12 @@ export class CreateTournamentDto {
     @IsNumber()
     numberOfTeams: number;
 
+    @IsNotEmpty()
     @ValidateIf(o => o.format.name === TournamentFormat.SingleRoundRobin || o.format.name === TournamentFormat.SingleRoundRobin)
     @IsGreaterThan(`numberOfTeams`, {
         message: `Each group must contain at least 2 teams`
     })
-    @IsNotEmpty()
+    @Min(1)
     @IsNumber()
     numberOfGroups: number;
 

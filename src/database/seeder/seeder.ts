@@ -7,13 +7,13 @@ import {
     TeamsSeeder,
     InvitationsSeeder,
     PrizesSeeder,
+    TournamentsSeeder,
     // LadderSeeder,
     // LadderStandingSeeder,
     // MapSeeder,
     // MatchesSeeder,
     // ParticipatingTeamSeeder,
     // PerformancesSeeder,
-    // TournamentsSeeder,
     // TournamentAdminSeeder,
 } from './tables-seeders';
 import { Injectable } from '@nestjs/common';
@@ -29,9 +29,9 @@ export class Seeder {
         private readonly teamsSeeder: TeamsSeeder,
         private readonly invitationsSeeder: InvitationsSeeder,
         private readonly prizesSeeder: PrizesSeeder,
+        private readonly tournamentsSeeder: TournamentsSeeder,
         // private readonly matchesSeeder: MatchesSeeder,
         // private readonly performancesSeeder: PerformancesSeeder,
-        // private readonly tournamentsSeeder: TournamentsSeeder,
         // private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         // private readonly mapSeeder: MapSeeder,
         // private readonly ladderStandingSeeder: LadderStandingSeeder,
@@ -48,5 +48,6 @@ export class Seeder {
         const teams = await this.teamsSeeder.seed(players);
         const invitations = await this.invitationsSeeder.seed(players, teams);
         const prizes = await this.prizesSeeder.seed(10);
+        const tournaments = await this.tournamentsSeeder.seed(10, prizes, formats, users, game);
     }
 }

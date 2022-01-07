@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { Tournament } from '.';
 
@@ -16,6 +16,6 @@ export class Prize {
     @Expose()
     distribution: string;
 
-    @OneToOne(() => Tournament, (tournament) => tournament.prize)
+    @OneToMany(() => Tournament, (tournament) => tournament.prize)
     tournament: Tournament;
 }
