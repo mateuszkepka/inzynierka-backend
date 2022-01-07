@@ -8,11 +8,11 @@ import {
     InvitationsSeeder,
     PrizesSeeder,
     TournamentsSeeder,
+    ParticipatingTeamSeeder,
     // LadderSeeder,
     // LadderStandingSeeder,
     // MapSeeder,
     // MatchesSeeder,
-    // ParticipatingTeamSeeder,
     // PerformancesSeeder,
     // TournamentAdminSeeder,
 } from './tables-seeders';
@@ -30,13 +30,13 @@ export class Seeder {
         private readonly invitationsSeeder: InvitationsSeeder,
         private readonly prizesSeeder: PrizesSeeder,
         private readonly tournamentsSeeder: TournamentsSeeder,
+        private readonly rosterSeeder: ParticipatingTeamSeeder,
         // private readonly matchesSeeder: MatchesSeeder,
         // private readonly performancesSeeder: PerformancesSeeder,
         // private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         // private readonly mapSeeder: MapSeeder,
         // private readonly ladderStandingSeeder: LadderStandingSeeder,
         // private readonly ladderSeeder: LadderSeeder,
-        // private readonly rosterSeeder: ParticipatingTeamSeeder,
     ) { }
 
     async seed() {
@@ -49,5 +49,6 @@ export class Seeder {
         const invitations = await this.invitationsSeeder.seed(players, teams);
         const prizes = await this.prizesSeeder.seed(10);
         const tournaments = await this.tournamentsSeeder.seed(10, prizes, formats, users, game);
+        const rosters = await this.rosterSeeder.seed(tournaments);
     }
 }
