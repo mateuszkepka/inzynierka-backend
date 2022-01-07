@@ -58,7 +58,7 @@ export class ParticipatingTeam {
     roster: RosterMember[];
 
     @Expose()
-    @Column({ type: `json`, nullable: true })
+    @Column({ type: `json`, default: null, nullable: true })
     @Type(() => RosterMember)
     subs: RosterMember[];
 

@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ParticipatingTeam, Team, Tournament } from 'src/entities';
+import { ParticipatingTeam, Player, Team, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
 import { shuffle } from 'src/util';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
+import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
 
 @Injectable()
 export class ParticipatingTeamSeeder {
     constructor(
         @InjectRepository(ParticipatingTeam) private readonly rosterRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>
     ) { }
 
     async seed(tournaments: Tournament[]) {
         const createdRosters = [];
-
         for (let i = 0; i < tournaments.length; i++) {
             let teams = await this.teamsRepository
                 .createQueryBuilder(`team`)
@@ -36,18 +37,23 @@ export class ParticipatingTeamSeeder {
             teams = shuffle(teams);
             for (let j = 0; j < tournaments[i].numberOfTeams; j++) {
                 if (teams[j]) {
+                    const members = await this.playersRepository
+                        .createQueryBuilder(`player`)
+                        .addSelect(`user.userId`)
+                        .addSelect(`user.username`)
+                        .innerJoinAndSelect(`player.teams`, `invitation`)
+                        .innerJoinAndSelect(`invitation.team`, `team`)
+                        .innerJoin(`player.user`, `user`)
+                        .where(`team.teamId = :id`, { id: teams[j].teamId })
+                        .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
+                        .getMany()
                     const roster = [];
-                    const subs = [];
                     for (let k = 0; k < tournaments[i].numberOfPlayers; k++) {
                         const member = new RosterMember();
-                        member.playerId = Math.floor(Math.random() * 50 + 1);
-                        member.username = faker.internet.userName();
+                        member.playerId = members[k].playerId;
+                        member.username = members[k].user.username;
                         roster.push(member)
                     }
-                    const sub = new RosterMember();
-                    sub.playerId = Math.floor(Math.random() * 50 + 1);
-                    sub.username = faker.internet.userName();
-                    subs.push(sub);
                     const participatingTeam = this.rosterRepository.create({
                         tournament: tournaments[i],
                         signDate: faker.datatype.datetime(),
@@ -56,7 +62,6 @@ export class ParticipatingTeamSeeder {
                         verificationDate: new Date(),
                         checkInDate: new Date(),
                         roster: roster,
-                        subs: subs
                     });
                     createdRosters.push(participatingTeam);
                 }
