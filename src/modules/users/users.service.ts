@@ -207,6 +207,42 @@ export class UsersService {
         return this.usersRepository.remove(user);
     }
 
+    public async setProfileImage(userId, image) {
+        const user = await this.getById(userId);
+        if (user.userProfileImage) {
+            if (user.userProfileImage !== 'default-avatar.jpg') {
+                const fs = require('fs')
+                const path = './uploads/userProfileImages/' + user.userProfileImage;
+                try {
+                    fs.unlinkSync(path)
+                } catch (err) {
+                    console.error("Previous user avatar failed to remove")
+                }
+            }
+        }
+        user.userProfileImage = image.filename;
+        this.usersRepository.save(user);
+        return user;
+    }
+
+    public async setProfileBackground(userId, image) {
+        const user = await this.getById(userId);
+        if (user.userProfileBackground) {
+            if (user.userProfileBackground !== 'default-background.jpg') {
+                const fs = require('fs')
+                const path = './uploads/userProfileBackgrounds/' + user.userProfileBackground;
+                try {
+                    fs.unlinkSync(path)
+                } catch (err) {
+                    console.error("Previous user backgrounds failed to remove")
+                }
+            }
+        }
+        user.userProfileBackground = image.filename;
+        this.usersRepository.save(user);
+        return user;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                                     JWT                                    */
     /* -------------------------------------------------------------------------- */

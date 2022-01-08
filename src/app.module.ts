@@ -40,10 +40,10 @@ import { UsersModule } from './modules/users/users.module';
                 return {
                     type: `postgres`,
                     // URL is needed for docker purposes
-                    url: process.env.DATABASE_URL,
-                    // database: config.get<string>(`DB_NAME`),
-                    // username: config.get<string>(`DB_USER`),
-                    // password: config.get<string>(`DB_PASSWORD`),
+                    // url: process.env.DATABASE_URL,
+                    database: config.get<string>(`DB_NAME`),
+                    username: config.get<string>(`DB_USER`),
+                    password: config.get<string>(`DB_PASSWORD`),
                     synchronize: true,
                     logging: true,
                     entities: [

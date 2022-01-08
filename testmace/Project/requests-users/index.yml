@@ -9,6 +9,10 @@ children:
   - revoke-role
   - update-user
   - remove-user
+  - avatar-upload
+  - get-user-avatar
+  - get-user-background
+  - background-upload
 variablesArray: []
 type: Folder
 authData:

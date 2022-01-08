@@ -5,18 +5,14 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/auth/login'
+    method: GET
+    url: '${$env.url}/teams/team-image/default-team.png'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "email": "bubu@gmail.com",
-        "password": "bubu"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -26,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in-user
+name: get-team-image
