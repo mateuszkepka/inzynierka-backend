@@ -1,7 +1,22 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UploadedFiles, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
-import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Res,
+    UploadedFile,
+    UseInterceptors,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Express } from 'express';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { MatchQueryDto } from '../matches/dto/get-matches.dto';
@@ -9,22 +24,19 @@ import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { v4 as uuidv4 } from 'uuid';
-import { Observable, of } from 'rxjs';
-import { fileURLToPath } from 'url';
-import { extname } from "path";
-import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
-
+import { Public } from 'src/roles/public.decorator';
 
 @Controller(`users`)
 @Roles(Role.User)
-@UsePipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-}))
+@UsePipes(
+    new ValidationPipe({
+        whitelist: true,
+        transform: true,
+    }),
+)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
@@ -32,7 +44,10 @@ export class UsersController {
     }
 
     @Get(`/:id/tournaments`)
-    async getTournaments(@Param(`id`, ParseIntPipe) id: number, @Query() queryParams: GetUsersTournamentsQuery) {
+    async getTournaments(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Query() queryParams: GetUsersTournamentsQuery,
+    ) {
         return this.usersService.getTournamentsByUser(id, queryParams);
     }
 
@@ -51,50 +66,52 @@ export class UsersController {
         return this.usersService.getById(id);
     }
 
-    @Get('avatar/:imgpath')
-    async seeUploadedAvatar(@Param('imgpath') image, @Res() res) {
-        return res.sendFile(image, { root: './uploads/userProfileImages' });
+    @Public()
+    @Get(`avatar/:imgpath`)
+    async seeUploadedAvatar(@Param(`imgpath`) image, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/userProfileImages` });
     }
 
-    @Get('background/:imgpath')
-    async seeUploadedBackground(@Param('imgpath') image, @Res() res) {
-        return res.sendFile(image, { root: './uploads/userProfileBackgrounds' });
+    @Public()
+    @Get(`background/:imgpath`)
+    async seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/userProfileBackgrounds` });
     }
 
-    @Post('/upload-user-image')
+    @Public()
+    @Post(`:id/upload-user-image`)
     @UseInterceptors(
-        FileInterceptor('image', {
+        FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: './uploads/userProfileImages',
+                destination: `./uploads/userProfileImages`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
-
         }),
     )
-    async uploadedFile(@UploadedFile() image, @Req() { user }: RequestWithUser) {
+    async uploadedFile(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number) {
         if (!image) {
-            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
+            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
         }
-        return this.usersService.setProfileImage(user, image);
+        return this.usersService.setProfileImage(id, image);
     }
 
-    @Post('/upload-user-background')
+    @Public()
+    @Post(`:id/upload-user-background`)
     @UseInterceptors(
-        FileInterceptor('image', {
+        FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: './uploads/userProfileBackgrounds',
+                destination: `./uploads/userProfileBackgrounds`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
-
         }),
     )
-    async uploadedBackground(@UploadedFile() image, @Req() { user }: RequestWithUser) {
+    async uploadedBackground(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number) {
         if (!image) {
-            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
+            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
         }
-        return this.usersService.setProfileBackground(user, image);
+        return this.usersService.setProfileBackground(id, image);
     }
 
     @Post(`/:id/roles/grant`)

@@ -207,7 +207,8 @@ export class UsersService {
         return this.usersRepository.remove(user);
     }
 
-    public async setProfileImage(user, image) {
+    public async setProfileImage(userId, image) {
+        const user = await this.getById(userId);
         if (user.userProfileImage) {
             if (user.userProfileImage !== 'default-avatar.jpg') {
                 const fs = require('fs')
@@ -224,7 +225,8 @@ export class UsersService {
         return user;
     }
 
-    public async setProfileBackground(user, image) {
+    public async setProfileBackground(userId, image) {
+        const user = await this.getById(userId);
         if (user.userProfileBackground) {
             if (user.userProfileBackground !== 'default-background.jpg') {
                 const fs = require('fs')

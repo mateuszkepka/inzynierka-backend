@@ -91,10 +91,10 @@ export class User {
     reportsSent: Report[];
 
     @Expose()
-    @Column({ default: 'default-avatar.jpg' })
+    @Column({ default: `default-avatar.jpg` })
     userProfileImage: string;
 
     @Expose()
-    @Column({ default: 'default-background.jpg' })
+    @Column({ default: `default-background.jpg` })
     userProfileBackground: string;
 }
