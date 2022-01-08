@@ -5,19 +5,14 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/players'
+    method: GET
+    url: '${$env.url}/users/background/default-background.jpg'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "summonerName": "Tesdfsfting",
-        "gameId": 1,
-        "region": "EUNE"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -27,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-player
+name: get-user-background

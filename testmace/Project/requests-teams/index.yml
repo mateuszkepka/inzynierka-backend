@@ -8,6 +8,8 @@ children:
   - create-team
   - update-team
   - remove-team
+  - upload-team-image
+  - get-team-image
 variablesArray: []
 type: Folder
 authData:

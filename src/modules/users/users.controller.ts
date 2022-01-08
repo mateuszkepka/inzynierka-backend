@@ -52,8 +52,13 @@ export class UsersController {
     }
 
     @Get('avatar/:imgpath')
-    seeUploadedFile(@Param('imgpath') image, @Res() res) {
+    async seeUploadedAvatar(@Param('imgpath') image, @Res() res) {
         return res.sendFile(image, { root: './uploads/userProfileImages' });
+    }
+
+    @Get('background/:imgpath')
+    async seeUploadedBackground(@Param('imgpath') image, @Res() res) {
+        return res.sendFile(image, { root: './uploads/userProfileBackgrounds' });
     }
 
     @Post('/upload-user-image')
@@ -69,9 +74,27 @@ export class UsersController {
     )
     async uploadedFile(@UploadedFile() image, @Req() { user }: RequestWithUser) {
         if (!image) {
-            throw new BadRequestException('invalid file provided, allowed *.csv single file');
+            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
         }
         return this.usersService.setProfileImage(user, image);
+    }
+
+    @Post('/upload-user-background')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: './uploads/userProfileBackgrounds',
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+
+        }),
+    )
+    async uploadedBackground(@UploadedFile() image, @Req() { user }: RequestWithUser) {
+        if (!image) {
+            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
+        }
+        return this.usersService.setProfileBackground(user, image);
     }
 
     @Post(`/:id/roles/grant`)

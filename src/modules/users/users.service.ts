@@ -224,6 +224,23 @@ export class UsersService {
         return user;
     }
 
+    public async setProfileBackground(user, image) {
+        if (user.userProfileBackground) {
+            if (user.userProfileBackground !== 'default-background.jpg') {
+                const fs = require('fs')
+                const path = './uploads/userProfileBackgrounds/' + user.userProfileBackground;
+                try {
+                    fs.unlinkSync(path)
+                } catch (err) {
+                    console.error("Previous user avatar failed to remove")
+                }
+            }
+        }
+        user.userProfileBackground = image.filename;
+        this.usersRepository.save(user);
+        return user;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                                     JWT                                    */
     /* -------------------------------------------------------------------------- */

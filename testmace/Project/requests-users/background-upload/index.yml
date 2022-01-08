@@ -6,25 +6,24 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/players'
+    url: '${$env.url}/users/upload-user-background'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
-    jsonBody: |-
-      {
-        "summonerName": "Tesdfsfting",
-        "gameId": 1,
-        "region": "EUNE"
-      }
+    type: FormData
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData: []
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
+        name: image
+        type: File
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-player
+name: background-upload
