@@ -85,4 +85,8 @@ export class User {
     @Expose()
     @OneToMany(() => Report, (report) => report.reportingUser)
     reportsSent: Report[];
+
+    @Expose()
+    @Column({ default: 'default-avatar.jpg' })
+    userProfileImage: string;
 }

@@ -207,6 +207,23 @@ export class UsersService {
         return this.usersRepository.remove(user);
     }
 
+    public async setProfileImage(user, image) {
+        if (user.userProfileImage) {
+            if (user.userProfileImage !== 'default-avatar.jpg') {
+                const fs = require('fs')
+                const path = './uploads/userProfileImages/' + user.userProfileImage;
+                try {
+                    fs.unlinkSync(path)
+                } catch (err) {
+                    console.error("Previous user avatar failed to remove")
+                }
+            }
+        }
+        user.userProfileImage = image.filename;
+        this.usersRepository.save(user);
+        return user;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                                     JWT                                    */
     /* -------------------------------------------------------------------------- */

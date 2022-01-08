@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UploadedFiles, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Express } from 'express';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { MatchQueryDto } from '../matches/dto/get-matches.dto';
@@ -6,9 +9,20 @@ import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { v4 as uuidv4 } from 'uuid';
+import { Observable, of } from 'rxjs';
+import { fileURLToPath } from 'url';
+import { extname } from "path";
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
+
 
 @Controller(`users`)
 @Roles(Role.User)
+@UsePipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+}))
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
@@ -35,6 +49,29 @@ export class UsersController {
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {
         return this.usersService.getById(id);
+    }
+
+    @Get('avatar/:imgpath')
+    seeUploadedFile(@Param('imgpath') image, @Res() res) {
+        return res.sendFile(image, { root: './uploads/userProfileImages' });
+    }
+
+    @Post('/upload-user-image')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: './uploads/userProfileImages',
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+
+        }),
+    )
+    async uploadedFile(@UploadedFile() image, @Req() { user }: RequestWithUser) {
+        if (!image) {
+            throw new BadRequestException('invalid file provided, allowed *.csv single file');
+        }
+        return this.usersService.setProfileImage(user, image);
     }
 
     @Post(`/:id/roles/grant`)

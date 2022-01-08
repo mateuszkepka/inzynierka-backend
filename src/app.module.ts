@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 import * as entities from './entities';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
@@ -16,6 +16,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
 
 @Module({
     imports: [
