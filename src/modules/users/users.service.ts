@@ -232,7 +232,7 @@ export class UsersService {
                 try {
                     fs.unlinkSync(path)
                 } catch (err) {
-                    console.error("Previous user avatar failed to remove")
+                    console.error("Previous user backgrounds failed to remove")
                 }
             }
         }
