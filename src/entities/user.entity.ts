@@ -1,12 +1,13 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Expose, Transform } from 'class-transformer';
+import { Performance, Report } from '.';
+
 import { Player } from './player.entity';
+import { Role } from 'src/roles/roles.enum';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { Expose, Transform } from 'class-transformer';
-import { Role } from 'src/roles/roles.enum';
 import { UserStatus } from 'src/modules/users/interfaces/user-status.enum';
-import { Performance, Report } from '.';
 
 @Entity()
 @Unique([`university`, `studentId`])
@@ -64,13 +65,16 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value[0].playerId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value[0].playerId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 
@@ -85,4 +89,12 @@ export class User {
     @Expose()
     @OneToMany(() => Report, (report) => report.reportingUser)
     reportsSent: Report[];
+
+    @Expose()
+    @Column({ default: `default-avatar.jpg` })
+    userProfileImage: string;
+
+    @Expose()
+    @Column({ default: `default-background.jpg` })
+    userProfileBackground: string;
 }

@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+      target: development
+      
+    command: npm run seed-n-start:prod
+    volumes:
+      - ./:/inzynierka/backend/src/app
+      - /inzynierka/backend/src/app/node_modules
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/inzynierka
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - 3000:3000
+      - 9229:9229
+  
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ../inzynierka-frontend
+      target: development
+    command: npm run start
+    volumes:
+      - ../inzynierka-frontend:/inzynierka/frontend/src/app
+      - /inzynierka/frontend/src/app/node_modules
+    ports:
+      - 4200:4200
+    links:
+      - backend
+  
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: inzynierka
+    ports:
+      - 35000:5432
+    
+  postgres_admin:
+    image: dpage/pgadmin4:latest
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80

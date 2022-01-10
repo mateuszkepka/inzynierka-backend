@@ -11,6 +11,7 @@ import { MatchQuery } from '../matches/dto/get-matches.dto';
 @Controller(`teams`)
 @Roles(Role.User)
 export class TeamsController {
+    usersService: any;
     constructor(private readonly teamsService: TeamsService) { }
 
     @Get(`/test`)
@@ -45,10 +46,37 @@ export class TeamsController {
         return this.teamsService.getById(id);
     }
 
+    @Get('team-image/:imgpath')
+    seeUploadedFile(@Param('imgpath') image, @Res() res) {
+        return res.sendFile(image, { root: './uploads/teamProfileImages' });
+    }
+
     @Get()
     async getAll() {
         return this.teamsService.getAll();
     }
+
+    @Post('/upload-team-image/:id')
+    @Roles(Role.Player)
+    @UseGuards(UserIsCaptainGuard)
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: './uploads/teamProfileImages',
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+
+
+        }),
+    )
+    uploadedFile(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+        if (!image) {
+            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
+        }
+        return this.teamsService.setTeamImage(id, image, user);
+    }
+
 
     @Post()
     @Roles(Role.Player)

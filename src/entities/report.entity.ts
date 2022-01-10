@@ -1,5 +1,6 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Expose } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ReportStatus } from 'src/modules/reports/report-status.enum';
 import { User } from '.';
 
@@ -11,7 +12,7 @@ export class Report {
 
     @Expose()
     @Column({
-        type: 'enum',
+        type: `enum`,
         enum: ReportStatus,
         default: ReportStatus.Unseen,
     })

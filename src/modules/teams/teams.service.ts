@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { copyFileSync } from 'fs';
 import { Invitation, Match, Player, Team, User } from 'src/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { PlayersService } from '../players/players.service';
+import { UsersService } from '../users/users.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 
@@ -17,6 +19,7 @@ export class TeamsService {
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
+        private readonly usersService: UsersService,
     ) { }
 
     async getAll() {
@@ -151,6 +154,30 @@ export class TeamsService {
             });
             await manager.save(invitation);
         });
+        return team;
+    }
+
+
+    public async setTeamImage(id, image, user) {
+        const team = await this.getById(id);
+        const owner = await this.playersService.getOwner(team.captain.playerId);
+        console.log(team);
+        if (owner.userId !== user.userId) {
+            throw new BadRequestException(`You need to be a captain of this team to add avatar to it`);
+        }
+        if (team.teamProfileImage) {
+            if (team.teamProfileImage !== 'default-team.png') {
+                const fs = require('fs')
+                const path = './uploads/teamProfileImages/' + team.teamProfileImage;
+                try {
+                    fs.unlinkSync(path)
+                } catch (err) {
+                    console.error("Previous user avatar failed to remove")
+                }
+            }
+        }
+        team.teamProfileImage = image.filename;
+        this.teamsRepository.save(team);
         return team;
     }
 
