@@ -84,7 +84,7 @@ export class BracketsService {
     private async generateMatches(numberOfPhases: number, hour: Date, tournament: Tournament, teams: ParticipatingTeam[], ladder: Ladder) {
         const matches = [];
         const standings = [];
-        for (let round = numberOfPhases; round > 0; round--) {
+        for (let round = numberOfPhases; round > 1; round--) {
             let position = 1;
             const endDate = tournament.tournamentStartDate;
             endDate.setHours(tournament.endingHour);
