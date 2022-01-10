@@ -1,37 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Format } from 'src/entities';
 import { Repository } from 'typeorm';
-import * as faker from 'faker';
+import { Format } from 'src/entities';
 
 @Injectable()
-export class PresetsSeeder {
-    constructor(@InjectRepository(Format) private readonly presetsRepository: Repository<Format>) {}
+export class FormatsSeeder {
+    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) { }
 
-    async seed(numberOfRows: number) {
-        const isSeeded = await this.presetsRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Preset" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "Preset" table...`);
-
-        const createdPresets = [];
-
-        for (let i = 0; i < numberOfRows; ++i) {
-            const preset: Partial<Format> = {
-                // mapName: faker.name.findName(),
-                // pickRules: faker.lorem.sentences(5),
-                // spectatorRules: faker.lorem.sentences(5),
-            };
-            const newPreset = await this.presetsRepository.create(preset);
-            createdPresets.push(newPreset);
-            await this.presetsRepository.save(newPreset);
-        }
-
-        return createdPresets;
+    async seed() {
+        const formats = [];
+        const singleRobin = this.formatsRepository.create({
+            name: `Single Round Robin`,
+            description: `System grupowy, gdzie każda drużyna gra z każdą inną dokładnie raz`,
+        });
+        const doubleRobin = this.formatsRepository.create({
+            name: `Double Round Robin`,
+            description: `System grupowy, gdzie każda drużyna gra z każdą inną dokładnie 2 razy`
+        })
+        const singleLadder = this.formatsRepository.create({
+            name: `Single Elimination Ladder`,
+            description: `System drabinkowy bez drabinki przegranych`
+        })
+        const doubleLadder = this.formatsRepository.create({
+            name: `Single Elimination Ladder`,
+            description: `System drabinkowy z drabinką przegranych`
+        })
+        formats.push(singleRobin, doubleRobin, singleLadder, doubleLadder)
+        return this.formatsRepository.save(formats);
     }
 }

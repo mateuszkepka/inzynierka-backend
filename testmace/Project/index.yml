@@ -19,10 +19,10 @@ children:
   - requests-formats
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2NDEzNDcwMDksImV4cCI6MTY0MTQ0NzAwOX0.i4bShKErkRUjQ25dDts49DtbyfkdzXys68nterMevTY;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0MTU4ODA3MywiZXhwIjoxNjQxNjg4MDczfQ.kw3UtSjt8wocAtdUTYU2u2SH3F36vHD2QEr7sgndDbg;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE2NDEzNDcwMDksImV4cCI6MTY0MjM0NzAwOX0.8i9FC2qJgZ8EM-9lK_tOcpZHtUQC3BPdvSBhV1zyyrQ;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0MTU4ODA3MywiZXhwIjoxNjQyNTg4MDczfQ.NoraAQ6APVGHbPg2_9aJpL5s-aDwYj5WBBTlqgfkhI8;
     Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:

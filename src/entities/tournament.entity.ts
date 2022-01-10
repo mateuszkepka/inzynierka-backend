@@ -123,7 +123,7 @@ export class Tournament {
     rosters: ParticipatingTeam[];
 
     @Expose()
-    @OneToOne(() => Prize, (prize) => prize.tournament, { cascade: true, eager: true, nullable: true })
+    @ManyToOne(() => Prize, { cascade: true, eager: true, nullable: true })
     @JoinColumn({ name: `prizeId` })
     prize: Prize;
 }

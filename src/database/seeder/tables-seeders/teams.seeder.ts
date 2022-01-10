@@ -3,35 +3,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
+import { shuffle } from 'src/util';
 
 @Injectable()
 export class TeamsSeeder {
-    constructor(
-        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-    ) {}
+    constructor(@InjectRepository(Team) private readonly teamsRepository: Repository<Team>) { }
 
-    async seed(numberOfRows: number, captains: Player[]) {
-        const isSeeded = await this.teamsRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Team" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "Team" table...`);
+    async seed(captains: Player[]) {
         const createdTeams = [];
-
-        for (let i = 0; i < numberOfRows; ++i) {
-            const team: Partial<Team> = {
-                teamName: faker.internet.userName(),
-                creationDate: faker.datatype.datetime(),
-                captain: captains[i]
-            };
-            const newTeam = await this.teamsRepository.create(team);
-            createdTeams.push(newTeam);
-            await this.teamsRepository.save(newTeam);
+        captains = shuffle(captains);
+        for (let i = 0; i < captains.length; ++i) {
+            const ifCaptain = Math.random() < 0.3 ? true : false;
+            if (ifCaptain) {
+                const team = this.teamsRepository.create({
+                    teamName: faker.internet.userName(),
+                    captain: captains[i],
+                    game: captains[i].game,
+                    region: captains[i].region
+                });
+                createdTeams.push(team);
+            }
         }
-        return createdTeams;
+        return this.teamsRepository.save(createdTeams);
     }
 }

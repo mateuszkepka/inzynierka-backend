@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Ladder, LadderStanding, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
+import { Ladder, LadderStanding, Match, ParticipatingTeam, Tournament } from "src/entities";
+import { shuffle } from "src/util";
 import { Repository } from "typeorm";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
 import { TeamsService } from "../teams/teams.service";
-import { shuffle } from "./tournaments.service";
 
 @Injectable()
 export class BracketsService {

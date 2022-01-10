@@ -3,36 +3,54 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
+import * as argon2 from 'argon2';
+import { Role } from 'src/roles/roles.enum';
 
 @Injectable()
 export class UsersSeeder {
-    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
+    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
 
     async seed(numberOfRows: number) {
-        const isSeeded = await this.usersRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Users" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "Users" table...`);
         const createdUsers = [];
 
-        for (let i = 0; i < numberOfRows; ++i) {
-            const user: Partial<User> = {
+        const adminPassword = await argon2.hash(`admin`, {
+            type: argon2.argon2id,
+        });
+        const admin = this.usersRepository.create({
+            email: `admin@admin.com`,
+            username: `admin`,
+            password: adminPassword,
+            country: `Poland`,
+            roles: [Role.User, Role.Admin]
+        });
+        createdUsers.push(admin);
+
+        for (let i = 0; i < 5; i++) {
+            const password = await argon2.hash(faker.internet.password(), {
+                type: argon2.argon2id,
+            });
+            const organizer = this.usersRepository.create({
                 email: faker.internet.email(),
                 username: faker.internet.userName(),
-                password: faker.internet.password(),
-                country: faker.address.country(),
-                university: faker.company.companyName(),
-                studentId: faker.datatype.uuid(),
-            };
-            const newUser = await this.usersRepository.create(user);
-            createdUsers.push(newUser);
-            await this.usersRepository.save(newUser);
+                password: password,
+                country: `Poland`,
+                roles: [Role.User, Role.Organizer]
+            });
+            createdUsers.push(organizer);
         }
-        return createdUsers;
+
+        for (let i = 0; i < numberOfRows; i++) {
+            const password = await argon2.hash(faker.internet.password(), {
+                type: argon2.argon2id,
+            });
+            const user = this.usersRepository.create({
+                email: faker.internet.email(),
+                username: faker.internet.userName(),
+                password: password,
+                country: `Poland`,
+            });
+            createdUsers.push(user);
+        }
+        return this.usersRepository.save(createdUsers);
     }
 }
