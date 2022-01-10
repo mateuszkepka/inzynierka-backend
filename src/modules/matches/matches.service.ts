@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Ladder, Map, Match, ParticipatingTeam, Performance, Team, Tournament } from 'src/entities';
+import { Ladder, Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
 import { Brackets, Repository } from 'typeorm';
 import { TournamentFormat } from '../formats/dto/tournament-format-enum';
 import { PlayersService } from '../players/players.service';
@@ -149,10 +149,14 @@ export class MatchesService {
     async resolveMatch(matchId: number, files: Array<Express.Multer.File>) {
         await this.parseResults(files);
         const match = await this.getById(matchId);
-        const format = match.tournament.format.name;
+        const tournament = await this.tournamentsService.getById(match.tournament.tournamentId);
+        const group = await this.tournamentsService.getGroupById(tournament.tournamentId);
+        const format = tournament.format.name;
         if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleEliminationLadder) {
-            const firstRoster = match.group.standings.find(standing => standing.roster === match.firstRoster);
-            const secondRoster = match.group.standings.find(standing => standing.roster === match.secondRoster);
+            const firstRoster = group.standings.find(standing => standing.roster === match.firstRoster);
+            const secondRoster = group.standings.find(standing => standing.roster === match.secondRoster);
+
+            // granting points for the match
             if (match.winner === 0) {
                 firstRoster.points += 1;
                 secondRoster.points += 1;
@@ -165,7 +169,9 @@ export class MatchesService {
                 firstRoster.points += 0;
                 secondRoster.points += 3;
             }
-            const standings = match.group.standings;
+
+            // setting proper places in groups
+            const standings = group.standings;
             standings.sort((a, b) => {
                 if (a.points > b.points) {
                     return 1;
@@ -186,6 +192,7 @@ export class MatchesService {
             const ties = standings.filter(e => lookForTies[e.points]);
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
+            // deciding the winner
             let winningRoster = null;
             if (match.winner === 1) {
                 winningRoster = match.firstRoster;
@@ -195,9 +202,20 @@ export class MatchesService {
             }
             const ladder = match.tournament.ladders.find((ladder) => ladder.isLosers = false);
             const standings = await this.tournamentsService.getStandingsByMatch(match);
+
+            // setting next round for the winner
             const nextRound = standings.round - 1;
+
             if (nextRound > 0) {
-                const nextPosition = standings.position / 2;
+                // setting next match position
+                let nextPosition: number;
+                if (standings.position % 2 === 0) {
+                    nextPosition === standings.position / 2;
+                }
+                if (standings.position % 2 !== 0) {
+                    nextPosition === (standings.position + 1) / 2;
+                }
+                // promoting winner to the next stage
                 const nextMatch = await this.getMatchByPosition(ladder, nextRound, nextPosition);
                 if (nextMatch.firstRoster === null) {
                     nextMatch.firstRoster === winningRoster;
@@ -206,6 +224,84 @@ export class MatchesService {
                     nextMatch.secondRoster === winningRoster;
                 }
                 await this.matchesRepository.save(nextMatch);
+            }
+        }
+        if (format === TournamentFormat.DoubleEliminationLadder) {
+            // deciding the winner
+            let winningRoster: ParticipatingTeam = null;
+            let losingRoster: ParticipatingTeam = null;
+            if (match.winner === 1) {
+                winningRoster = match.firstRoster;
+                losingRoster = match.secondRoster;
+            }
+            if (match.winner === 2) {
+                winningRoster = match.secondRoster;
+                losingRoster = match.firstRoster;
+            }
+            // getting upper and lower brackets
+            const upperLadder = tournament.ladders.find((ladder) => ladder.isLosers = false);
+            const lowerLadder = tournament.ladders.find((ladder) => ladder.isLosers = true);
+
+            // getting position of the match in bracket
+            const standings = await this.tournamentsService.getStandingsByMatch(match);
+
+            // setting next match position
+            let nextPosition: number;
+            if (standings.position % 2 === 0) {
+                nextPosition === standings.position / 2;
+            }
+            if (standings.position % 2 !== 0) {
+                nextPosition === (standings.position + 1) / 2;
+            }
+
+            // when the match is in the upper bracket
+            if (!standings.ladder.isLosers) {
+                // setting next round for the winner
+                const nextUpperRound = standings.round - 1;
+
+                // promoting winner to the next stage
+                if (nextUpperRound > 0) {
+                    const nextMatch = await this.getMatchByPosition(upperLadder, nextUpperRound, nextPosition);
+                    if (nextMatch.firstRoster === null) {
+                        nextMatch.firstRoster === winningRoster;
+                    }
+                    if (nextMatch.secondRoster === null) {
+                        nextMatch.secondRoster === winningRoster;
+                    }
+                    await this.matchesRepository.save(nextMatch);
+                }
+
+                // setting next round for the loser
+                const nextLowerRound = standings.round;
+
+                // demoting loser to the lower bracket
+                if (nextLowerRound > 0) {
+                    const nextMatch = await this.getMatchByPosition(lowerLadder, nextLowerRound, nextPosition);
+                    if (nextMatch.firstRoster === null) {
+                        nextMatch.firstRoster === losingRoster;
+                    }
+                    if (nextMatch.secondRoster === null) {
+                        nextMatch.secondRoster === losingRoster;
+                    }
+                    await this.matchesRepository.save(nextMatch);
+                }
+            }
+            // when the match is in the lower bracket
+            if (standings.ladder.isLosers) {
+                // setting next round for the winner
+                const nextLowerRound = standings.round - 1;
+
+                // promoting winner to the next stage
+                if (nextLowerRound >= 0) {
+                    const nextMatch = await this.getMatchByPosition(lowerLadder, nextLowerRound, nextPosition);
+                    if (nextMatch.firstRoster === null) {
+                        nextMatch.firstRoster === losingRoster;
+                    }
+                    if (nextMatch.secondRoster === null) {
+                        nextMatch.secondRoster === losingRoster;
+                    }
+                    await this.matchesRepository.save(nextMatch);
+                }
             }
         }
     }

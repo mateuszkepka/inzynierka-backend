@@ -49,7 +49,7 @@ export class TournamentsService {
     async getById(tournamentId: number) {
         const tournament = await this.tournamentsRepository.findOne({
             where: { tournamentId: tournamentId },
-            relations: [`organizer`, `game`, `format`]
+            relations: [`organizer`, `game`, `format`, `ladders`]
         });
         if (!tournament) {
             throw new NotFoundException(`Tournament with this id does not exist`);
@@ -223,7 +223,10 @@ export class TournamentsService {
     }
 
     async getGroupById(groupId: number) {
-        const group = await this.groupsRepository.findOne({ where: { groupId: groupId } });
+        const group = await this.groupsRepository.findOne({
+            relations: [`standings`],
+            where: { groupId: groupId }
+        });
         if (!group) {
             throw new NotFoundException(`Group with given id doest not exist!`);
         }
@@ -232,6 +235,7 @@ export class TournamentsService {
 
     async getStandingsByMatch(match: Match) {
         const standings = await this.bracketsRepository.findOne({
+            relations: [`ladder`],
             where: { match: match }
         });
         return standings;
@@ -246,6 +250,14 @@ export class TournamentsService {
             throw new NotFoundException(`ParticipatingTeam with this id does not exist`);
         }
         return participatingteam;
+    }
+
+    async getGroupByTournament(tournamentId: number) {
+        const tournament = await this.getById(tournamentId);
+        const group = await this.groupsRepository.findOne({
+            where: { tournament: tournament }
+        });
+        return group;
     }
 
     async changeStatus(tournamentId: number, teamId: number, status: ParticipationStatus) {
@@ -407,6 +419,10 @@ export class TournamentsService {
             if (format === TournamentFormat.SingleEliminationLadder) {
                 console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`)
                 await this.bracketsService.generateLadder(tournament, teams, false);
+            }
+            if (format === TournamentFormat.DoubleEliminationLadder) {
+                console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`)
+                await this.bracketsService.generateLadder(tournament, teams, true);
             }
         })
         this.schedulerRegistry.addCronJob(jobName, job)
