@@ -25,10 +25,6 @@ export class UpdateTournamentDto {
     @IsOptional()
     tournamentStartDate: Date;
 
-    // @IsDateString()
-    // @IsOptional()
-    // tournamentEndDate: Date;
-
     @IsString()
     @IsOptional()
     description: string;

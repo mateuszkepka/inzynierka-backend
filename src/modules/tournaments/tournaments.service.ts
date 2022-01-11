@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Player, Ladder, LadderStanding, Group, GroupStanding } from 'src/entities';
+import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Player, Ladder, Group, GroupStanding } from 'src/entities';
 import { Repository } from 'typeorm';
 import { FormatsService } from '../formats/formats.service';
 import { GamesService } from '../games/games.service';
@@ -28,8 +28,8 @@ export class TournamentsService {
     constructor(
         @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(ParticipatingTeam) private readonly rostersRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(GroupStanding) private readonly groupStandingsRepository: Repository<GroupStanding>,
         @InjectRepository(TournamentAdmin) private readonly tournamentAdminsRepository: Repository<TournamentAdmin>,
-        @InjectRepository(LadderStanding) private readonly bracketsRepository: Repository<LadderStanding>,
         @InjectRepository(Ladder) private readonly laddersRepository: Repository<Ladder>,
         @InjectRepository(Group) private readonly groupsRepository: Repository<Group>,
         @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
@@ -45,6 +45,15 @@ export class TournamentsService {
         private readonly teamsService: TeamsService,
         private readonly gamesService: GamesService
     ) { }
+
+    async test() {
+        const tournament = await this.getById(6);
+        const participatingTeams = await this.rostersRepository
+            .createQueryBuilder(`participatingTeam`)
+            .limit(31)
+            .getMany();
+        this.bracketsService.generateLadder(tournament, participatingTeams, true);
+    }
 
     async getById(tournamentId: number) {
         const tournament = await this.tournamentsRepository.findOne({
@@ -73,17 +82,8 @@ export class TournamentsService {
             .innerJoinAndSelect(`tournament.organizer`, `organizer`)
             .innerJoinAndSelect(`tournament.prize`, `prize`)
             .where(`1=1`)
-        switch (status) {
-            case TournamentStatus.Finished:
-                queryBuilder.andWhere(`tournament.tournamentEndDate < :date`, { date: new Date() })
-                break;
-            case TournamentStatus.Ongoing:
-                queryBuilder.andWhere(`tournament.tournamentStartDate < :date1`, { date1: new Date() })
-                queryBuilder.andWhere(`tournament.tournamentEndDate > :date2`, { date2: new Date() })
-                break;
-            case TournamentStatus.Upcoming:
-                queryBuilder.andWhere(`tournament.tournamentStartDate > :date`, { date: new Date() })
-                break;
+        if (status) {
+            queryBuilder.andWhere(`tournament.status = :status`, {status: status})
         }
         const tournaments = await queryBuilder.getMany();
         if (tournaments.length === 0) {
@@ -97,9 +97,10 @@ export class TournamentsService {
         const format = tournament.format.name;
         let standings: Group[] | Ladder[];
         if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleRoundRobin) {
-            if (new Date() < tournament.checkInCloseDate) {
-                throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
-            }
+            // TODO uncomment date check for production
+            // if (new Date() < tournament.checkInCloseDate) {
+            //     throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
+            // }
             standings = await this.groupsRepository
                 .createQueryBuilder(`group`)
                 .addSelect([`team.teamId`, `team.teamName`])
@@ -107,12 +108,14 @@ export class TournamentsService {
                 .innerJoin(`standing.team`, `team`)
                 .innerJoin(`group.tournament`, `tournament`)
                 .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
+                .orderBy(`group.name`)
+                .addOrderBy(`standing.place`)
                 .getMany();
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
-            if (new Date() < tournament.checkInCloseDate) {
-                throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
-            }
+            // if (new Date() < tournament.checkInCloseDate) {
+            //     throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
+            // }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
@@ -126,9 +129,9 @@ export class TournamentsService {
                 .getMany();
         }
         if (format === TournamentFormat.DoubleEliminationLadder) {
-            if (new Date() < tournament.checkInCloseDate) {
-                throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
-            }
+            // if (new Date() < tournament.checkInCloseDate) {
+            //     throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
+            // }
             // TODO
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
@@ -224,21 +227,13 @@ export class TournamentsService {
 
     async getGroupById(groupId: number) {
         const group = await this.groupsRepository.findOne({
-            relations: [`standings`],
+            relations: [`standings`, `standings.roster`, `standings.team`],
             where: { groupId: groupId }
         });
         if (!group) {
             throw new NotFoundException(`Group with given id doest not exist!`);
         }
         return group;
-    }
-
-    async getStandingsByMatch(match: Match) {
-        const standings = await this.bracketsRepository.findOne({
-            relations: [`ladder`],
-            where: { match: match }
-        });
-        return standings;
     }
 
     async getParticipatingTeamById(participatingTeamId: number) {
@@ -252,12 +247,48 @@ export class TournamentsService {
         return participatingteam;
     }
 
-    async getGroupByTournament(tournamentId: number) {
+    async getGroups(tournamentId: number) {
         const tournament = await this.getById(tournamentId);
-        const group = await this.groupsRepository.findOne({
+        const group = await this.groupsRepository.find({
             where: { tournament: tournament }
         });
         return group;
+    }
+
+    async getGroupsStanding(standingId: number) {
+        const standing = await this.groupStandingsRepository.findOne({
+            relations: [`team`, `roster`],
+            where: { groupStandingId: standingId }
+        })
+        return standing;
+    }
+
+    async getLadder(tournament: Tournament, isLosers: boolean) {
+        const ladder = await this.laddersRepository.findOne({
+            where: { tournament: tournament, isLosers: isLosers }
+        })
+        return ladder;
+    }
+
+    async getMaxRound(ladderId: number) {
+        const round = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .select(`MAX(match.round)`)
+            .innerJoin(`match.ladder`, `ladder`)
+            .where(`ladder.ladderId = :ladderId`, { ladderId: ladderId })
+            .getRawOne();
+        return round;
+    }
+
+    async getMaxPositionInRound(ladderId: number, round: number) {
+        const position = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .select(`MAX(match.position)`)
+            .innerJoin(`match.ladder`, `ladder`)
+            .where(`ladder.ladderId = :ladderId`, { ladderId: ladderId })
+            .andWhere(`match.round = :round`, { round: round })
+            .getRawOne();
+        return position;
     }
 
     async changeStatus(tournamentId: number, teamId: number, status: ParticipationStatus) {

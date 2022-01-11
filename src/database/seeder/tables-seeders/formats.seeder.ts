@@ -22,7 +22,7 @@ export class FormatsSeeder {
             description: `System drabinkowy bez drabinki przegranych`
         })
         const doubleLadder = this.formatsRepository.create({
-            name: `Single Elimination Ladder`,
+            name: `Double Elimination Ladder`,
             description: `System drabinkowy z drabinką przegranych`
         })
         formats.push(singleRobin, doubleRobin, singleLadder, doubleLadder)

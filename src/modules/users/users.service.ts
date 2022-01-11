@@ -141,17 +141,8 @@ export class UsersService {
                 queryBuilder.innerJoin(`tournament.organizer`, `user`)
                 break;
         }
-        switch (status) {
-            case TournamentStatus.Finished:
-                queryBuilder.andWhere(`tournament.tournamentEndDate < :date`, { date: new Date() })
-                break;
-            case TournamentStatus.Ongoing:
-                queryBuilder.andWhere(`tournament.tournamentStartDate < :date1`, { date1: new Date() })
-                queryBuilder.andWhere(`tournament.tournamentEndDate > :date2`, { date2: new Date() })
-                break;
-            case TournamentStatus.Upcoming:
-                queryBuilder.andWhere(`tournament.tournamentStartDate > :date`, { date: new Date() })
-                break;
+        if (status) {
+            queryBuilder.andWhere(`tournament.status = :status`, { status: status })
         }
         const tournaments = await queryBuilder.getMany();
         if (tournaments.length === 0) {

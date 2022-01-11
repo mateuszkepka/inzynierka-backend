@@ -54,7 +54,6 @@ import { FormatsModule } from './modules/formats/formats.module';
                         entities.Group,
                         entities.GroupStanding,
                         entities.Ladder,
-                        entities.LadderStanding,
                         entities.Map,
                         entities.Match,
                         entities.Performance,

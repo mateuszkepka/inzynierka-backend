@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { LadderStanding } from '.';
+import { Match } from './match.entity';
 import { Tournament } from './tournament.entity';
 
 @Entity()
@@ -26,6 +26,6 @@ export class Ladder {
     tournament: Tournament;
 
     @Expose()
-    @OneToMany(() => LadderStanding, (standing) => standing.ladder)
-    standings: LadderStanding[]
+    @OneToMany(() => Match, (match) => match.ladder)
+    matches: Match[]
 }

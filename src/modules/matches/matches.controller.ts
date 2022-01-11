@@ -16,17 +16,11 @@ export class MatchesController {
         return this.matchesService.getById(id);
     }
 
-    @Post(`/:id/results`)
+    @Post(`/:id/results/:winnerId`)
     @UseInterceptors(FilesInterceptor(`results`))
-    async sendResults(@Param(`id`, ParseIntPipe) id: number, @UploadedFiles() results: Array<Express.Multer.File>) {
-        return this.matchesService.resolveMatch(id, results);
+    async sendResults(@Param(`id`, ParseIntPipe) id: number, @Param(`winnerId`, ParseIntPipe) winnerId: number, @UploadedFiles() results: Array<Express.Multer.File>) {
+        return this.matchesService.resolveMatch(id, winnerId, results);
     }
-
-    // @Post()
-    // @Roles(Role.Organizer)
-    // async create(@Body() matchData: CreateMatchDto) {
-    //     return this.matchesService.create(matchData);
-    // }
 
     @Patch(`/:id`)
     async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateMatchDto) {
