@@ -16,6 +16,7 @@ children:
   - update-participating-team
   - remove-tournament-admin (TODO)
   - (test)
+  - (test) resolve match
 variablesArray: []
 type: Folder
 authData:

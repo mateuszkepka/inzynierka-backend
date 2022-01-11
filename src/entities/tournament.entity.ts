@@ -8,6 +8,7 @@ import { Format } from './format.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
 import { ParticipatingTeam, TournamentAdmin } from '.';
+import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status-enum';
 
 @Entity()
 export class Tournament {
@@ -66,6 +67,13 @@ export class Tournament {
 
     @Column()
     endingMinutes: number;
+
+    @Expose()
+    @Column({
+        type: `enum`,
+        enum: TournamentStatus
+    })
+    status: TournamentStatus;
 
     @Expose()
     @Column()

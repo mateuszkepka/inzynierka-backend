@@ -22,6 +22,11 @@ import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
+    @Get(`/test`)
+    async test() {
+        return this.tournamentsService.test();
+    }
+
     @Get(`/:id/admins/available`)
     @Roles(Role.Organizer)
     async getAvailableAdmins(
@@ -53,6 +58,7 @@ export class TournamentsController {
     }
 
     @Get(`/:id/teams`)
+    @Public()
     @Roles(Role.Organizer)
     async getTournamentTeams(
         @Param(`id`, ParseIntPipe) id: number,

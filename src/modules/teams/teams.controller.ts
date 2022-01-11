@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { Roles } from 'src/roles/roles.decorator';
@@ -7,17 +7,14 @@ import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
+import { diskStorage } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
 
 @Controller(`teams`)
 @Roles(Role.User)
 export class TeamsController {
-    usersService: any;
     constructor(private readonly teamsService: TeamsService) { }
-
-    @Get(`/test`)
-    async test() {
-        return this.teamsService.getByParticipatingTeam(1);
-    }
 
     @Get(`/:id/players/available`)
     async getAvailablePlayers(
@@ -66,8 +63,6 @@ export class TeamsController {
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
-
-
         }),
     )
     uploadedFile(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {

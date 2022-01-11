@@ -23,6 +23,6 @@ export class SuspensionsSeeder {
                 createdSuspensions.push(suspension);
             }
         }
-        return this.suspensionsRepository.save(createdSuspensions);;
+        return this.suspensionsRepository.save(createdSuspensions);
     }
 }

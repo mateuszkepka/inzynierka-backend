@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
+import { GroupStanding, Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
 import { UsersModule } from '../users/users.module';
 import { PlayersModule } from '../players/players.module';
 import { TournamentsModule } from '../tournaments/tournaments.module';
@@ -13,6 +13,7 @@ import { GamesModule } from '../games/games.module';
     imports: [
         TypeOrmModule.forFeature([
             ParticipatingTeam,
+            GroupStanding,
             Performance,
             Match,
             Team,

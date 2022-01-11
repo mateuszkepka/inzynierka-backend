@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Ladder, Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
+import { GroupStanding, Ladder, Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
 import { Brackets, Repository } from 'typeorm';
 import { TournamentFormat } from '../formats/dto/tournament-format-enum';
 import { PlayersService } from '../players/players.service';
@@ -13,7 +13,8 @@ import { UpdateMatchDto } from './dto/update-match.dto';
 @Injectable()
 export class MatchesService {
     constructor(
-        @InjectRepository(Performance) private readonly performanceRepository: Repository<Performance>,
+        @InjectRepository(GroupStanding) private readonly groupStandingsRepository: Repository<GroupStanding>,
+        @InjectRepository(Performance) private readonly performancesRepository: Repository<Performance>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Map) private readonly mapsRepository: Repository<Map>,
         private readonly tournamentsService: TournamentsService,
@@ -36,8 +37,10 @@ export class MatchesService {
             ])
             .addSelect([
                 `firstTeam.teamId`, `firstTeam.teamName`,
-                `secondTeam.teamId`, `secondTeam.teamName`, `performance.user`
+                `secondTeam.teamId`, `secondTeam.teamName`, `performance.user`,
+                `tournament.tournamentId`, `group.groupId`
             ])
+            .leftJoin(`match.group`, `group`)
             .leftJoin(`match.tournament`, `tournament`)
             .leftJoin(`match.firstRoster`, `firstRoster`)
             .leftJoin(`match.secondRoster`, `secondRoster`)
@@ -51,6 +54,14 @@ export class MatchesService {
         if (!match) {
             throw new NotFoundException(`Match with this id doesn't exist`);
         }
+        return match;
+    }
+
+    async getWithRelations(matchId: number) {
+        const match = await this.matchesRepository.findOne({
+            relations: [`group`, `tournament`, `firstRoster`, `secondRoster`, `firstTeam`, `secondTeam`, `ladder`],
+            where: { matchId: matchId }
+        })
         return match;
     }
 
@@ -128,13 +139,13 @@ export class MatchesService {
             // TODO error handling
             const player = await this.playersService.getByNickname(raw.summonerName);
             const user = await this.playersService.getOwner(player.playerId);
-            const performance = this.performanceRepository.create({
+            const performance = this.performancesRepository.create({
                 user: user,
                 kills: raw.kills,
                 deaths: raw.deaths,
                 assists: raw.assists
             })
-            return this.performanceRepository.save(performance);
+            return this.performancesRepository.save(performance);
         })
         if (match.maps.length + 1 >= match.numberOfMaps) {
             return;
@@ -146,15 +157,17 @@ export class MatchesService {
         return this.mapsRepository.save(map);
     }
 
-    async resolveMatch(matchId: number, files: Array<Express.Multer.File>) {
+    async resolveMatch(matchId: number, winnerId: number, files: Array<Express.Multer.File>) {
         await this.parseResults(files);
-        const match = await this.getById(matchId);
+        const match = await this.getWithRelations(matchId);
+        match.winner = winnerId;
         const tournament = await this.tournamentsService.getById(match.tournament.tournamentId);
-        const group = await this.tournamentsService.getGroupById(tournament.tournamentId);
         const format = tournament.format.name;
-        if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleEliminationLadder) {
-            const firstRoster = group.standings.find(standing => standing.roster === match.firstRoster);
-            const secondRoster = group.standings.find(standing => standing.roster === match.secondRoster);
+        if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleRoundRobin) {
+            const group = await this.tournamentsService.getGroupById(match.group.groupId);
+            let standings = group.standings;
+            const firstRoster = standings.find(standing => standing.team.teamId === match.firstTeam.teamId);
+            const secondRoster = standings.find(standing => standing.team.teamId === match.secondTeam.teamId);
 
             // granting points for the match
             if (match.winner === 0) {
@@ -171,25 +184,15 @@ export class MatchesService {
             }
 
             // setting proper places in groups
-            const standings = group.standings;
-            standings.sort((a, b) => {
-                if (a.points > b.points) {
-                    return 1;
+            standings = standings.sort((a, b) => (b.points - a.points));
+
+            for (let i = 0; i < standings.length; i++) {
+                if (standings[i + 1] && (standings[i].points === standings[i + 1].points)) {
+                    // TODO tiebreaking system
                 }
-                if (a.points < b.points) {
-                    return -1;
-                }
-                return 0;
-            })
-            standings.forEach((standing, index) => {
-                standing.place = index;
-            })
-            // TODO tiebreaking system
-            const lookForTies = standings.reduce((previous, current) => {
-                previous[current.points] = ++previous[current.points] || 0;
-                return previous;
-            }, {})
-            const ties = standings.filter(e => lookForTies[e.points]);
+                standings[i].place = i + 1;
+            }
+            return this.groupStandingsRepository.save(standings);
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
             // deciding the winner
@@ -201,19 +204,18 @@ export class MatchesService {
                 winningRoster = match.secondRoster;
             }
             const ladder = match.tournament.ladders.find((ladder) => ladder.isLosers = false);
-            const standings = await this.tournamentsService.getStandingsByMatch(match);
 
             // setting next round for the winner
-            const nextRound = standings.round - 1;
+            const nextRound = match.round - 1;
 
             if (nextRound > 0) {
                 // setting next match position
                 let nextPosition: number;
-                if (standings.position % 2 === 0) {
-                    nextPosition === standings.position / 2;
+                if (match.position % 2 === 0) {
+                    nextPosition === match.position / 2;
                 }
-                if (standings.position % 2 !== 0) {
-                    nextPosition === (standings.position + 1) / 2;
+                if (match.position % 2 !== 0) {
+                    nextPosition === (match.position + 1) / 2;
                 }
                 // promoting winner to the next stage
                 const nextMatch = await this.getMatchByPosition(ladder, nextRound, nextPosition);
@@ -230,90 +232,187 @@ export class MatchesService {
             // deciding the winner
             let winningRoster: ParticipatingTeam = null;
             let losingRoster: ParticipatingTeam = null;
+
+            let winningTeam: Team = null;
+            let losingTeam: Team = null;
+
             if (match.winner === 1) {
                 winningRoster = match.firstRoster;
                 losingRoster = match.secondRoster;
+                winningTeam = match.firstTeam;
+                losingTeam = match.secondTeam;
             }
             if (match.winner === 2) {
                 winningRoster = match.secondRoster;
                 losingRoster = match.firstRoster;
+                winningTeam = match.secondTeam;
+                losingTeam = match.firstTeam;
             }
+
             // getting upper and lower brackets
-            const upperLadder = tournament.ladders.find((ladder) => ladder.isLosers = false);
-            const lowerLadder = tournament.ladders.find((ladder) => ladder.isLosers = true);
+            const upperLadder = await this.tournamentsService.getLadder(tournament, false);
+            const lowerLadder = await this.tournamentsService.getLadder(tournament, true);
 
-            // getting position of the match in bracket
-            const standings = await this.tournamentsService.getStandingsByMatch(match);
+            // getting number of rounds for brackets
+            let numberOfUpperRounds = await this.tournamentsService.getMaxRound(upperLadder.ladderId);
+            let numberOfLowerRounds = await this.tournamentsService.getMaxRound(lowerLadder.ladderId);
 
-            // setting next match position
-            let nextPosition: number;
-            if (standings.position % 2 === 0) {
-                nextPosition === standings.position / 2;
-            }
-            if (standings.position % 2 !== 0) {
-                nextPosition === (standings.position + 1) / 2;
-            }
+            numberOfUpperRounds = numberOfUpperRounds.max;
+            numberOfLowerRounds = numberOfLowerRounds.max;
 
-            // when the match is in the upper bracket
-            if (!standings.ladder.isLosers) {
-                // setting next round for the winner
-                const nextUpperRound = standings.round - 1;
+            // setting next matches position
+            let winnersPosition: number;
+            let losersPosition: number;
 
-                // promoting winner to the next stage
-                if (nextUpperRound > 0) {
-                    const nextMatch = await this.getMatchByPosition(upperLadder, nextUpperRound, nextPosition);
-                    if (nextMatch.firstRoster === null) {
-                        nextMatch.firstRoster === winningRoster;
+            let winnersRound: number;
+            let losersRound: number;
+
+            let winnersLadder: Ladder;
+            let losersLadder: Ladder;
+
+            // logic when match is in the upper bracket
+            if (!match.ladder.isLosers) {
+                // first upper bracket round
+                if (match.round === numberOfUpperRounds) {
+                    winnersLadder = upperLadder;
+                    winnersRound = match.round - 1;
+
+                    losersLadder = lowerLadder;
+                    losersRound = numberOfLowerRounds;
+                    if (match.position % 2 === 0) {
+                        winnersPosition = match.position / 2;
+                        losersPosition = match.position / 2;
                     }
-                    if (nextMatch.secondRoster === null) {
-                        nextMatch.secondRoster === winningRoster;
+                    if (match.position % 2 !== 0) {
+                        winnersPosition = (match.position + 1) / 2;
+                        losersPosition = (match.position + 1) / 2;
                     }
-                    await this.matchesRepository.save(nextMatch);
+                    // rest of upper bracket rounds apart from final
+                } else if (match.round < numberOfUpperRounds - 1 && match.round > 2) {
+                    winnersLadder = upperLadder;
+                    winnersRound = winnersRound - 1;
+                    losersLadder = lowerLadder;
+
+                    const maxLosersRound = await this.tournamentsService.getMaxRound(lowerLadder.ladderId);
+                    const maxWinnersRound = await this.tournamentsService.getMaxRound(upperLadder.ladderId);
+                    const maxPosition = await this.tournamentsService.getMaxPositionInRound(upperLadder.ladderId, match.round);
+
+                    // array for storing rounds in upper bracket
+                    const winnersRounds: number[] = [];
+                    let winnersIterator = 2;
+                    while (winnersRounds.length < maxWinnersRound) {
+                        winnersRounds.push(winnersIterator++);
+                    }
+
+                    // array for storing rounds in lower bracket
+                    const losersRounds: number[] = [];
+                    let losersIterator = 1;
+                    while (losersRounds.length < maxLosersRound) {
+                        losersRounds.push(losersIterator += 2);
+                    }
+
+                    // array for flipping positions in lower bracket
+                    let positions: number[] = [];
+                    let positionsIterator = 1;
+                    while (positions.length < maxPosition) {
+                        positions.push(positionsIterator++);
+                    }
+                    const firstHalf = positions.slice(0, positions.length / 2).reverse();
+                    const secondHalf = positions.slice(-positions.length / 2).reverse();
+                    positions = firstHalf.concat(secondHalf);
+
+                    if (match.position % 2 === 0) {
+                        winnersPosition = match.position / 2;
+                    }
+                    if (match.position % 2 !== 0) {
+                        winnersPosition = (match.position + 1) / 2;
+                    }
+
+                    // mapping round after loss in upper bracket to lower bracket
+                    losersRound = losersRounds[winnersRounds.findIndex(r => r === match.round)];
+
+                    // mapping position after loss in upper bracket to lower bracket
+                    losersPosition = positions[positions.findIndex(p => p === match.position)];
+
+                    // upper bracket final
+                } else if (match.round === 2) {
+                    winnersLadder = upperLadder;
+                    winnersRound = 1;
+                    winnersPosition = 1;
+
+                    losersLadder = lowerLadder;
+                    losersRound = 1;
+                    losersPosition = 1;
                 }
+            }
 
-                // setting next round for the loser
-                const nextLowerRound = standings.round;
-
-                // demoting loser to the lower bracket
-                if (nextLowerRound > 0) {
-                    const nextMatch = await this.getMatchByPosition(lowerLadder, nextLowerRound, nextPosition);
-                    if (nextMatch.firstRoster === null) {
-                        nextMatch.firstRoster === losingRoster;
+            // logic when match is in the lower bracket
+            if (match.ladder.isLosers) {
+                // first lower bracket round
+                if (match.round === numberOfLowerRounds) {
+                    winnersLadder = lowerLadder;
+                    winnersRound = match.round - 1;
+                    winnersPosition = match.position;
+                    // rest of lower bracket rounds apart from final
+                } else if (match.round < numberOfUpperRounds - 1 && match.round > 1) {
+                    winnersLadder = lowerLadder;
+                    winnersRound = match.round - 1;
+                    if (match.round % 2 === 0) {
+                        winnersPosition = match.position;
                     }
-                    if (nextMatch.secondRoster === null) {
-                        nextMatch.secondRoster === losingRoster;
+                    if (match.round % 2 !== 0) {
+                        if (match.position % 2 === 0) {
+                            winnersPosition = match.position / 2;
+                        }
+                        if (match.position % 2 !== 0) {
+                            winnersPosition = (match.position + 1) / 2;
+                        }
                     }
-                    await this.matchesRepository.save(nextMatch);
+                    // lower bracket final
+                } else if (match.round === 1) {
+                    winnersLadder = upperLadder;
+                    winnersPosition = 1;
+                    winnersRound = 1;
                 }
             }
-            // when the match is in the lower bracket
-            if (standings.ladder.isLosers) {
-                // setting next round for the winner
-                const nextLowerRound = standings.round - 1;
-
-                // promoting winner to the next stage
-                if (nextLowerRound >= 0) {
-                    const nextMatch = await this.getMatchByPosition(lowerLadder, nextLowerRound, nextPosition);
-                    if (nextMatch.firstRoster === null) {
-                        nextMatch.firstRoster === losingRoster;
-                    }
-                    if (nextMatch.secondRoster === null) {
-                        nextMatch.secondRoster === losingRoster;
-                    }
-                    await this.matchesRepository.save(nextMatch);
-                }
+            const nextWinnersMatch = await this.getMatchByPosition(winnersLadder, winnersRound, winnersPosition);
+            const nextLosersMatch = await this.getMatchByPosition(losersLadder, losersRound, losersPosition);
+            if (nextWinnersMatch.secondTeam !== null) {
+                nextWinnersMatch.firstTeam = winningTeam;
+                nextWinnersMatch.firstRoster = winningRoster;
+            } else if (nextWinnersMatch.firstTeam !== null) {
+                nextWinnersMatch.secondTeam = winningTeam;
+                nextWinnersMatch.secondRoster = winningRoster;
             }
+            if (nextLosersMatch.secondTeam !== null) {
+                nextLosersMatch.firstTeam = losingTeam;
+                nextLosersMatch.firstRoster = losingRoster;
+            } else if (nextLosersMatch.firstTeam !== null) {
+                nextLosersMatch.secondTeam = losingTeam;
+                nextLosersMatch.secondRoster = losingRoster;
+            }
+            await this.matchesRepository.save(nextWinnersMatch);
+            if (nextLosersMatch) {
+                await this.matchesRepository.save(nextLosersMatch);
+            }
+            console.log(`Wygrał ${winningTeam.teamName} id ${winningTeam.teamId}`);
+            console.log(`Winners next round ${winnersRound}`)
+            console.log(`Winner next pos ${winnersPosition}`);
+            console.log(`Next winners match ${nextWinnersMatch.matchId}\n`)
+            console.log(`Przegrał ${losingTeam.teamName} id ${losingTeam.teamId}`);
+            console.log(`Losers next round ${losersRound}`)
+            console.log(`Losers next pos ${losersPosition}`)
+            console.log(`Next winners match ${nextLosersMatch.matchId}`)
         }
     }
 
     async getMatchByPosition(ladder: Ladder, round: number, position: number) {
         const match = await this.matchesRepository
             .createQueryBuilder(`match`)
-            .innerJoin(`match.standings`, `standing`)
-            .innerJoin(`standing.ladder`, `ladder`)
+            .innerJoin(`match.ladder`, `ladder`)
             .where(`ladder.ladderId = :ladderId`, { ladderId: ladder.ladderId })
-            .andWhere(`standing.position = :position`, { position: position })
-            .andWhere(`standing.round = :round`, { round: round })
+            .andWhere(`match.position = :position`, { position: position })
+            .andWhere(`match.round = :round`, { round: round })
             .getOne()
         return match;
     }

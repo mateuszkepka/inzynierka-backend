@@ -20,7 +20,6 @@ requestData:
         "registerStartDate": "2005-12-16",
         "registerEndDate": "2030-12-16",
         "tournamentStartDate": "2005-12-16",
-        "tournamentEndDate": "2030-12-16",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

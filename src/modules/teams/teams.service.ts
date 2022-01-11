@@ -1,12 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { copyFileSync } from 'fs';
 import { Invitation, Match, Player, Team, User } from 'src/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { PlayersService } from '../players/players.service';
-import { UsersService } from '../users/users.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 
@@ -19,7 +17,6 @@ export class TeamsService {
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
-        private readonly usersService: UsersService,
     ) { }
 
     async getAll() {
