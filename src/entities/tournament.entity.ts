@@ -64,15 +64,19 @@ export class Tournament {
     @Column()
     tournamentStartDate: Date;
 
+    @Expose()
     @Column()
     checkInOpenDate: Date;
 
+    @Expose()
     @Column()
     checkInCloseDate: Date;
 
+    @Expose()
     @Column()
     endingHour: number;
 
+    @Expose()
     @Column()
     endingMinutes: number;
 
