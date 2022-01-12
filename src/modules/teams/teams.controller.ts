@@ -19,13 +19,14 @@ import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
-import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
+import { UploadTeamImagesGuard } from './guards/upload-team-images.guard';
+import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 
 @Controller(`teams`)
 @Roles(Role.User)
@@ -70,8 +71,7 @@ export class TeamsController {
     }
 
     @Post(`/upload-team-image/:id`)
-    @Roles(Role.Player)
-    @UseGuards(UserIsCaptainGuard)
+    @UseGuards(UploadTeamImagesGuard)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
