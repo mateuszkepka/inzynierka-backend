@@ -6,7 +6,10 @@ import * as faker from 'faker';
 
 @Injectable()
 export class SuspensionsSeeder {
-    constructor(@InjectRepository(Suspension) private readonly suspensionsRepository: Repository<Suspension>,) { }
+    constructor(
+        @InjectRepository(Suspension)
+        private readonly suspensionsRepository: Repository<Suspension>,
+    ) {}
 
     async seed(users: User[]) {
         const createdSuspensions = [];
@@ -18,7 +21,7 @@ export class SuspensionsSeeder {
                     endDate: faker.date.soon(10),
                     reason: faker.lorem.sentences(2),
                     user: users[i],
-                    admin: admin
+                    admin: admin,
                 });
                 createdSuspensions.push(suspension);
             }

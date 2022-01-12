@@ -1,4 +1,12 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -42,7 +50,7 @@ export class Tournament {
 
     @Expose()
     @Column()
-    numberOfMaps: number
+    numberOfMaps: number;
 
     @Expose()
     @Column()
@@ -71,7 +79,7 @@ export class Tournament {
     @Expose()
     @Column({
         type: `enum`,
-        enum: TournamentStatus
+        enum: TournamentStatus,
     })
     status: TournamentStatus;
 
@@ -80,25 +88,31 @@ export class Tournament {
     description: string;
 
     @Expose({ name: `gameId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.gameId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.gameId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
     @Expose({ name: `organizerId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.userId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.userId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `organizerId` })
     organizer: User;
@@ -116,13 +130,16 @@ export class Tournament {
     tournamentAdmins: TournamentAdmin[];
 
     @Expose()
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.name;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.name;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Format, { nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;

@@ -3,10 +3,10 @@ import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import { FormatsService } from './formats.service';
 
-@Controller('formats')
+@Controller(`formats`)
 @Roles(Role.Organizer)
 export class FormatsController {
-    constructor(private readonly formatsService: FormatsService) { }
+    constructor(private readonly formatsService: FormatsService) {}
 
     @Get(`:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {

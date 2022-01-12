@@ -1,4 +1,15 @@
-import { IsDateString, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min, ValidateIf } from 'class-validator';
+import {
+    IsDateString,
+    IsEnum,
+    IsIn,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Max,
+    Min,
+    ValidateIf,
+} from 'class-validator';
 import { IsGreaterThan } from 'src/decorators/is-greater-than.validator';
 import { TournamentFormat } from '../../formats/dto/tournament-format-enum';
 
@@ -24,9 +35,13 @@ export class CreateTournamentDto {
     numberOfTeams: number;
 
     @IsNotEmpty()
-    @ValidateIf(o => o.format.name === TournamentFormat.SingleRoundRobin || o.format.name === TournamentFormat.SingleRoundRobin)
+    @ValidateIf(
+        (o) =>
+            o.format.name === TournamentFormat.SingleRoundRobin ||
+            o.format.name === TournamentFormat.SingleRoundRobin,
+    )
     @IsGreaterThan(`numberOfTeams`, {
-        message: `Each group must contain at least 2 teams`
+        message: `Each group must contain at least 2 teams`,
     })
     @Min(1)
     @IsNumber()
@@ -53,13 +68,13 @@ export class CreateTournamentDto {
     @IsNumber()
     @Min(0)
     @Max(24)
-    endingHour: number
+    endingHour: number;
 
     @IsNotEmpty()
     @IsNumber()
     @Min(0)
     @Max(59)
-    endingMinutes: number
+    endingMinutes: number;
 
     @IsNotEmpty()
     @IsString()

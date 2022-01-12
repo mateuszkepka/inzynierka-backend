@@ -12,7 +12,7 @@ export class Format {
     @Column({
         type: `enum`,
         enum: TournamentFormat,
-        nullable: false
+        nullable: false,
     })
     name: string;
 

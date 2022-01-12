@@ -1,4 +1,11 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 
 import { User } from './user.entity';

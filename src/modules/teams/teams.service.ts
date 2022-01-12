@@ -12,12 +12,13 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 export class TeamsService {
     constructor(
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
+        @InjectRepository(Invitation)
+        private readonly invitationsRepository: Repository<Invitation>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
-    ) { }
+    ) {}
 
     async getAll() {
         const teams = await this.teamsRepository.find({
@@ -44,7 +45,9 @@ export class TeamsService {
         const team = await this.teamsRepository
             .createQueryBuilder(`team`)
             .innerJoin(`team.rosters`, `roster`)
-            .where(`roster.participatingTeamId = :participatingId`, { participatingId: participatingId })
+            .where(`roster.participatingTeamId = :participatingId`, {
+                participatingId: participatingId,
+            })
             .getOne();
         if (!team) {
             throw new NotFoundException(`Team with given participation id was not found`);
@@ -64,9 +67,9 @@ export class TeamsService {
             .innerJoin(`player.user`, `user`)
             .where(`team.teamId = :id`, { id: teamId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
-            .getMany()
+            .getMany();
         if (members.length === 0) {
-            throw new NotFoundException(`This team has no members`)
+            throw new NotFoundException(`This team has no members`);
         }
         return members;
     }
@@ -89,14 +92,17 @@ export class TeamsService {
                     .where(`team.teamId = :teamId`, { teamId: team.teamId })
                     .andWhere(
                         new Brackets((qb) => {
-                            qb.where(`invitation.status = :s1`, { s1: InvitationStatus.Accepted })
-                                .orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending });
-                        }))
+                            qb.where(`invitation.status = :s1`, {
+                                s1: InvitationStatus.Accepted,
+                            }).orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending });
+                        }),
+                    )
                     .getQuery();
                 return `player.playerId NOT IN ` + subQuery;
-            }).getMany();
+            })
+            .getMany();
         if (players.length === 0) {
-            throw new NotFoundException(`No players to invite found`)
+            throw new NotFoundException(`No players to invite found`);
         }
         return players;
     }
@@ -107,18 +113,23 @@ export class TeamsService {
             .createQueryBuilder(`match`)
             .addSelect([`firstRoster.team`, `secondRoster.team`])
             .addSelect([`firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`])
-            .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
+            .addSelect([
+                `firstTeam.teamId`,
+                `firstTeam.teamName`,
+                `secondTeam.teamId`,
+                `secondTeam.teamName`,
+            ])
             .innerJoin(`match.firstRoster`, `firstRoster`)
             .innerJoin(`match.secondRoster`, `secondRoster`)
             .innerJoin(`firstRoster.team`, `firstTeam`)
             .innerJoin(`secondRoster.team`, `secondTeam`)
-            .where(`firstTeam.teamId = :teamId OR secondTeam.teamId = :teamId`, { teamId: teamId })
+            .where(`firstTeam.teamId = :teamId OR secondTeam.teamId = :teamId`, { teamId: teamId });
         if (status && status !== null) {
-            queryBuilder.andWhere(`match.status = :status`, { status: status })
+            queryBuilder.andWhere(`match.status = :status`, { status: status });
         }
         const matches = await queryBuilder.getMany();
         if (matches.length === 0) {
-            throw new NotFoundException(`No matches found`)
+            throw new NotFoundException(`No matches found`);
         }
         return matches;
     }
@@ -135,9 +146,9 @@ export class TeamsService {
             teamName: createTeamDto.name,
             captain: captain,
             region: captain.region,
-            game: captain.game
+            game: captain.game,
         });
-        await this.connection.transaction(async manager => {
+        await this.connection.transaction(async (manager) => {
             await manager.save(team);
             const insertedTeam = await manager.findOne(Team, {
                 teamName: team.teamName,
@@ -154,22 +165,23 @@ export class TeamsService {
         return team;
     }
 
-
     public async setTeamImage(id, image, user) {
         const team = await this.getById(id);
         const owner = await this.playersService.getOwner(team.captain.playerId);
         console.log(team);
         if (owner.userId !== user.userId) {
-            throw new BadRequestException(`You need to be a captain of this team to add avatar to it`);
+            throw new BadRequestException(
+                `You need to be a captain of this team to add avatar to it`,
+            );
         }
         if (team.teamProfileImage) {
-            if (team.teamProfileImage !== 'default-team.png') {
-                const fs = require('fs')
-                const path = './uploads/teamProfileImages/' + team.teamProfileImage;
+            if (team.teamProfileImage !== `default-team.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/teamProfileImages/` + team.teamProfileImage;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user avatar failed to remove")
+                    console.error(`Previous user avatar failed to remove`);
                 }
             }
         }
@@ -182,13 +194,13 @@ export class TeamsService {
         const team = await this.getById(teamId);
         const members = await this.getMembers(teamId);
         const captain = await this.playersService.getById(attrs.captainId);
-        if (!members.some(member => member.playerId === attrs.captainId)) {
+        if (!members.some((member) => member.playerId === attrs.captainId)) {
             throw new BadRequestException(`Given player is not a member of the team`);
         }
         Object.assign(team, attrs);
         return this.teamsRepository.update(teamId, {
             teamName: attrs.name,
-            captain: captain
+            captain: captain,
         });
     }
 

@@ -11,8 +11,8 @@ import { getRandom, shuffle } from 'src/util';
 export class PlayersSeeder {
     constructor(
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
-        @InjectRepository(User) private readonly usersRepository: Repository<User>
-    ) { }
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    ) {}
 
     async seed(users: User[], game: Game) {
         const createdPlayers = [];

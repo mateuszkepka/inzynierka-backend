@@ -37,25 +37,31 @@ export class Match {
     numberOfMaps: number;
 
     @Expose({ name: `tournamentId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.tournamentId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.tournamentId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
 
     @Expose({ name: `groupId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.groupId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.groupId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Group, (group) => group.matches, { nullable: true })
     @JoinColumn({ name: `groupId` })
     group: Group;

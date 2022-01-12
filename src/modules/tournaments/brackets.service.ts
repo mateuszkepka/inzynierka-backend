@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Ladder, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
-import { setNextPhaseDate, shuffle } from "src/util";
-import { Repository } from "typeorm";
-import { MatchStatus } from "../matches/interfaces/match-status.enum";
-import { TeamsService } from "../teams/teams.service";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Ladder, Match, ParticipatingTeam, Team, Tournament } from 'src/entities';
+import { setNextPhaseDate, shuffle } from 'src/util';
+import { Repository } from 'typeorm';
+import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { TeamsService } from '../teams/teams.service';
 
 @Injectable()
 export class BracketsService {
@@ -12,18 +12,22 @@ export class BracketsService {
         @InjectRepository(Ladder) private readonly laddersRepository: Repository<Ladder>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly teamsService: TeamsService,
-    ) { }
+    ) {}
 
-    async generateLadder(tournament: Tournament, participatingTeams: ParticipatingTeam[], isLosers: boolean) {
+    async generateLadder(
+        tournament: Tournament,
+        participatingTeams: ParticipatingTeam[],
+        isLosers: boolean,
+    ) {
         let matches: Match[] = [];
 
         // variables to control the flow of match dates
         let upperDate: Date = new Date(tournament.tournamentStartDate);
-        let lowerDate: Date = new Date(tournament.tournamentStartDate);
+        const lowerDate: Date = new Date(tournament.tournamentStartDate);
         lowerDate.setHours(lowerDate.getHours() + tournament.numberOfMaps);
 
         // copying participating teams into another array
-        let teams: ParticipatingTeam[] = []
+        let teams: ParticipatingTeam[] = [];
         participatingTeams.forEach((team) => teams.push(Object.assign({}, team)));
 
         // calculating the size of a bracket
@@ -47,7 +51,7 @@ export class BracketsService {
         // creating upper bracket
         const upperBracket = await this.laddersRepository.save({
             isLosers: false,
-            tournament: tournament
+            tournament: tournament,
         });
 
         // generating upper bracket matches
@@ -55,7 +59,14 @@ export class BracketsService {
         if (isLosers) {
             phasesIfLower += 1;
         }
-        const firstUpperRound = await this.generateFirstRound(teams, tournament, upperBracket, phasesIfLower, Math.pow(2, numberOfPhases), upperDate);
+        const firstUpperRound = await this.generateFirstRound(
+            teams,
+            tournament,
+            upperBracket,
+            phasesIfLower,
+            Math.pow(2, numberOfPhases),
+            upperDate,
+        );
         upperDate = setNextPhaseDate(upperDate, tournament);
         matches = matches.concat(firstUpperRound);
 
@@ -67,7 +78,13 @@ export class BracketsService {
             if (isLosers) {
                 doubleEliminationRound += 1;
             }
-            const upperRound = await this.generateRound(tournament, upperBracket, doubleEliminationRound, numberOfUpperMatches, upperDate);
+            const upperRound = await this.generateRound(
+                tournament,
+                upperBracket,
+                doubleEliminationRound,
+                numberOfUpperMatches,
+                upperDate,
+            );
             upperDate = setNextPhaseDate(upperDate, tournament);
             matches = matches.concat(upperRound);
         }
@@ -77,17 +94,29 @@ export class BracketsService {
             // creating lower bracket
             const lowerBracket = await this.laddersRepository.save({
                 isLosers: true,
-                tournament: tournament
+                tournament: tournament,
             });
 
             let numberOfLowerMatches = bracketSize / 2;
 
             // generating lower bracket matches
-            for (let round = (numberOfPhases * 2) - 2; round > 0; round -= 2) {
+            for (let round = numberOfPhases * 2 - 2; round > 0; round -= 2) {
                 numberOfLowerMatches = numberOfLowerMatches / 2;
-                const lowerFullRound = await this.generateRound(tournament, lowerBracket, round, numberOfLowerMatches, lowerDate);
+                const lowerFullRound = await this.generateRound(
+                    tournament,
+                    lowerBracket,
+                    round,
+                    numberOfLowerMatches,
+                    lowerDate,
+                );
                 upperDate = setNextPhaseDate(upperDate, tournament);
-                const lowerHalfRound = await this.generateRound(tournament, lowerBracket, round - 1, numberOfLowerMatches, lowerDate);
+                const lowerHalfRound = await this.generateRound(
+                    tournament,
+                    lowerBracket,
+                    round - 1,
+                    numberOfLowerMatches,
+                    lowerDate,
+                );
                 upperDate = setNextPhaseDate(upperDate, tournament);
                 matches = matches.concat(lowerFullRound, lowerHalfRound);
             }
@@ -101,26 +130,37 @@ export class BracketsService {
                 round: 1,
                 position: 1,
                 ladder: upperBracket,
-                maps: []
+                maps: [],
             });
             matches.push(grandFinalMatch);
         }
         await this.matchesRepository.save(matches);
     }
 
-    private async generateFirstRound(teams: ParticipatingTeam[], tournament: Tournament, ladder: Ladder, round: number, numberOfMatches: number, date: Date): Promise<Match[]> {
+    private async generateFirstRound(
+        teams: ParticipatingTeam[],
+        tournament: Tournament,
+        ladder: Ladder,
+        round: number,
+        numberOfMatches: number,
+        date: Date,
+    ): Promise<Match[]> {
         const matches: Match[] = [];
         let position = 1;
         for (let i = 0; i < numberOfMatches; i += 2) {
             let firstTeam: Team = null;
-            let secondTeam: Team = null
+            let secondTeam: Team = null;
             const firstRoster = teams[i];
             const secondRoster = teams[i + 1];
             if (firstRoster !== null) {
-                firstTeam = await this.teamsService.getByParticipatingTeam(firstRoster.participatingTeamId);
+                firstTeam = await this.teamsService.getByParticipatingTeam(
+                    firstRoster.participatingTeamId,
+                );
             }
             if (secondRoster !== null) {
-                secondTeam = await this.teamsService.getByParticipatingTeam(secondRoster.participatingTeamId);
+                secondTeam = await this.teamsService.getByParticipatingTeam(
+                    secondRoster.participatingTeamId,
+                );
             }
             const match = this.matchesRepository.create({
                 matchStartDate: new Date(date),
@@ -134,14 +174,20 @@ export class BracketsService {
                 round: round,
                 position: position++,
                 ladder: ladder,
-                maps: []
-            })
+                maps: [],
+            });
             matches.push(match);
         }
         return matches;
     }
 
-    private async generateRound(tournament: Tournament, ladder: Ladder, round: number, numberOfMatches: number, date: Date): Promise<Match[]> {
+    private async generateRound(
+        tournament: Tournament,
+        ladder: Ladder,
+        round: number,
+        numberOfMatches: number,
+        date: Date,
+    ): Promise<Match[]> {
         const matches: Match[] = [];
         for (let i = 0; i < numberOfMatches; i++) {
             const match = this.matchesRepository.create({
@@ -152,8 +198,8 @@ export class BracketsService {
                 round: round,
                 position: i + 1,
                 ladder: ladder,
-                maps: []
-            })
+                maps: [],
+            });
             matches.push(match);
         }
         return matches;

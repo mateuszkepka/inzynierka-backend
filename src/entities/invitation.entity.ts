@@ -2,7 +2,10 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 import { Team } from './team.entity';
 import { Player } from './player.entity';
 import { Expose, Transform } from 'class-transformer';
-import { InvitationStatus, Status, } from 'src/modules/invitations/interfaces/invitation-status.enum';
+import {
+    InvitationStatus,
+    Status,
+} from 'src/modules/invitations/interfaces/invitation-status.enum';
 
 @Entity()
 @Unique([`player`, `team`])
@@ -17,12 +20,15 @@ export class Invitation {
     player: Player;
 
     @Expose({ name: `teamId` })
-    @Transform(({ value }) => {
-        if (value === undefined) {
-            return
-        }
-        return value.teamId;
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value === undefined) {
+                return;
+            }
+            return value.teamId;
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Team, (team) => team.members, { nullable: true, onDelete: `CASCADE` })
     @JoinColumn({ name: `teamId` })
     team: Team;

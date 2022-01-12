@@ -21,13 +21,16 @@ export class Performance {
     assists: number;
 
     @Expose({ name: `username` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.username;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.username;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => User, (user) => user.performances)
     @JoinColumn({ name: `userId` })
     user: User;

@@ -8,7 +8,7 @@ import { Role } from 'src/roles/roles.enum';
 
 @Injectable()
 export class UsersSeeder {
-    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
+    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
 
     async seed(numberOfRows: number) {
         const createdUsers = [];
@@ -21,7 +21,7 @@ export class UsersSeeder {
             username: `admin`,
             password: adminPassword,
             country: `Poland`,
-            roles: [Role.User, Role.Admin]
+            roles: [Role.User, Role.Admin],
         });
         createdUsers.push(admin);
 
@@ -34,7 +34,7 @@ export class UsersSeeder {
                 username: faker.internet.userName(),
                 password: password,
                 country: `Poland`,
-                roles: [Role.User, Role.Organizer]
+                roles: [Role.User, Role.Organizer],
             });
             createdUsers.push(organizer);
         }

@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards, UsePipes, } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+    UsePipes,
+} from '@nestjs/common';
 import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
@@ -20,7 +33,7 @@ import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) { }
+    constructor(private readonly tournamentsService: TournamentsService) {}
 
     @Get(`/test`)
     async test() {
@@ -31,7 +44,7 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getAvailableAdmins(
         @Param(`id`, ParseIntPipe) id: number,
-        @Req() { user }: RequestWithUser
+        @Req() { user }: RequestWithUser,
     ) {
         return this.tournamentsService.getAvailableAdmins(id, user);
     }
@@ -52,7 +65,7 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getTournamentMatches(
         @Param(`id`, ParseIntPipe) id: number,
-        @Query() { status }: MatchQuery
+        @Query() { status }: MatchQuery,
     ) {
         return this.tournamentsService.getMatchesByTournament(id, status);
     }
@@ -62,7 +75,7 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async getTournamentTeams(
         @Param(`id`, ParseIntPipe) id: number,
-        @Query() { status }: ParticipatingTeamQuery
+        @Query() { status }: ParticipatingTeamQuery,
     ) {
         return this.tournamentsService.getTeamsByTournament(id, status);
     }
@@ -82,37 +95,25 @@ export class TournamentsController {
     @Post()
     @Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
-    async create(
-        @Body() body: CreateTournamentDto,
-        @Req() { user }: RequestWithUser
-    ) {
+    async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
     }
 
     @Post(`/:id/admins`)
     @Roles(Role.Organizer)
-    async addAdmin(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: CreateAdminDto
-    ) {
+    async addAdmin(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreateAdminDto) {
         return this.tournamentsService.addAdmin(id, body);
     }
 
     @Post(`/:id/prizes`)
     @Roles(Role.Organizer)
-    async addPrize(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: CreatePrizeDto
-    ) {
+    async addPrize(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreatePrizeDto) {
         return this.tournamentsService.addPrize(id, body);
     }
 
     @Post(`/:id/teams`)
     @UseGuards(UserIsCaptainGuard)
-    async addTeam(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: CreateParticipatingTeamDto
-    ) {
+    async addTeam(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreateParticipatingTeamDto) {
         return this.tournamentsService.addTeam(id, body);
     }
 
@@ -122,7 +123,11 @@ export class TournamentsController {
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
-        return this.tournamentsService.changeStatus(tournamentId, teamId, ParticipationStatus.CheckedIn);
+        return this.tournamentsService.changeStatus(
+            tournamentId,
+            teamId,
+            ParticipationStatus.CheckedIn,
+        );
     }
 
     @Patch(`/:id/teams/:teamId`)
@@ -130,7 +135,7 @@ export class TournamentsController {
     async verifyTeam(
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
-        @Body() { status }: VerifyTeamDto
+        @Body() { status }: VerifyTeamDto,
     ) {
         return this.tournamentsService.changeStatus(tournamentId, teamId, status);
     }
@@ -138,10 +143,7 @@ export class TournamentsController {
     @Patch(`/:id`)
     @Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
-    async update(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: UpdateTournamentDto
-    ) {
+    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateTournamentDto) {
         return this.tournamentsService.update(id, body);
     }
 
@@ -156,7 +158,7 @@ export class TournamentsController {
     @Roles(Role.Organizer)
     async removeAdmin(
         @Param(`id`, ParseIntPipe) id: number,
-        @Param(`adminId`, ParseIntPipe) adminId: number
+        @Param(`adminId`, ParseIntPipe) adminId: number,
     ) {
         return `todo`;
     }

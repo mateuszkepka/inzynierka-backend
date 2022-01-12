@@ -7,7 +7,7 @@ import { shuffle } from 'src/util';
 
 @Injectable()
 export class TeamsSeeder {
-    constructor(@InjectRepository(Team) private readonly teamsRepository: Repository<Team>) { }
+    constructor(@InjectRepository(Team) private readonly teamsRepository: Repository<Team>) {}
 
     async seed(captains: Player[]) {
         const createdTeams = [];
@@ -19,7 +19,7 @@ export class TeamsSeeder {
                     teamName: faker.internet.userName(),
                     captain: captains[i],
                     game: captains[i].game,
-                    region: captains[i].region
+                    region: captains[i].region,
                 });
                 createdTeams.push(team);
             }
