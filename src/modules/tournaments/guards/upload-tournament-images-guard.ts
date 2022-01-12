@@ -1,21 +1,20 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
-import { Role } from 'src/roles/roles.enum';
+import { UsersService } from 'src/modules/users/users.service';
 import { TournamentsService } from '../tournaments.service';
 
 @Injectable()
-export class UserIsTournamentAdmin implements CanActivate {
+export class UploadTeamTournamentGuard implements CanActivate {
     constructor(
         @Inject(TournamentsService) private readonly tournamentsService: TournamentsService,
+        @Inject(UsersService) private readonly usersService: UsersService,
     ) {}
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
-        if (user.roles.includes(Role.Admin)) {
-            return true;
-        }
-        const tournamentId = Number(request.params.id);
-        const admins = await this.tournamentsService.getAdmins(tournamentId);
-        if (admins.some((admin) => admin.userId === user.userId)) {
+        const tournament = await this.tournamentsService.getById(request.params.id);
+        console.log(user.userId);
+        console.log(tournament.organizer.userId);
+        if (user.userId === tournament.organizer.userId) {
             return true;
         }
         return false;

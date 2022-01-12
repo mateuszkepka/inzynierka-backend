@@ -174,7 +174,7 @@ export class TeamsService {
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
-                    console.error(`Previous user avatar failed to remove`);
+                    console.error(`Previous team profile failed to remove`);
                 }
             }
         }
@@ -192,7 +192,7 @@ export class TeamsService {
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
-                    console.error(`Previous user avatar failed to remove`);
+                    console.error(`Previous team background failed to remove`);
                 }
             }
         }

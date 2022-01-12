@@ -27,6 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
 import { UploadTeamImagesGuard } from './guards/upload-team-images.guard';
 import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
+import { Public } from 'src/roles/public.decorator';
 
 @Controller(`teams`)
 @Roles(Role.User)
@@ -60,11 +61,13 @@ export class TeamsController {
         return this.teamsService.getById(id);
     }
 
+    @Public()
     @Get(`team-profile/:imgpath`)
     seeUploadedProfile(@Param(`imgpath`) image, @Res() res) {
         return res.sendFile(image, { root: `./uploads/teamProfileImages` });
     }
 
+    @Public()
     @Get(`team-background/:imgpath`)
     seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
         return res.sendFile(image, { root: `./uploads/teamProfileBackgrounds` });

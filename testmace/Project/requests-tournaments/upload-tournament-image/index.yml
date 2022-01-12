@@ -6,25 +6,24 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/players'
+    url: '${$env.url}/tournaments/upload-tournament-image/7'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
-    jsonBody: |-
-      {
-        "summonerName": "Tesdfsfdsdting",
-        "gameId": 1,
-        "region": "EUNE"
-      }
+    type: FormData
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData: []
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Wadol\Downloads\Wikidata_Map_April_2016_Big.png'
+        name: image
+        type: File
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: create-player
+name: upload-tournament-image
