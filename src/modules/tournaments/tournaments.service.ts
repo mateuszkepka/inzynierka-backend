@@ -469,6 +469,26 @@ export class TournamentsService {
         return tournament;
     }
 
+    public async setTournamentBackground(id, image, user) {
+        const tournament = await this.getById(id);
+        if (tournament.tournamentProfileBackground) {
+            if (tournament.tournamentProfileBackground !== `default-tournament-profile.png`) {
+                const fs = require(`fs`);
+                const path =
+                    `./uploads/tournamentProfileBackgrounds/` +
+                    tournament.tournamentProfileBackground;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous user avatar failed to remove`);
+                }
+            }
+        }
+        tournament.tournamentProfileBackground = image.filename;
+        this.tournamentsRepository.save(tournament);
+        return tournament;
+    }
+
     private async validateRoster(team: Team, roster: RosterMember[]) {
         const exceptions = [];
         for (const member of roster) {

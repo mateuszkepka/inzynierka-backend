@@ -100,7 +100,7 @@ export class TournamentsController {
     }
 
     @Post()
-    //@Roles(Role.Organizer)
+    @Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
     async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
@@ -125,37 +125,36 @@ export class TournamentsController {
     ) {
         if (!image) {
             throw new BadRequestException(
-                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+                `invalid file provided, allowed formats jpg/png/jpng and max size 2mb`,
             );
         }
         return this.tournamentsService.setTournamentProfile(id, image, user);
     }
 
-    //     @Post(`/upload-team-background/:id`)
-    // @UseGuards(UploadTeamImagesGuard)
-    //     @UseInterceptors(
-    //         FileInterceptor(`image`, {
-    //             storage: diskStorage({
-    //                 destination: `./uploads/teamProfileBackgrounds`,
-    //                 filename: editFileName,
-    //             }),
-    //             fileFilter: imageFileFilter,
-    //             limits: { fileSize: 4000000 },
-    //         }),
-    //     )
-    //     async uploadedBackground(
-    //         @UploadedFile() image,
-    //         @Param(`id`, ParseIntPipe) id: number,
-    //         @Req() { user }: RequestWithUser,
-    //     ) {
-    //         if (!image) {
-    //             throw new BadRequestException(
-    //                 `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
-    //             );
-    //         }
-    //         return this.teamsService.setTeamBackground(id, image, user);
-    //     }
-
+    @Post(`/upload-tournament-background/:id`)
+    @UseGuards(UploadTeamTournamentGuard)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/tournamentProfileBackgrounds`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
+        }),
+    )
+    async uploadedBackground(
+        @UploadedFile() image,
+        @Param(`id`, ParseIntPipe) id: number,
+        @Req() { user }: RequestWithUser,
+    ) {
+        if (!image) {
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
+        }
+        return this.tournamentsService.setTournamentBackground(id, image, user);
+    }
     @Post(`/:id/admins`)
     @Roles(Role.Organizer)
     async addAdmin(@Param(`id`, ParseIntPipe) id: number, @Body() body: CreateAdminDto) {

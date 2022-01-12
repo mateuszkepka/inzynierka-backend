@@ -18,6 +18,7 @@ children:
   - (test)
   - (test) resolve match
   - upload-tournament-image
+  - upload-tournament-background
 variablesArray: []
 type: Folder
 authData:
