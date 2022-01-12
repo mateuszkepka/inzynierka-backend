@@ -60,9 +60,14 @@ export class TeamsController {
         return this.teamsService.getById(id);
     }
 
-    @Get(`team-image/:imgpath`)
-    seeUploadedFile(@Param(`imgpath`) image, @Res() res) {
+    @Get(`team-profile/:imgpath`)
+    seeUploadedProfile(@Param(`imgpath`) image, @Res() res) {
         return res.sendFile(image, { root: `./uploads/teamProfileImages` });
+    }
+
+    @Get(`team-background/:imgpath`)
+    seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/teamProfileBackgrounds` });
     }
 
     @Get()
@@ -79,17 +84,45 @@ export class TeamsController {
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
         }),
     )
-    uploadedFile(
+    async uploadedFile(
         @UploadedFile() image,
         @Param(`id`, ParseIntPipe) id: number,
         @Req() { user }: RequestWithUser,
     ) {
         if (!image) {
-            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
         }
-        return this.teamsService.setTeamImage(id, image, user);
+        return this.teamsService.setTeamProfile(id, image, user);
+    }
+
+    @Post(`/upload-team-background/:id`)
+    @UseGuards(UploadTeamImagesGuard)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/teamProfileBackgrounds`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
+        }),
+    )
+    async uploadedBackground(
+        @UploadedFile() image,
+        @Param(`id`, ParseIntPipe) id: number,
+        @Req() { user }: RequestWithUser,
+    ) {
+        if (!image) {
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
+        }
+        return this.teamsService.setTeamBackground(id, image, user);
     }
 
     @Post()

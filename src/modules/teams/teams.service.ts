@@ -165,17 +165,10 @@ export class TeamsService {
         return team;
     }
 
-    public async setTeamImage(id, image, user) {
+    public async setTeamProfile(id, image, user) {
         const team = await this.getById(id);
-        const owner = await this.playersService.getOwner(team.captain.playerId);
-        console.log(team);
-        if (owner.userId !== user.userId) {
-            throw new BadRequestException(
-                `You need to be a captain of this team to add avatar to it`,
-            );
-        }
         if (team.teamProfileImage) {
-            if (team.teamProfileImage !== `default-team.png`) {
+            if (team.teamProfileImage !== `default-team-profile.png`) {
                 const fs = require(`fs`);
                 const path = `./uploads/teamProfileImages/` + team.teamProfileImage;
                 try {
@@ -186,6 +179,24 @@ export class TeamsService {
             }
         }
         team.teamProfileImage = image.filename;
+        this.teamsRepository.save(team);
+        return team;
+    }
+
+    public async setTeamBackground(id, image, user) {
+        const team = await this.getById(id);
+        if (team.teamProfileBackground) {
+            if (team.teamProfileBackground !== `default-team-background.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/teamProfileBackgrounds/` + team.teamProfileBackground;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous user avatar failed to remove`);
+                }
+            }
+        }
+        team.teamProfileBackground = image.filename;
         this.teamsRepository.save(team);
         return team;
     }

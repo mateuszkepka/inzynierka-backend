@@ -80,6 +80,10 @@ export class Team {
     members: Invitation[];
 
     @Expose()
-    @Column({ default: `default-team.png` })
+    @Column({ default: `default-team-profile.png` })
     teamProfileImage: string;
+
+    @Expose()
+    @Column({ default: `default-team-background.png` })
+    teamProfileBackground: string;
 }
