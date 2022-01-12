@@ -460,7 +460,7 @@ export class TournamentsService {
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
-                    console.error(`Previous user avatar failed to remove`);
+                    console.error(`Previous tournament profile failed to remove`);
                 }
             }
         }
@@ -480,7 +480,7 @@ export class TournamentsService {
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
-                    console.error(`Previous user avatar failed to remove`);
+                    console.error(`Previous tournament background failed to remove`);
                 }
             }
         }
