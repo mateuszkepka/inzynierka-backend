@@ -9,7 +9,9 @@ children:
   - update-team
   - remove-team
   - upload-team-image
-  - get-team-image
+  - get-team-profile
+  - upload-team-background
+  - get-team-background
 variablesArray: []
 type: Folder
 authData:

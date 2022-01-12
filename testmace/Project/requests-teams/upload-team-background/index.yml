@@ -6,24 +6,24 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/login'
+    url: '${$env.url}/teams/upload-team-background/2'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
-    jsonBody: |-
-      {
-        "email": "bubu2@gmail.com",
-        "password": "bubu2"
-      }
+    type: FormData
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData: []
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Wadol\Downloads\Wikidata_Map_April_2016_Big.png'
+        name: image
+        type: File
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in-user
+name: upload-team-background

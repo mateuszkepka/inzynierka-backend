@@ -6,24 +6,24 @@ import { TournamentFormat } from './dto/tournament-format-enum';
 
 @Injectable()
 export class FormatsService {
-    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) { }
+    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) {}
 
     async getById(formatId: number) {
         const format = await this.formatsRepository.findOne({
-            where: { formatId: formatId }
+            where: { formatId: formatId },
         });
         if (!format) {
-            throw new NotFoundException(`Format with this id does not exist`)
+            throw new NotFoundException(`Format with this id does not exist`);
         }
         return format;
     }
 
     async getByName(name: TournamentFormat) {
         const format = await this.formatsRepository.findOne({
-            where: { name: name }
+            where: { name: name },
         });
         if (!format) {
-            throw new NotFoundException(`Format with this name does not exist`)
+            throw new NotFoundException(`Format with this name does not exist`);
         }
         return format;
     }
@@ -35,5 +35,4 @@ export class FormatsService {
         }
         return formats;
     }
-
 }

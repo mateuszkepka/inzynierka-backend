@@ -1,6 +1,6 @@
-import { IsEnum, IsIn, IsNotEmpty, IsOptional } from "class-validator";
-import { TournamentStatus } from "src/modules/tournaments/dto/tourrnament.status-enum";
-import { Role } from "src/roles/roles.enum";
+import { IsEnum, IsIn, IsNotEmpty, IsOptional } from 'class-validator';
+import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status-enum';
+import { Role } from 'src/roles/roles.enum';
 
 export class GetUsersTournamentsQuery {
     @IsOptional()
@@ -9,5 +9,5 @@ export class GetUsersTournamentsQuery {
 
     @IsNotEmpty()
     @IsIn([Role.Player, Role.TournamentAdmin, Role.Organizer])
-    role: Role.Player | Role.TournamentAdmin | Role.Organizer
+    role: Role.Player | Role.TournamentAdmin | Role.Organizer;
 }

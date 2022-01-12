@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/entities';
 import { Repository } from 'typeorm';
@@ -12,12 +17,13 @@ import { InvitationStatus } from './interfaces/invitation-status.enum';
 @Injectable()
 export class InvitationsService {
     constructor(
-        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
+        @InjectRepository(Invitation)
+        private readonly invitationsRepository: Repository<Invitation>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
-    ) { }
+    ) {}
 
     async getById(id: number) {
         const invitation = await this.invitationsRepository.findOne({
@@ -91,7 +97,7 @@ export class InvitationsService {
     async remove(id: number, user: User) {
         const invitation = await this.getById(id);
         // TEAMS OF THE USER WHO SENDS REQUEST
-        var teams = []
+        let teams = [];
         try {
             teams = await this.usersService.getTeamsByUser(user.userId);
         } catch (ignore) {
@@ -99,7 +105,7 @@ export class InvitationsService {
         }
         // THE TEAM WHICH INVITATION IS ABOUT
         const teamOnInvitation = await this.teamsService.getById(invitation.team.teamId);
-        if (!(teams.some((team) => team.teamId === teamOnInvitation.teamId))) {
+        if (!teams.some((team) => team.teamId === teamOnInvitation.teamId)) {
             throw new ForbiddenException(`You are not a team member`);
         }
         // ACCOUNTS OF THE USER WHO SENDS REQUEST
@@ -114,7 +120,7 @@ export class InvitationsService {
             }
             // A CAPTAIN CANNOT KICK HIMSELF
             if (playerOnInvitation) {
-                throw new ForbiddenException(`You can not kick a team's captain`)
+                throw new ForbiddenException(`You can not kick a team's captain`);
             }
             // THE CAPTAIN KICKS A TEAM MEMBER
             return this.invitationsRepository.remove(invitation);

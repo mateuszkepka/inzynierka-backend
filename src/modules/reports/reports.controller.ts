@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Req,
+} from '@nestjs/common';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
@@ -9,7 +19,7 @@ import { ReportsService } from './reports.service';
 
 @Controller(`reports`)
 export class ReportsController {
-    constructor(private readonly reportsService: ReportsService) { }
+    constructor(private readonly reportsService: ReportsService) {}
 
     @Get(`/:id`)
     @Roles(Role.Admin)

@@ -6,7 +6,7 @@ import * as faker from 'faker';
 
 @Injectable()
 export class PrizesSeeder {
-    constructor(@InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>) { }
+    constructor(@InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>) {}
 
     async seed(numberOfRows: number) {
         const createdPrizes = [];

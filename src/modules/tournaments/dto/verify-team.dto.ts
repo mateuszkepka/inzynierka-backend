@@ -4,5 +4,5 @@ import { ParticipationStatus } from 'src/modules/teams/dto/participation-status'
 export class VerifyTeamDto {
     @IsNotEmpty()
     @IsEnum(ParticipationStatus)
-    status: ParticipationStatus
+    status: ParticipationStatus;
 }

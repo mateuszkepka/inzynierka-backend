@@ -6,7 +6,7 @@ import * as faker from 'faker';
 
 @Injectable()
 export class MatchesSeeder {
-    constructor(@InjectRepository(Match) private readonly matchesRepository: Repository<Match>) { }
+    constructor(@InjectRepository(Match) private readonly matchesRepository: Repository<Match>) {}
 
     async seed(numberOfRows: number, rosters: ParticipatingTeam[], tournaments: Tournament[]) {
         const isSeeded = await this.matchesRepository.findOne();
@@ -21,8 +21,8 @@ export class MatchesSeeder {
         const createdMatches = [];
 
         for (let i = 0; i < numberOfRows; ++i) {
-            const rand = Math.floor(Math.random() * (10))
-            const rand2 = Math.floor(Math.random() * (10))
+            const rand = Math.floor(Math.random() * 10);
+            const rand2 = Math.floor(Math.random() * 10);
             const match: Partial<Match> = {
                 matchStartDate: faker.datatype.datetime(),
                 matchEndDate: faker.datatype.datetime(),

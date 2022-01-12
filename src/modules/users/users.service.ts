@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, Player, Team, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
@@ -15,16 +20,17 @@ import { MatchStatus } from '../matches/interfaces/match-status.enum';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Tournament)
+        private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-    ) { }
+    ) {}
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne({
-            where: { userId: userId }
+            where: { userId: userId },
         });
         if (!user) {
             throw new NotFoundException(`User with this id does not exist`);
@@ -34,7 +40,7 @@ export class UsersService {
 
     async getByUsername(username: string) {
         const user = await this.usersRepository.findOne({
-            where: { username: username }
+            where: { username: username },
         });
         if (!user) {
             throw new NotFoundException(`User with this username does not exist`);
@@ -44,7 +50,7 @@ export class UsersService {
 
     async getByEmail(email: string) {
         const user = await this.usersRepository.findOne({
-            where: { email: email }
+            where: { email: email },
         });
         return user;
     }
@@ -68,18 +74,27 @@ export class UsersService {
         const queryBuilder = this.matchesRepository
             .createQueryBuilder(`match`)
             .select([
-                `match.matchId`, `match.matchStartDate`, `match.status`,
-                `match.winner`, `match.numberOfMaps`,
-                `match.firstRoster`, `match.secondRoster`
+                `match.matchId`,
+                `match.matchStartDate`,
+                `match.status`,
+                `match.winner`,
+                `match.numberOfMaps`,
+                `match.firstRoster`,
+                `match.secondRoster`,
             ])
             .addSelect([
-                `firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`,
-                `firstRoster.team`, `secondRoster.team`,
-                `firstRoster.roster`, `secondRoster.roster`
+                `firstRoster.participatingTeamId`,
+                `secondRoster.participatingTeamId`,
+                `firstRoster.team`,
+                `secondRoster.team`,
+                `firstRoster.roster`,
+                `secondRoster.roster`,
             ])
             .addSelect([
-                `firstTeam.teamId`, `firstTeam.teamName`,
-                `secondTeam.teamId`, `secondTeam.teamName`
+                `firstTeam.teamId`,
+                `firstTeam.teamName`,
+                `secondTeam.teamId`,
+                `secondTeam.teamName`,
             ])
             .innerJoin(`match.firstRoster`, `firstRoster`)
             .innerJoin(`match.secondRoster`, `secondRoster`)
@@ -91,13 +106,13 @@ export class UsersService {
             .innerJoin(`secondInvitation.player`, `secondPlayer`)
             .innerJoin(`firstPlayer.user`, `firstUser`)
             .innerJoin(`secondPlayer.user`, `secondUser`)
-            .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId })
+            .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId });
         if (status && status !== null) {
-            queryBuilder.andWhere(`match.status = :status`, { status: status })
+            queryBuilder.andWhere(`match.status = :status`, { status: status });
         }
         const matches = await queryBuilder.getMany();
         if (matches.length === 0) {
-            throw new NotFoundException(`No matches found`)
+            throw new NotFoundException(`No matches found`);
         }
         return matches;
     }
@@ -112,7 +127,7 @@ export class UsersService {
             .innerJoin(`player.user`, `user`)
             .where(`user.userId = :userId`, { userId: userId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
-            .getMany()
+            .getMany();
         if (teams.length === 0) {
             throw new NotFoundException(`This player is not a member of any team`);
         }
@@ -127,26 +142,28 @@ export class UsersService {
         const { status, role } = queryParams;
         switch (role) {
             case Role.Player:
-                queryBuilder.innerJoin(`tournament.rosters`, `roster`)
+                queryBuilder
+                    .innerJoin(`tournament.rosters`, `roster`)
                     .innerJoin(`roster.team`, `team`)
                     .innerJoin(`team.members`, `invitation`)
                     .innerJoin(`invitation.player`, `player`)
-                    .innerJoin(`player.user`, `user`)
+                    .innerJoin(`player.user`, `user`);
                 break;
             case Role.TournamentAdmin:
-                queryBuilder.innerJoin(`tournament.tournamentAdmins`, `admins`)
-                    .innerJoin(`admins.user`, `user`)
+                queryBuilder
+                    .innerJoin(`tournament.tournamentAdmins`, `admins`)
+                    .innerJoin(`admins.user`, `user`);
                 break;
             case Role.Organizer:
-                queryBuilder.innerJoin(`tournament.organizer`, `user`)
+                queryBuilder.innerJoin(`tournament.organizer`, `user`);
                 break;
         }
         if (status) {
-            queryBuilder.andWhere(`tournament.status = :status`, { status: status })
+            queryBuilder.andWhere(`tournament.status = :status`, { status: status });
         }
         const tournaments = await queryBuilder.getMany();
         if (tournaments.length === 0) {
-            throw new NotFoundException(`No tournaments with given parameters found`)
+            throw new NotFoundException(`No tournaments with given parameters found`);
         }
         return tournaments;
     }
@@ -188,12 +205,14 @@ export class UsersService {
         const queryParams = new GetUsersTournamentsQuery();
         queryParams.status = TournamentStatus.Ongoing;
         queryParams.role = Role.Organizer;
-        var tournaments = [];
+        let tournaments = [];
         try {
             tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) { }
+        } catch (ignore) {}
         if (tournaments.length !== 0) {
-            throw new ForbiddenException(`You can not delete your account when you have ongoing tournaments`);
+            throw new ForbiddenException(
+                `You can not delete your account when you have ongoing tournaments`,
+            );
         }
         return this.usersRepository.remove(user);
     }
@@ -201,13 +220,13 @@ export class UsersService {
     public async setProfileImage(userId, image) {
         const user = await this.getById(userId);
         if (user.userProfileImage) {
-            if (user.userProfileImage !== 'default-avatar.jpg') {
-                const fs = require('fs')
-                const path = './uploads/userProfileImages/' + user.userProfileImage;
+            if (user.userProfileImage !== `default-avatar.jpg`) {
+                const fs = require(`fs`);
+                const path = `./uploads/userProfileImages/` + user.userProfileImage;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user avatar failed to remove")
+                    console.error(`Previous user avatar failed to remove`);
                 }
             }
         }
@@ -219,13 +238,13 @@ export class UsersService {
     public async setProfileBackground(userId, image) {
         const user = await this.getById(userId);
         if (user.userProfileBackground) {
-            if (user.userProfileBackground !== 'default-background.jpg') {
-                const fs = require('fs')
-                const path = './uploads/userProfileBackgrounds/' + user.userProfileBackground;
+            if (user.userProfileBackground !== `default-background.jpg`) {
+                const fs = require(`fs`);
+                const path = `./uploads/userProfileBackgrounds/` + user.userProfileBackground;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user backgrounds failed to remove")
+                    console.error(`Previous user backgrounds failed to remove`);
                 }
             }
         }

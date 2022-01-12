@@ -14,8 +14,8 @@ export class PlayersService {
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly gamesService: GamesService,
-        private readonly connection: Connection
-    ) { }
+        private readonly connection: Connection,
+    ) {}
 
     async getAll() {
         const players = await this.playersRepository.find({
@@ -59,17 +59,17 @@ export class PlayersService {
         const { summonerName, gameId, region } = body;
         const ifExists = await this.getByNickname(summonerName);
         if (ifExists) {
-            throw new BadRequestException(`This summoner name is already taken!`)
+            throw new BadRequestException(`This summoner name is already taken!`);
         }
         const game = await this.gamesService.getById(gameId);
         if (!Object.values(RegionsLoL).includes(region)) {
             throw new NotFoundException(`Wrong region provided`);
         }
-        await this.connection.transaction(async manager => {
+        await this.connection.transaction(async (manager) => {
             const player = this.playersRepository.create({
                 ...body,
                 game: game,
-                user: user
+                user: user,
             });
             if (!user.roles.includes(Role.Player)) {
                 user.roles.push(Role.Player);

@@ -8,7 +8,7 @@ export class AddPlayerAccountDto {
     @IsNotEmpty()
     @IsNumber()
     gameId: number;
-    
+
     @IsNotEmpty()
     @IsEnum(RegionsLoL)
     region: RegionsLoL;

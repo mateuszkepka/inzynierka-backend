@@ -7,7 +7,7 @@ import { UpdateGameDto } from './dto/update-game.dto';
 
 @Injectable()
 export class GamesService {
-    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) { }
+    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
 
     async getById(gameId: number) {
         const game = await this.gamesRepository.findOne({ where: { gameId: gameId } });
@@ -27,7 +27,9 @@ export class GamesService {
 
     async create(createGameDto: CreateGameDto) {
         const game = new Game();
-        const checktitle = await this.gamesRepository.findOne({ where: { title: createGameDto.title } });
+        const checktitle = await this.gamesRepository.findOne({
+            where: { title: createGameDto.title },
+        });
         if (checktitle) {
             throw new BadRequestException(`Game with that name already exists`);
         }
@@ -45,6 +47,4 @@ export class GamesService {
         Object.assign(game, attrs);
         return this.gamesRepository.save(game);
     }
-
-
 }

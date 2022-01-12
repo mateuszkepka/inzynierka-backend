@@ -1,6 +1,6 @@
 export * from './game.entity';
 export * from './group.entity';
-export * from './group-standing.entity'
+export * from './group-standing.entity';
 export * from './ladder.entity';
 export * from './map.entity';
 export * from './match.entity';

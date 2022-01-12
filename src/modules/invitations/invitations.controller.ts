@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, Req, UseGuards, Query, ParseIntPipe, Patch } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Param,
+    Delete,
+    Req,
+    UseGuards,
+    Query,
+    ParseIntPipe,
+    Patch,
+} from '@nestjs/common';
 import { InvitationsService } from './invitations.service';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
@@ -12,7 +24,7 @@ import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 @Controller(`invitations`)
 @Roles(Role.Player)
 export class InvitationsController {
-    constructor(private readonly invitationsService: InvitationsService) { }
+    constructor(private readonly invitationsService: InvitationsService) {}
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id) {

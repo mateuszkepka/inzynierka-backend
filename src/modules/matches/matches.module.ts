@@ -11,14 +11,7 @@ import { GamesModule } from '../games/games.module';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([
-            ParticipatingTeam,
-            GroupStanding,
-            Performance,
-            Match,
-            Team,
-            Map,
-        ]),
+        TypeOrmModule.forFeature([ParticipatingTeam, GroupStanding, Performance, Match, Team, Map]),
         TournamentsModule,
         PlayersModule,
         UsersModule,
@@ -29,4 +22,4 @@ import { GamesModule } from '../games/games.module';
     exports: [MatchesService],
     controllers: [MatchesController],
 })
-export class MatchesModule { }
+export class MatchesModule {}

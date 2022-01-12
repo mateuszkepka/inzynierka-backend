@@ -24,7 +24,9 @@ export class DateValidationPipe implements PipeTransform {
                 throw new BadRequestException(`Tournament start date cannot be in the past`);
             }
             if (breakDate > startDate) {
-                throw new BadRequestException(`Registration must end at least 1 hour before the start of tournament`);
+                throw new BadRequestException(
+                    `Registration must end at least 1 hour before the start of tournament`,
+                );
             }
         }
         if (metatype === CreateSuspensionDto) {

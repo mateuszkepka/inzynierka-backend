@@ -7,13 +7,12 @@ import { CreateReportDto } from './dto/create-report-dto';
 import { ReportStatusQuery } from './dto/get-reports.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 
-
 @Injectable()
 export class ReportsService {
     constructor(
         @InjectRepository(Report) private readonly reportsRepository: Repository<Report>,
-        private readonly usersService: UsersService
-    ) { }
+        private readonly usersService: UsersService,
+    ) {}
 
     async getById(reportId: number) {
         const report = await this.reportsRepository.findOne({ where: { reportId: reportId } });
@@ -31,17 +30,17 @@ export class ReportsService {
             .addSelect([`reporting.userId`, `reporting.username`])
             .innerJoin(`report.reportedUser`, `reported`)
             .innerJoin(`report.reportingUser`, `reporting`)
-            .where(`1=1`)
+            .where(`1=1`);
         if (reportedId) {
-            queryBuilder.andWhere(`reported.userId = :reportedId`, { reportedId: reportedId })
+            queryBuilder.andWhere(`reported.userId = :reportedId`, { reportedId: reportedId });
         }
         if (reportingId) {
-            queryBuilder.andWhere(`reporting.userId = :reportingId`, { reportingId: reportingId })
+            queryBuilder.andWhere(`reporting.userId = :reportingId`, { reportingId: reportingId });
         }
         if (status) {
-            queryBuilder.andWhere(`report.status = :status`, { status: status })
+            queryBuilder.andWhere(`report.status = :status`, { status: status });
         }
-        const reports = await queryBuilder.getMany()
+        const reports = await queryBuilder.getMany();
         if (reports.length === 0) {
             throw new NotFoundException(`No reports with given parameters found`);
         }
@@ -50,7 +49,7 @@ export class ReportsService {
 
     async create(createReportDto: CreateReportDto, user: User) {
         console.log(user);
-        const reportedUser = await this.usersService.getById(createReportDto.userId)
+        const reportedUser = await this.usersService.getById(createReportDto.userId);
         if (reportedUser.userId === user.userId) {
             throw new BadRequestException(`You cant report Yourself`);
         }
