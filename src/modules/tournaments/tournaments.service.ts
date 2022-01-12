@@ -38,6 +38,7 @@ import { ParticipationStatus } from '../teams/dto/participation-status';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { GroupsService } from './groups.service';
 import { BracketsService } from './brackets.service';
+import { TournamentStatus } from './dto/tourrnament.status-enum';
 
 @Injectable()
 export class TournamentsService {
@@ -373,6 +374,7 @@ export class TournamentsService {
             game: game,
             format: format,
             organizer: user,
+            status: TournamentStatus.Upcoming,
         });
         await this.tournamentsRepository.save(tournament);
         this.scheduleTournament(tournament);
@@ -446,6 +448,25 @@ export class TournamentsService {
     async remove(id: number) {
         const tournament = await this.getById(id);
         return this.tournamentsRepository.remove(tournament);
+    }
+
+    public async setTournamentProfile(id, image, user) {
+        const tournament = await this.getById(id);
+        if (tournament.tournamentProfileImage) {
+            if (tournament.tournamentProfileImage !== `default-tournament-profile.png`) {
+                const fs = require(`fs`);
+                const path =
+                    `./uploads/tournamentProfileImages/` + tournament.tournamentProfileImage;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous user avatar failed to remove`);
+                }
+            }
+        }
+        tournament.tournamentProfileImage = image.filename;
+        this.tournamentsRepository.save(tournament);
+        return tournament;
     }
 
     private async validateRoster(team: Team, roster: RosterMember[]) {

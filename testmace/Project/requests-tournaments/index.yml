@@ -17,6 +17,7 @@ children:
   - remove-tournament-admin (TODO)
   - (test)
   - (test) resolve match
+  - upload-tournament-image
 variablesArray: []
 type: Folder
 authData:

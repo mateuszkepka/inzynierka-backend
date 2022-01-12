@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -9,7 +10,9 @@ import {
     Post,
     Query,
     Req,
+    UploadedFile,
     UseGuards,
+    UseInterceptors,
     UsePipes,
 } from '@nestjs/common';
 import { Public } from 'src/roles/public.decorator';
@@ -29,6 +32,10 @@ import { TournamentsService } from './tournaments.service';
 import { ParticipationStatus } from '../teams/dto/participation-status';
 import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/config/tournament-profile-upload.utils';
+import { UploadTeamTournamentGuard } from './guards/upload-tournament-images-guard';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -93,11 +100,61 @@ export class TournamentsController {
     }
 
     @Post()
-    @Roles(Role.Organizer)
+    //@Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
     async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
     }
+
+    @Post(`/upload-tournament-image/:id`)
+    @UseGuards(UploadTeamTournamentGuard)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/tournamentProfileImages`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
+        }),
+    )
+    async uploadedFile(
+        @UploadedFile() image,
+        @Param(`id`, ParseIntPipe) id: number,
+        @Req() { user }: RequestWithUser,
+    ) {
+        if (!image) {
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
+        }
+        return this.tournamentsService.setTournamentProfile(id, image, user);
+    }
+
+    //     @Post(`/upload-team-background/:id`)
+    // @UseGuards(UploadTeamImagesGuard)
+    //     @UseInterceptors(
+    //         FileInterceptor(`image`, {
+    //             storage: diskStorage({
+    //                 destination: `./uploads/teamProfileBackgrounds`,
+    //                 filename: editFileName,
+    //             }),
+    //             fileFilter: imageFileFilter,
+    //             limits: { fileSize: 4000000 },
+    //         }),
+    //     )
+    //     async uploadedBackground(
+    //         @UploadedFile() image,
+    //         @Param(`id`, ParseIntPipe) id: number,
+    //         @Req() { user }: RequestWithUser,
+    //     ) {
+    //         if (!image) {
+    //             throw new BadRequestException(
+    //                 `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+    //             );
+    //         }
+    //         return this.teamsService.setTeamBackground(id, image, user);
+    //     }
 
     @Post(`/:id/admins`)
     @Roles(Role.Organizer)
