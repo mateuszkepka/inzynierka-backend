@@ -56,15 +56,19 @@ export class Tournament {
     @Column()
     tournamentStartDate: Date;
 
+    @Expose()
     @Column()
     checkInOpenDate: Date;
 
+    @Expose()
     @Column()
     checkInCloseDate: Date;
 
+    @Expose()
     @Column()
     endingHour: number;
 
+    @Expose()
     @Column()
     endingMinutes: number;
 
@@ -124,7 +128,7 @@ export class Tournament {
             return
         }
     }, { toPlainOnly: true })
-    @ManyToOne(() => Format, { nullable: true })
+    @ManyToOne(() => Format, { eager: true, nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;
 
