@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/users/16/accounts'
+    url: '${$env.url}/users/76/accounts'
   headers: []
   disabledInheritedHeaders: []
   params: []

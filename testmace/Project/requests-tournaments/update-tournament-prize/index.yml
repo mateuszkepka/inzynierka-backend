@@ -5,25 +5,25 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/users/upload-user-background'
+    method: PATCH
+    url: '${$env.url}/tournaments/12/prizes'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: FormData
-    jsonBody: ''
+    type: Json
+    jsonBody: |-
+      {
+        "currency": "PLN",
+        "distribution": "1:150, 2:50, 3-4:15, 5:8-5"
+      }
     xmlBody: ''
     textBody: ''
-    formData:
-      - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
-        name: image
-        type: File
+    formData: []
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: background-upload
+name: update-tournament-prize

@@ -39,6 +39,7 @@ export class User {
     @Column({ nullable: true })
     studentId: string;
 
+    @Expose()
     @Column(`text`, { array: true, default: [`user`], nullable: true })
     roles: Role[];
 
@@ -90,11 +91,9 @@ export class User {
     @OneToMany(() => Report, (report) => report.reportingUser)
     reportsSent: Report[];
 
-    @Expose()
     @Column({ default: `default-avatar.jpg` })
-    userProfileImage: string;
+    profilePicture: string;
 
-    @Expose()
     @Column({ default: `default-background.jpg` })
-    userProfileBackground: string;
+    backgroundPicture: string;
 }

@@ -4,7 +4,7 @@ import { ParticipatingTeam, Player, Team, Tournament } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
-import { shuffle } from 'src/util';
+import { shuffle } from 'src/utils/tournaments-util';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
 

@@ -1,7 +1,7 @@
 enabled: true
 children:
-  - get-tournaments-filtered
   - get-tournament-by-id
+  - get-tournaments-filtered
   - get-tournament-teams
   - get-tournament-admins
   - get-tournament-matches
@@ -13,8 +13,9 @@ children:
   - create-participating-team
   - check-in
   - update-tournament
+  - update-tournament-prize
   - update-participating-team
-  - remove-tournament-admin (TODO)
+  - remove-tournament-admin
   - (test)
   - (test) resolve match
 variablesArray: []

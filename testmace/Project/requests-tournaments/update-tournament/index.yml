@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/tournaments/1'
+    url: '${$env.url}/tournaments/12'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,12 +14,18 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "name": "xDDDDDDDDDD",
+        "name": "TeeestXD",
         "numberOfPlayers": 5,
-        "numberOfTeams": 6,
-        "registerStartDate": "2005-12-16",
-        "registerEndDate": "2030-12-16",
-        "tournamentStartDate": "2005-12-16",
+        "numberOfTeams": 16,
+        "format": "Double Elimination Ladder",
+        "numberOfPlayers": 5,
+        "numberOfTeams": 16,
+        "numberOfMaps": 3,
+        "endingHour": 22,
+        "endingMinutes": 0,
+        "registerStartDate": "2022-02-02T22:01:00+0000",
+        "registerEndDate": "2022-02-03T20:01:00+0000",
+        "tournamentStartDate": "2022-02-03T22:01:00+0000",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

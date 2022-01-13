@@ -6,16 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/users/upload-user-image'
+    url: '${$env.url}/users/upload-user-background'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: FormData
-    jsonBody: |-
-      {
-        "country": "Somalia"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData:
@@ -23,10 +20,10 @@ requestData:
         value: 'C:\Users\Wadol\Downloads\dfghhh.png'
         name: image
         type: File
-    file: 'C:\Users\Wadol\Downloads\dfghhh.png'
+    file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: avatar-upload
+name: upload-background

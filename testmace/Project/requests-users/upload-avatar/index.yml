@@ -6,24 +6,27 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/auth/login'
+    url: '${$env.url}/users/1/profile-picture'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
+    type: FormData
     jsonBody: |-
       {
-        "email": "test@gmail.com",
-        "password": "test"
+        "country": "Somalia"
       }
     xmlBody: ''
     textBody: ''
-    formData: []
-    file: ''
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
+        name: image
+        type: File
+    file: 'C:\Users\Wadol\Downloads\dfghhh.png'
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: log-in-user
+name: upload-avatar

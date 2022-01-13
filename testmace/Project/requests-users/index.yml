@@ -5,14 +5,14 @@ children:
   - get-user-matches
   - get-user-teams
   - get-user-tournaments
-  - grant-role
-  - revoke-role
-  - update-user
-  - remove-user
-  - avatar-upload
   - get-user-avatar
   - get-user-background
-  - background-upload
+  - grant-role
+  - revoke-role
+  - upload-avatar
+  - upload-background
+  - update-user
+  - remove-user
 variablesArray: []
 type: Folder
 authData:

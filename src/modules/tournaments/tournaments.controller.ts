@@ -5,7 +5,6 @@ import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { VerifyTeamDto } from './dto/verify-team.dto';
-import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
@@ -16,6 +15,10 @@ import { TournamentsService } from './tournaments.service';
 import { ParticipationStatus } from '../teams/dto/participation-status';
 import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
+import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
+import { MemberIsNotSuspended } from './guards/member-is-not-suspended.guard';
+import { UserIsOrganizer } from './guards/user-is-organizer.guard';
+import { UpdatePrizeDto } from './dto/update-prize.dto';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -89,17 +92,18 @@ export class TournamentsController {
         return this.tournamentsService.create(body, user);
     }
 
-    @Post(`/:id/admins`)
+    @Post(`/:id/admins/:adminId`)
     @Roles(Role.Organizer)
     async addAdmin(
-        @Param(`id`, ParseIntPipe) id: number,
-        @Body() body: CreateAdminDto
+        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`adminId`, ParseIntPipe) adminId: number
     ) {
-        return this.tournamentsService.addAdmin(id, body);
+        return this.tournamentsService.addAdmin(tournamentId, adminId);
     }
 
     @Post(`/:id/prizes`)
     @Roles(Role.Organizer)
+    @UseGuards(UserIsOrganizer)
     async addPrize(
         @Param(`id`, ParseIntPipe) id: number,
         @Body() body: CreatePrizeDto
@@ -107,17 +111,18 @@ export class TournamentsController {
         return this.tournamentsService.addPrize(id, body);
     }
 
-    @Post(`/:id/teams`)
-    @UseGuards(UserIsCaptainGuard)
+    @Post(`/:id/teams/:teamId`)
+    @UseGuards(UserIsCaptainGuard, MemberIsNotSuspended)
     async addTeam(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
         @Body() body: CreateParticipatingTeamDto
     ) {
-        return this.tournamentsService.addTeam(id, body);
+        return this.tournamentsService.addTeam(tournamentId, teamId, body);
     }
 
     @Post(`/:id/teams/:teamId`)
-    @UseGuards(UserIsCaptainGuard)
+    @UseGuards(UserIsCaptainGuard, MemberIsNotSuspended)
     async checkIn(
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
@@ -127,6 +132,7 @@ export class TournamentsController {
 
     @Patch(`/:id/teams/:teamId`)
     @Roles(Role.Organizer, Role.TournamentAdmin)
+    @UseGuards(UserIsTournamentAdmin)
     async verifyTeam(
         @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
@@ -135,9 +141,20 @@ export class TournamentsController {
         return this.tournamentsService.changeStatus(tournamentId, teamId, status);
     }
 
+    @Patch(`/:id/prizes`)
+    @Roles(Role.Organizer)
+    @UseGuards(UserIsOrganizer)
+    async updatePrize(
+        @Param(`id`, ParseIntPipe) id: number,
+        @Body() body: UpdatePrizeDto
+    ) {
+        return this.tournamentsService.updatePrize(id, body);
+    }
+
     @Patch(`/:id`)
     @Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
+    @UseGuards(UserIsOrganizer)
     async update(
         @Param(`id`, ParseIntPipe) id: number,
         @Body() body: UpdateTournamentDto
@@ -147,17 +164,18 @@ export class TournamentsController {
 
     @Delete(`/:id`)
     @Roles(Role.Organizer)
+    @UseGuards(UserIsOrganizer)
     async remove(@Param(`id`, ParseIntPipe) id: number) {
         return this.tournamentsService.remove(id);
     }
 
-    // TODO
     @Delete(`/:id/admins/:adminId`)
     @Roles(Role.Organizer)
+    @UseGuards(UserIsOrganizer)
     async removeAdmin(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`id`, ParseIntPipe) tournamentId: number,
         @Param(`adminId`, ParseIntPipe) adminId: number
     ) {
-        return `todo`;
+        return this.tournamentsService.removeAdmin(tournamentId, adminId);
     }
 }

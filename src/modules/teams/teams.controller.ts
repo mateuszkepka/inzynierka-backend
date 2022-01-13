@@ -9,7 +9,7 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
+import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 
 @Controller(`teams`)
 @Roles(Role.User)

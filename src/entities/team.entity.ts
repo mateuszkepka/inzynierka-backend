@@ -61,11 +61,9 @@ export class Team {
     @OneToMany(() => ParticipatingTeam, (roster) => roster.team)
     rosters: ParticipatingTeam[];
 
-    @Expose()
     @OneToMany(() => Invitation, (invitation) => invitation.team)
     members: Invitation[];
 
-    @Expose()
     @Column({ default: 'default-team.png' })
     teamProfileImage: string;
 }

@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game, Format, Prize, Tournament, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { getRandom } from 'src/util';
+import { getRandom } from 'src/utils/tournaments-util';
 import { Role } from 'src/roles/roles.enum';
-import { TournamentFormat } from 'src/modules/formats/dto/tournament-format-enum';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
+import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
 
 @Injectable()
 export class TournamentsSeeder {
@@ -49,6 +50,7 @@ export class TournamentsSeeder {
                 tournamentStartDate: tournamentStartDate,
                 endingHour: endingHour,
                 endingMinutes: endingMinutes,
+                status: TournamentStatus.Upcoming,
                 description: faker.lorem.sentences(5),
                 prize: prizes[Math.floor(Math.random() * prizes.length)],
                 format: format,

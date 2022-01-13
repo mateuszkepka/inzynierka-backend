@@ -1,5 +1,5 @@
 import { IsEnum, IsIn, IsNotEmpty, IsOptional } from "class-validator";
-import { TournamentStatus } from "src/modules/tournaments/dto/tourrnament.status-enum";
+import { TournamentStatus } from "src/modules/tournaments/dto/tourrnament.status.enum";
 import { Role } from "src/roles/roles.enum";
 
 export class GetUsersTournamentsQuery {

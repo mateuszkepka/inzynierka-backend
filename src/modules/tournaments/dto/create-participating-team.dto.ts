@@ -3,10 +3,6 @@ import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } f
 
 export class CreateParticipatingTeamDto {
     @IsNotEmpty()
-    @IsNumber()
-    teamId: number;
-
-    @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => RosterMember)

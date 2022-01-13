@@ -1,27 +1,25 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Player, Ladder, Group, GroupStanding } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Tournament, ParticipatingTeam, Team, TournamentAdmin, Prize, User, Match, Player, Ladder, Group, GroupStanding, Format } from 'src/entities';
+import { Connection, Repository } from 'typeorm';
 import { FormatsService } from '../formats/formats.service';
 import { GamesService } from '../games/games.service';
 import { PlayersService } from '../players/players.service';
-import { SuspensionsService } from '../suspensions/suspensions.service';
 import { TeamsService } from '../teams/teams.service';
 import { UsersService } from '../users/users.service';
-import { CreateAdminDto } from './dto/create-admin-dto';
 import { CreateParticipatingTeamDto, RosterMember } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
-import { TournamentStatus } from './dto/tourrnament.status-enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { TournamentFormat } from '../formats/dto/tournament-format-enum';
+import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { CronJob } from 'cron';
 import { ParticipationStatus } from '../teams/dto/participation-status';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { GroupsService } from './groups.service';
 import { BracketsService } from './brackets.service';
+import { UpdatePrizeDto } from './dto/update-prize.dto';
 
 @Injectable()
 export class TournamentsService {
@@ -35,7 +33,6 @@ export class TournamentsService {
         @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-        private readonly suspensionsService: SuspensionsService,
         private readonly schedulerRegistry: SchedulerRegistry,
         private readonly formatsService: FormatsService,
         private readonly playersService: PlayersService,
@@ -43,7 +40,8 @@ export class TournamentsService {
         private readonly groupsService: GroupsService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
-        private readonly gamesService: GamesService
+        private readonly gamesService: GamesService,
+        private readonly connection: Connection
     ) { }
 
     async test() {
@@ -83,7 +81,7 @@ export class TournamentsService {
             .innerJoinAndSelect(`tournament.prize`, `prize`)
             .where(`1=1`)
         if (status) {
-            queryBuilder.andWhere(`tournament.status = :status`, {status: status})
+            queryBuilder.andWhere(`tournament.status = :status`, { status: status })
         }
         const tournaments = await queryBuilder.getMany();
         if (tournaments.length === 0) {
@@ -338,13 +336,19 @@ export class TournamentsService {
     }
 
     async update(id: number, attributes: Partial<UpdateTournamentDto>) {
+        let format: Format;
+        if (attributes.format != null) {
+            format = await this.formatsService.getByName(attributes.format);
+            delete attributes.format;
+        }
         const tournament = await this.getById(id);
         Object.assign(tournament, attributes);
+        tournament.format = format;
         return this.tournamentsRepository.save(tournament);
     }
 
-    async addTeam(tournamentId: number, body: CreateParticipatingTeamDto) {
-        const { teamId, roster, subs } = body;
+    async addTeam(tournamentId: number, teamId: number, body: CreateParticipatingTeamDto) {
+        const { roster, subs } = body;
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
         if (tournament.registerStartDate > new Date()) {
@@ -379,9 +383,9 @@ export class TournamentsService {
         return this.rostersRepository.save(participatingTeam);
     }
 
-    async addAdmin(id: number, body: CreateAdminDto) {
-        const tournament = await this.getById(id);
-        const user = await this.usersService.getById(body.userId);
+    async addAdmin(tournamentId: number, adminId: number) {
+        const tournament = await this.getById(tournamentId);
+        const user = await this.usersService.getById(adminId);
         const admin = this.tournamentAdminsRepository.create({
             tournament: tournament,
             user: user
@@ -395,12 +399,34 @@ export class TournamentsService {
             ...body,
             tournament: tournament
         });
+        await this.connection.transaction(async manager => {
+            tournament.prize = prize;
+            await manager.save(tournament);
+            await manager.save(prize);
+        });
+        return prize;
+    }
+
+    async updatePrize(prizeId: number, attributes: Partial<UpdatePrizeDto>) {
+        const prize = await this.prizeRepository.findOne({
+            where: { prizeId: prizeId }
+        });
+        Object.assign(prize, attributes);
         return this.prizeRepository.save(prize);
     }
 
     async remove(id: number) {
         const tournament = await this.getById(id);
         return this.tournamentsRepository.remove(tournament);
+    }
+
+    async removeAdmin(tournamentId: number, adminId: number) {
+        const tournament = await this.getById(tournamentId);
+        const user = await this.usersService.getById(adminId);
+        const admin = await this.tournamentAdminsRepository.findOne({
+            where: { tournament: tournament, user: user }
+        });
+        return this.tournamentAdminsRepository.remove(admin);
     }
 
     private async validateRoster(team: Team, roster: RosterMember[]) {
@@ -426,12 +452,6 @@ export class TournamentsService {
                 if (!(members.some((member) => member.playerId === player.playerId))) {
                     exceptions.push(`Player with id ${player.playerId} is not a member of team ${team.teamName}`);
                 }
-                try {
-                    const suspensions = await this.suspensionsService.getFiltered(user.userId, `active`);
-                    if (suspensions.length !== 0) {
-                        exceptions.push(`${player.summonerName} has an active suspension`)
-                    }
-                } catch (ignore) { }
             }
         }
         return exceptions;

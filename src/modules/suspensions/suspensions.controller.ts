@@ -16,6 +16,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
+import { SuspensionStatus } from './dto/suspension-status.enum';
 import { UpdateSuspensionDto } from './dto/update-suspension.dto';
 import { SuspensionsService } from './suspensions.service';
 
@@ -30,7 +31,7 @@ export class SuspensionsController {
     }
 
     @Get()
-    async getFiltered(@Query(`userId`) userId: number, @Query(`status`) status: string) {
+    async getFiltered(@Query(`userId`) userId: number, @Query(`status`) status: SuspensionStatus) {
         return await this.suspensionsService.getFiltered(userId, status);
     }
 

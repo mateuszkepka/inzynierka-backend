@@ -1,9 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
 import { Role } from "src/roles/roles.enum";
 import { TournamentsService } from "../tournaments.service";
 
 @Injectable()
-export class UserIsTournamentAdmin implements CanActivate {
+export class UserIsOrganizer implements CanActivate {
     constructor(
         private readonly tournamentsService: TournamentsService,
     ) { }
@@ -14,8 +14,8 @@ export class UserIsTournamentAdmin implements CanActivate {
             return true;
         }
         const tournamentId = Number(request.params.tournamentId);
-        const admins = await this.tournamentsService.getAdmins(tournamentId);
-        if (admins.some(admin => admin.userId === user.userId)) {
+        const tournament = await this.tournamentsService.getById(tournamentId);
+        if (user.userId !== tournament.organizer.userId) {
             return true;
         }
         return false;

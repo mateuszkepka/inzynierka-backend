@@ -1,7 +1,7 @@
 enabled: true
 children:
-  - get-all-teams
   - get-team-by-id
+  - get-all-teams
   - get-team-matches
   - get-team-members
   - get-players-to-invite

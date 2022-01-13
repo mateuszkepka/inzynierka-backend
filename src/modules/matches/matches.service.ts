@@ -1,12 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroupStanding, Ladder, Map, Match, ParticipatingTeam, Performance, Team } from 'src/entities';
 import { Brackets, Repository } from 'typeorm';
-import { TournamentFormat } from '../formats/dto/tournament-format-enum';
+import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { PlayersService } from '../players/players.service';
-import { TeamsService } from '../teams/teams.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
-import { CreateMatchDto } from './dto/create-match.dto';
 import { CreateStatsDto } from './dto/create-stats.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
@@ -19,7 +17,6 @@ export class MatchesService {
         @InjectRepository(Map) private readonly mapsRepository: Repository<Map>,
         private readonly tournamentsService: TournamentsService,
         private readonly playersService: PlayersService,
-        private readonly teamsService: TeamsService,
     ) { }
 
     async getById(id: number) {
@@ -80,37 +77,6 @@ export class MatchesService {
                 }))
             .getMany();
         return matches;
-    }
-
-    async create(createMatchDto: CreateMatchDto) {
-        const tournament = await this.tournamentsService.getById(createMatchDto.tournamentId);
-        const { firstRosterId, secondRosterId } = createMatchDto;
-        var firstTeam: Team, secondTeam: Team = null;
-        var firstRoster: ParticipatingTeam = null, secondRoster: ParticipatingTeam = null;
-        if (firstRosterId) {
-            firstRoster = await this.tournamentsService.getParticipatingTeamById(
-                createMatchDto.firstRosterId,
-            );
-            firstTeam = await this.teamsService.getByParticipatingTeam(firstRoster.participatingTeamId);
-        }
-        if (secondRosterId) {
-            secondRoster = await this.tournamentsService.getParticipatingTeamById(
-                createMatchDto.secondRosterId,
-            );
-            secondTeam = await this.teamsService.getByParticipatingTeam(secondRoster.participatingTeamId);
-        }
-        if (firstRoster && secondRoster && (firstRoster.tournament.tournamentId !== secondRoster.tournament.tournamentId)) {
-            throw new BadRequestException(`These two teams are not in the same tournament`);
-        }
-        const match = this.matchesRepository.create({
-            tournament: tournament,
-            firstRoster: firstRoster,
-            secondRoster: secondRoster,
-            firstTeam: firstTeam,
-            secondTeam: secondTeam,
-            ...createMatchDto
-        })
-        return await this.matchesRepository.save(match);
     }
 
     async update(id: number, attrs: Partial<UpdateMatchDto>) {

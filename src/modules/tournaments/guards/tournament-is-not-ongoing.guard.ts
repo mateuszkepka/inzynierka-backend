@@ -1,9 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
 import { Role } from "src/roles/roles.enum";
+import { TournamentStatus } from "../dto/tourrnament.status.enum";
 import { TournamentsService } from "../tournaments.service";
 
 @Injectable()
-export class UserIsTournamentAdmin implements CanActivate {
+export class TournamentIsNotOngoing implements CanActivate {
     constructor(
         private readonly tournamentsService: TournamentsService,
     ) { }
@@ -14,10 +15,10 @@ export class UserIsTournamentAdmin implements CanActivate {
             return true;
         }
         const tournamentId = Number(request.params.tournamentId);
-        const admins = await this.tournamentsService.getAdmins(tournamentId);
-        if (admins.some(admin => admin.userId === user.userId)) {
-            return true;
+        const tournament = await this.tournamentsService.getById(tournamentId);
+        if (tournament.status === TournamentStatus.Ongoing) {
+            throw new ForbiddenException(`You can not delete a tournament after it has started`);
         }
-        return false;
+        return true;
     }
 }

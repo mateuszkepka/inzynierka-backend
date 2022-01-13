@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Ladder, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
-import { setNextPhaseDate, shuffle } from "src/util";
+import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
 import { Repository } from "typeorm";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
 import { TeamsService } from "../teams/teams.service";

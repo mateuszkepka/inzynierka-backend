@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
-import { setNextPhaseDate, shuffle } from "src/util";
+import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
 import { Repository } from "typeorm";
-import { TournamentFormat } from "../formats/dto/tournament-format-enum";
+import { TournamentFormat } from "../formats/dto/tournament-format.enum";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
 import { TeamsService } from "../teams/teams.service";
 

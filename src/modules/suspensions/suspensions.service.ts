@@ -4,6 +4,7 @@ import { Suspension, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
+import { SuspensionStatus } from './dto/suspension-status.enum';
 
 @Injectable()
 export class SuspensionsService {
@@ -24,7 +25,7 @@ export class SuspensionsService {
         return suspension;
     }
 
-    async getFiltered(userId: number, status: string) {
+    async getFiltered(userId: number, status: SuspensionStatus) {
         const queryBuilder = this.suspensionsRepository
             .createQueryBuilder(`suspension`)
             .innerJoinAndSelect(`suspension.user`, `user`)
@@ -35,11 +36,11 @@ export class SuspensionsService {
             queryBuilder.andWhere(`user.userId = :userId`, { userId: user.userId });
         }
         switch (status) {
-            case `active`:
+            case SuspensionStatus.Active:
                 queryBuilder.andWhere(`suspension.startDate <= :date1`, { date1: new Date() });
                 queryBuilder.andWhere(`suspension.endDate >= :date2`, { date2: new Date() });
                 break;
-            case `past`:
+            case SuspensionStatus.Past:
                 queryBuilder.andWhere(`suspension.endDate < :date`, { date: new Date() });
                 break;
             default:
