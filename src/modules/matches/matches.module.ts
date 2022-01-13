@@ -8,9 +8,13 @@ import { PlayersModule } from '../players/players.module';
 import { TournamentsModule } from '../tournaments/tournaments.module';
 import { TeamsModule } from '../teams/teams.module';
 import { GamesModule } from '../games/games.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
     imports: [
+        MulterModule.register({
+            dest: `./uploads/matchScreens`,
+        }),
         TypeOrmModule.forFeature([ParticipatingTeam, GroupStanding, Performance, Match, Team, Map]),
         TournamentsModule,
         PlayersModule,

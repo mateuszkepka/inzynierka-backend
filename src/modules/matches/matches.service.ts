@@ -483,6 +483,21 @@ export class MatchesService {
         }
     }
 
+    async textDetection(url) {
+        // Imports the Google Cloud client library
+        const vision = require(`@google-cloud/vision`);
+        // Creates a client
+        const client = new vision.ImageAnnotatorClient();
+        // Performs label detection on the image file
+        const path = `./uploads/matchScreens/` + url;
+        const [result] = await client.textDetection(path);
+        const detections = result.textAnnotations;
+        // console.log(`Text:`);
+        //detections.forEach((text) => console.log(text));
+        console.log(detections[0].description);
+        return detections[0].description;
+    }
+
     async getMatchByPosition(ladder: Ladder, round: number, position: number) {
         const match = await this.matchesRepository
             .createQueryBuilder(`match`)
