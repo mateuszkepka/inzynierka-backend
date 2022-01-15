@@ -40,5 +40,5 @@ lerna-debug.log*
 /uploads
 
 # Google Api Key
-key.json
 setup.ps1
+key.json
