@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { TournamentStatus } from '../tournaments/dto/tourrnament.status-enum';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
 import { Role } from 'src/roles/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
@@ -217,12 +217,12 @@ export class UsersService {
         return this.usersRepository.remove(user);
     }
 
-    public async setProfileImage(userId, image) {
+    public async setProfileImage(userId: number, image) {
         const user = await this.getById(userId);
-        if (user.userProfileImage) {
-            if (user.userProfileImage !== `default-avatar.jpg`) {
+        if (user.profilePicture) {
+            if (user.profilePicture !== `default-user-avatar.png`) {
                 const fs = require(`fs`);
-                const path = `./uploads/userProfileImages/` + user.userProfileImage;
+                const path = `./uploads/users/avatars/` + user.profilePicture;
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
@@ -230,17 +230,17 @@ export class UsersService {
                 }
             }
         }
-        user.userProfileImage = image.filename;
+        user.profilePicture = image.filename;
         this.usersRepository.save(user);
         return user;
     }
 
     public async setProfileBackground(userId, image) {
         const user = await this.getById(userId);
-        if (user.userProfileBackground) {
-            if (user.userProfileBackground !== `default-background.jpg`) {
+        if (user.backgroundPicture) {
+            if (user.backgroundPicture !== `default-user-background.png`) {
                 const fs = require(`fs`);
-                const path = `./uploads/userProfileBackgrounds/` + user.userProfileBackground;
+                const path = `./uploads/users/backgrounds/` + user.backgroundPicture;
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
@@ -248,7 +248,7 @@ export class UsersService {
                 }
             }
         }
-        user.userProfileBackground = image.filename;
+        user.backgroundPicture = image.filename;
         this.usersRepository.save(user);
         return user;
     }

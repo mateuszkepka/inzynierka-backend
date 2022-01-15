@@ -1,7 +1,7 @@
 enabled: true
 children:
   - get-match-by-id
-  - (TO DELETE) create-match
+  - create-match-results
   - update-match
   - screenDetection(test)
 variablesArray: []

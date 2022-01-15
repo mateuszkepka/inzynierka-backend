@@ -8,9 +8,9 @@ import { UsersService } from './users.service';
 @Module({
     imports: [
         MulterModule.register({
-            dest: `./uploads/userProfileImages`,
+            dest: './uploads/teams'
         }),
-        TypeOrmModule.forFeature([User, Player, Team, Tournament, Match]),
+        TypeOrmModule.forFeature([User, Player, Team, Tournament, Match])
     ],
     providers: [UsersService],
     exports: [UsersService],

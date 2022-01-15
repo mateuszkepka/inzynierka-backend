@@ -1,21 +1,9 @@
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Req,
-    UploadedFile,
-    UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, imageFileFilter } from 'src/config/match-screens-upload.utils';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
+import { editMapName, imageFileFilter } from 'src/utils/uploads-util';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
@@ -30,44 +18,32 @@ export class MatchesController {
         return this.matchesService.getById(id);
     }
 
-    @Get(`screenDetection/:path`)
-    async textDetection(@Param(`path`) path: string) {
-        return this.matchesService.textDetection(path);
+    @Post(`/:matchId/results/:winnerId`)
+    async testResults(
+        @UploadedFiles() results: Array<Express.Multer.File>,
+        @Param(`matchId`, ParseIntPipe) matchId: number,
+        @Req() { user }: RequestWithUser
+    ) {
+        return this.matchesService.parseResults(matchId, results, user);
     }
 
-    // @Post(`/:id/results/:winnerId`)
-    // @UseInterceptors(FilesInterceptor(`results`))
-    // async sendResults(
-    //     @Param(`id`, ParseIntPipe) id: number,
-    //     @Param(`winnerId`, ParseIntPipe) winnerId: number,
-    //     @UploadedFiles() results: Array<Express.Multer.File>,
-    // ) {
-    //     return this.matchesService.resolveMatch(id, winnerId, results);
-    // }
-
-    @Post(`/upload-player-screen/:id`)
-    // @UseGuards(UploadTeamImagesGuard)
+    @Post(`/:matchId/results/`)
     @UseInterceptors(
-        FileInterceptor(`image`, {
+        FilesInterceptor(`image[]`, 5, {
             storage: diskStorage({
-                destination: `./uploads/matchScreens`,
-                filename: editFileName,
+                destination: `./uploads/matches`,
+                filename: editMapName,
             }),
             fileFilter: imageFileFilter,
-            limits: { fileSize: 2000000 },
+            limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedFile(
-        @UploadedFile() image,
-        @Param(`id`, ParseIntPipe) id: number,
-        @Req() { user }: RequestWithUser,
+    async sendResults(
+        @UploadedFiles() results: Array<Express.Multer.File>,
+        @Param(`matchId`, ParseIntPipe) matchId: number,
+        @Req() { user }: RequestWithUser
     ) {
-        if (!image) {
-            throw new BadRequestException(
-                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
-            );
-        }
-        // return this.matchesService.setTeamProfile(id, image, user);
+        return this.matchesService.resolveMatch(matchId, results, user);
     }
 
     @Patch(`/:id`)

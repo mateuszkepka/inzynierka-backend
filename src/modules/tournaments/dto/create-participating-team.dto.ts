@@ -10,10 +10,6 @@ import {
 
 export class CreateParticipatingTeamDto {
     @IsNotEmpty()
-    @IsNumber()
-    teamId: number;
-
-    @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => RosterMember)

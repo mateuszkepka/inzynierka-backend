@@ -6,20 +6,27 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/matches/221/results/1'
+    url: '${$env.url}/users/1/avatars'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
-    jsonBody: ''
+    type: FormData
+    jsonBody: |-
+      {
+        "country": "Somalia"
+      }
     xmlBody: ''
     textBody: ''
-    formData: []
-    file: ''
+    formData:
+      - isChecked: true
+        value: 'D:\Obrazy\Avatary\kidcudi.jpg'
+        name: image
+        type: File
+    file: 'C:\Users\Wadol\Downloads\dfghhh.png'
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: (test) resolve match
+name: upload-user-avatar

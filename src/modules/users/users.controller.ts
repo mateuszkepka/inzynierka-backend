@@ -11,6 +11,7 @@ import {
     Query,
     Res,
     UploadedFile,
+    UseGuards,
     UseInterceptors,
     UsePipes,
     ValidationPipe,
@@ -24,8 +25,9 @@ import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { editFileName, imageFileFilter } from 'src/config/user-profile-upload.utils';
+import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import { Public } from 'src/roles/public.decorator';
+import { UserIsUserGuard } from './guards/user-is-user.guard';
 
 @Controller(`users`)
 @Roles(Role.User)
@@ -36,7 +38,7 @@ import { Public } from 'src/roles/public.decorator';
     }),
 )
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) { }
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
@@ -66,48 +68,46 @@ export class UsersController {
         return this.usersService.getById(id);
     }
 
+    @Get(`avatars/:imgpath`)
     @Public()
-    @Get(`avatar/:imgpath`)
-    async seeUploadedAvatar(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/userProfileImages` });
+    async seeUploadedAvatar(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/users/avatars` });
     }
 
+    @Get(`backgrounds/:imgpath`)
     @Public()
-    @Get(`background/:imgpath`)
-    async seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/userProfileBackgrounds` });
+    async seeUploadedBackground(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/users/backgrounds` });
     }
 
-    @Public()
-    @Post(`:id/upload-user-image`)
+    @Post(`:id/avatars`)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: `./uploads/userProfileImages`,
+                destination: `./uploads/users/avatars`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number) {
-        if (!image) {
-            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
-        }
+    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
+        console.log(image)
         return this.usersService.setProfileImage(id, image);
     }
 
-    @Public()
-    @Post(`:id/upload-user-background`)
+    @Post(`:id/backgrounds`)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: `./uploads/userProfileBackgrounds`,
+                destination: `./uploads/users/backgrounds`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number) {
+    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
         if (!image) {
             throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
         }
@@ -121,11 +121,13 @@ export class UsersController {
     }
 
     @Patch(`/:id`)
+    @UseGuards(UserIsUserGuard)
     async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
         return this.usersService.update(id, body);
     }
 
     @Delete(`/:id`)
+    @UseGuards(UserIsUserGuard)
     async remove(@Param(`id`, ParseIntPipe) id: number) {
         return this.usersService.remove(id);
     }

@@ -1,36 +1,28 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-    GroupStanding,
-    Ladder,
-    Map,
-    Match,
-    ParticipatingTeam,
-    Performance,
-    Team,
-} from 'src/entities';
-import { Brackets, Repository } from 'typeorm';
-import { TournamentFormat } from '../formats/dto/tournament-format-enum';
+import { GroupStanding, Ladder, Map, Match, ParticipatingTeam, Performance, Team, Tournament, User } from 'src/entities';
+import { Brackets, Connection, Repository } from 'typeorm';
+import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { PlayersService } from '../players/players.service';
-import { TeamsService } from '../teams/teams.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
-import { CreateMatchDto } from './dto/create-match.dto';
 import { CreateStatsDto } from './dto/create-stats.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
+import vision from '@google-cloud/vision';
+import { MatchStatus } from './interfaces/match-status.enum';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
 
 @Injectable()
 export class MatchesService {
     constructor(
-        @InjectRepository(GroupStanding)
-        private readonly groupStandingsRepository: Repository<GroupStanding>,
-        @InjectRepository(Performance)
-        private readonly performancesRepository: Repository<Performance>,
+        @InjectRepository(GroupStanding) private readonly groupStandingsRepository: Repository<GroupStanding>,
+        @InjectRepository(Performance) private readonly performancesRepository: Repository<Performance>,
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Map) private readonly mapsRepository: Repository<Map>,
         private readonly tournamentsService: TournamentsService,
         private readonly playersService: PlayersService,
-        private readonly teamsService: TeamsService,
-    ) {}
+        private readonly connection: Connection
+    ) { }
 
     async getById(id: number) {
         const match = await this.matchesRepository
@@ -55,13 +47,9 @@ export class MatchesService {
                 `secondRoster.roster`,
             ])
             .addSelect([
-                `firstTeam.teamId`,
-                `firstTeam.teamName`,
-                `secondTeam.teamId`,
-                `secondTeam.teamName`,
-                `performance.user`,
-                `tournament.tournamentId`,
-                `group.groupId`,
+                `firstTeam.teamId`, `firstTeam.teamName`,
+                `secondTeam.teamId`, `secondTeam.teamName`, `performance.player`,
+                `tournament.tournamentId`, `group.groupId`
             ])
             .leftJoin(`match.group`, `group`)
             .leftJoin(`match.tournament`, `tournament`)
@@ -71,7 +59,7 @@ export class MatchesService {
             .leftJoin(`secondRoster.team`, `secondTeam`)
             .leftJoinAndSelect(`match.maps`, `map`)
             .leftJoinAndSelect(`map.performances`, `performance`)
-            .leftJoinAndSelect(`performance.user`, `user`)
+            .leftJoinAndSelect(`performance.player`, `player`)
             .where(`match.matchId = :matchId`, { matchId: id })
             .getOne();
         if (!match) {
@@ -82,17 +70,9 @@ export class MatchesService {
 
     async getWithRelations(matchId: number) {
         const match = await this.matchesRepository.findOne({
-            relations: [
-                `group`,
-                `tournament`,
-                `firstRoster`,
-                `secondRoster`,
-                `firstTeam`,
-                `secondTeam`,
-                `ladder`,
-            ],
-            where: { matchId: matchId },
-        });
+            relations: [`group`, `tournament`, `firstRoster`, `secondRoster`, `firstTeam`, `secondTeam`, `ladder`, `firstTeam.captain`, `secondTeam.captain`, `firstTeam.captain.user`, `secondTeam.captain.user`],
+            where: { matchId: matchId }
+        })
         return match;
     }
 
@@ -119,47 +99,6 @@ export class MatchesService {
         return matches;
     }
 
-    async create(createMatchDto: CreateMatchDto) {
-        const tournament = await this.tournamentsService.getById(createMatchDto.tournamentId);
-        const { firstRosterId, secondRosterId } = createMatchDto;
-        let firstTeam: Team,
-            secondTeam: Team = null;
-        let firstRoster: ParticipatingTeam = null,
-            secondRoster: ParticipatingTeam = null;
-        if (firstRosterId) {
-            firstRoster = await this.tournamentsService.getParticipatingTeamById(
-                createMatchDto.firstRosterId,
-            );
-            firstTeam = await this.teamsService.getByParticipatingTeam(
-                firstRoster.participatingTeamId,
-            );
-        }
-        if (secondRosterId) {
-            secondRoster = await this.tournamentsService.getParticipatingTeamById(
-                createMatchDto.secondRosterId,
-            );
-            secondTeam = await this.teamsService.getByParticipatingTeam(
-                secondRoster.participatingTeamId,
-            );
-        }
-        if (
-            firstRoster &&
-            secondRoster &&
-            firstRoster.tournament.tournamentId !== secondRoster.tournament.tournamentId
-        ) {
-            throw new BadRequestException(`These two teams are not in the same tournament`);
-        }
-        const match = this.matchesRepository.create({
-            tournament: tournament,
-            firstRoster: firstRoster,
-            secondRoster: secondRoster,
-            firstTeam: firstTeam,
-            secondTeam: secondTeam,
-            ...createMatchDto,
-        });
-        return await this.matchesRepository.save(match);
-    }
-
     async update(id: number, attrs: Partial<UpdateMatchDto>) {
         const match = await this.getById(id);
         let firstRoster = null;
@@ -184,32 +123,78 @@ export class MatchesService {
         return this.matchesRepository.save(match);
     }
 
-    async createMap(matchId: number, mapWinner: number, rawPerformances: CreateStatsDto[]) {
+    async createMap(matchId: number, mapWinner: number, mapTime: string, rawPerformances: CreateStatsDto[]) {
         const match = await this.getById(matchId);
-        rawPerformances.forEach(async (raw) => {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const map = this.mapsRepository.create({
+                mapWinner: mapWinner,
+                time: mapTime,
+                match: match
+            })
+            await queryRunner.manager.save(map);
+            match.maps.push(map);
+            await queryRunner.manager.save(match);
+            for (const raw of rawPerformances) {
+                // TODO error handling
+                const player = await this.playersService.getByNickname(raw.summonerName);
+                const performance = this.performancesRepository.create({
+                    kills: raw.kills,
+                    deaths: raw.deaths,
+                    assists: raw.assists,
+                    player: player,
+                    map: map
+                })
+                await queryRunner.manager.save(performance);
+            }
+            if (match.maps.length + 1 >= match.numberOfMaps) {
+                return;
+            }
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async compareMaps(matchId: number, mapWinner: number, mapTime: string, rawPerformances: CreateStatsDto[], iterator: number) {
+        const match = await this.getById(matchId);
+        console.log(matchId, mapTime, mapWinner)
+        const map = await this.mapsRepository.findOne({
+            mapWinner: mapWinner,
+            time: mapTime,
+            match: match
+        })
+        for (const raw of rawPerformances) {
             // TODO error handling
             const player = await this.playersService.getByNickname(raw.summonerName);
-            const user = await this.playersService.getOwner(player.playerId);
-            const performance = this.performancesRepository.create({
-                user: user,
+            const performance = await this.performancesRepository.findOne({
                 kills: raw.kills,
                 deaths: raw.deaths,
                 assists: raw.assists,
-            });
-            return this.performancesRepository.save(performance);
-        });
-        if (match.maps.length + 1 >= match.numberOfMaps) {
-            return;
+                player: player,
+                map: map
+            })
+            console.log(performance)
+            if (!performance) {
+                match.status = MatchStatus.Unresolved;
+                match.winner = null;
+                throw new BadRequestException(`Screenshot number ${iterator} is inappropriate`);
+            }
         }
-        const map = this.mapsRepository.create({
-            mapWinner: mapWinner,
-            match: match,
-        });
-        return this.mapsRepository.save(map);
+        if (!map) {
+            match.status = MatchStatus.Unresolved;
+            match.winner = null;
+            throw new BadRequestException(`Screenshot number ${iterator} is inappropriate`);
+        }
+        await this.matchesRepository.save(match);
     }
 
-    async resolveMatch(matchId: number, winnerId: number, files: Array<Express.Multer.File>) {
-        await this.parseResults(files);
+    async resolveMatch(matchId: number, files: Array<Express.Multer.File>, user: User) {
+        const winnerId = await this.parseResults(matchId, files, user);
         const match = await this.getWithRelations(matchId);
         match.winner = winnerId;
         const tournament = await this.tournamentsService.getById(match.tournament.tournamentId);
@@ -276,7 +261,7 @@ export class MatchesService {
                     nextPosition === (match.position + 1) / 2;
                 }
                 // promoting winner to the next stage
-                const nextMatch = await this.getMatchByPosition(ladder, nextRound, nextPosition);
+                const nextMatch = await this.getMatchByPosition(ladder.ladderId, nextRound, nextPosition);
                 if (nextMatch.firstRoster === null) {
                     nextMatch.firstRoster === winningRoster;
                 }
@@ -337,9 +322,9 @@ export class MatchesService {
                 // first upper bracket round
                 if (match.round === numberOfUpperRounds) {
                     winnersLadder = upperLadder;
-                    winnersRound = match.round - 1;
-
                     losersLadder = lowerLadder;
+
+                    winnersRound = match.round - 1;
                     losersRound = numberOfLowerRounds;
                     if (match.position % 2 === 0) {
                         winnersPosition = match.position / 2;
@@ -350,34 +335,54 @@ export class MatchesService {
                         losersPosition = (match.position + 1) / 2;
                     }
                     // rest of upper bracket rounds apart from final
-                } else if (match.round < numberOfUpperRounds - 1 && match.round > 2) {
+                } else if (match.round === numberOfUpperRounds - 1) {
                     winnersLadder = upperLadder;
-                    winnersRound = winnersRound - 1;
                     losersLadder = lowerLadder;
 
-                    const maxLosersRound = await this.tournamentsService.getMaxRound(
-                        lowerLadder.ladderId,
-                    );
-                    const maxWinnersRound = await this.tournamentsService.getMaxRound(
-                        upperLadder.ladderId,
-                    );
-                    const maxPosition = await this.tournamentsService.getMaxPositionInRound(
-                        upperLadder.ladderId,
-                        match.round,
-                    );
+                    winnersRound = match.round - 1;
+
+                    let maxLosersRound = await this.tournamentsService.getMaxRound(lowerLadder.ladderId);
+                    maxLosersRound = maxLosersRound.max;
+                    losersRound = maxLosersRound - 1;
+
+                    let maxPosition = await this.tournamentsService.getMaxPositionInRound(lowerLadder.ladderId, losersRound);
+                    maxPosition = maxPosition.max;
+                    losersPosition = maxPosition + 1 - match.position;
+
+                    if (match.position % 2 === 0) {
+                        winnersPosition = match.position / 2;
+                    }
+                    if (match.position % 2 !== 0) {
+                        winnersPosition = (match.position + 1) / 2;
+                    }
+                } else if (match.round < numberOfUpperRounds && match.round > 2) {
+                    winnersLadder = upperLadder;
+                    losersLadder = lowerLadder;
+
+                    winnersRound = match.round - 1;
+
+                    let maxWinnersRound = await this.tournamentsService.getMaxRound(upperLadder.ladderId);
+                    maxWinnersRound = maxWinnersRound.max;
+
+                    let maxLosersRound = await this.tournamentsService.getMaxRound(lowerLadder.ladderId);
+                    maxLosersRound = maxLosersRound.max;
+
+                    let maxPosition = await this.tournamentsService.getMaxPositionInRound(upperLadder.ladderId, match.round);
+                    maxPosition = maxPosition.max;
 
                     // array for storing rounds in upper bracket
                     const winnersRounds: number[] = [];
                     let winnersIterator = 2;
-                    while (winnersRounds.length < maxWinnersRound) {
+                    while (winnersIterator < maxWinnersRound) {
                         winnersRounds.push(winnersIterator++);
                     }
 
                     // array for storing rounds in lower bracket
                     const losersRounds: number[] = [];
                     let losersIterator = 1;
-                    while (losersRounds.length < maxLosersRound) {
-                        losersRounds.push((losersIterator += 2));
+                    while (losersIterator < maxLosersRound) {
+                        losersRounds.push(losersIterator);
+                        losersIterator += 2;
                     }
 
                     // array for flipping positions in lower bracket
@@ -386,9 +391,10 @@ export class MatchesService {
                     while (positions.length < maxPosition) {
                         positions.push(positionsIterator++);
                     }
+
                     const firstHalf = positions.slice(0, positions.length / 2).reverse();
                     const secondHalf = positions.slice(-positions.length / 2).reverse();
-                    positions = firstHalf.concat(secondHalf);
+                    const flippedPositions = firstHalf.concat(secondHalf);
 
                     if (match.position % 2 === 0) {
                         winnersPosition = match.position / 2;
@@ -401,7 +407,7 @@ export class MatchesService {
                     losersRound = losersRounds[winnersRounds.findIndex((r) => r === match.round)];
 
                     // mapping position after loss in upper bracket to lower bracket
-                    losersPosition = positions[positions.findIndex((p) => p === match.position)];
+                    losersPosition = positions[flippedPositions.findIndex(p => p === match.position)];
 
                     // upper bracket final
                 } else if (match.round === 2) {
@@ -412,6 +418,8 @@ export class MatchesService {
                     losersLadder = lowerLadder;
                     losersRound = 1;
                     losersPosition = 1;
+                    tournament.status = TournamentStatus.Finished;
+                    await this.tournamentsRepository.save(tournament);
                 }
             }
 
@@ -423,7 +431,7 @@ export class MatchesService {
                     winnersRound = match.round - 1;
                     winnersPosition = match.position;
                     // rest of lower bracket rounds apart from final
-                } else if (match.round < numberOfUpperRounds - 1 && match.round > 1) {
+                } else if (match.round < numberOfUpperRounds && match.round > 1) {
                     winnersLadder = lowerLadder;
                     winnersRound = match.round - 1;
                     if (match.round % 2 === 0) {
@@ -444,72 +452,161 @@ export class MatchesService {
                     winnersRound = 1;
                 }
             }
-            const nextWinnersMatch = await this.getMatchByPosition(
-                winnersLadder,
-                winnersRound,
-                winnersPosition,
-            );
-            const nextLosersMatch = await this.getMatchByPosition(
-                losersLadder,
-                losersRound,
-                losersPosition,
-            );
-            if (nextWinnersMatch.secondTeam !== null) {
-                nextWinnersMatch.firstTeam = winningTeam;
-                nextWinnersMatch.firstRoster = winningRoster;
-            } else if (nextWinnersMatch.firstTeam !== null) {
-                nextWinnersMatch.secondTeam = winningTeam;
-                nextWinnersMatch.secondRoster = winningRoster;
-            }
-            if (nextLosersMatch.secondTeam !== null) {
-                nextLosersMatch.firstTeam = losingTeam;
-                nextLosersMatch.firstRoster = losingRoster;
-            } else if (nextLosersMatch.firstTeam !== null) {
-                nextLosersMatch.secondTeam = losingTeam;
-                nextLosersMatch.secondRoster = losingRoster;
-            }
-            await this.matchesRepository.save(nextWinnersMatch);
-            if (nextLosersMatch) {
-                await this.matchesRepository.save(nextLosersMatch);
-            }
+            const nextWinnersMatch = await this.getMatchByPosition(winnersLadder.ladderId, winnersRound, winnersPosition);
+            console.log(`Mecz id: ${match.matchId} r:${match.round} p:${match.position}\n`)
             console.log(`Wygrał ${winningTeam.teamName} id ${winningTeam.teamId}`);
             console.log(`Winners next round ${winnersRound}`);
             console.log(`Winner next pos ${winnersPosition}`);
             console.log(`Next winners match ${nextWinnersMatch.matchId}\n`);
             console.log(`Przegrał ${losingTeam.teamName} id ${losingTeam.teamId}`);
-            console.log(`Losers next round ${losersRound}`);
-            console.log(`Losers next pos ${losersPosition}`);
-            console.log(`Next winners match ${nextLosersMatch.matchId}`);
+            if (losersLadder != null) {
+                const nextLosersMatch = await this.getMatchByPosition(losersLadder.ladderId, losersRound, losersPosition);
+                if (nextLosersMatch.firstTeam === null) {
+                    nextLosersMatch.firstTeam = losingTeam;
+                    nextLosersMatch.firstRoster = losingRoster;
+                } else if (nextLosersMatch.secondTeam === null) {
+                    nextLosersMatch.secondTeam = losingTeam;
+                    nextLosersMatch.secondRoster = losingRoster;
+                }
+                await this.matchesRepository.save(nextLosersMatch);
+                console.log(`Losers next round ${losersRound}`)
+                console.log(`Losers next pos ${losersPosition}`)
+                console.log(`Next losers match ${nextLosersMatch.matchId}\n`)
+            }
+            if (losersLadder == null) {
+                console.log(`${losingTeam.teamName} odpada z turnieju\n`)
+            }
+            if (nextWinnersMatch.firstTeam === null) {
+                nextWinnersMatch.firstTeam = winningTeam;
+                nextWinnersMatch.firstRoster = winningRoster;
+            } else if (nextWinnersMatch.secondTeam === null) {
+                nextWinnersMatch.secondTeam = winningTeam;
+                nextWinnersMatch.secondRoster = winningRoster;
+            }
+            await this.matchesRepository.save(nextWinnersMatch);
         }
     }
 
-    async textDetection(url) {
-        // Imports the Google Cloud client library
-        const vision = require(`@google-cloud/vision`);
-        // Creates a client
-        const client = new vision.ImageAnnotatorClient();
-        // Performs label detection on the image file
-        const path = `./uploads/matchScreens/` + url;
-        const [result] = await client.textDetection(path);
-        const detections = result.textAnnotations;
-        // console.log(`Text:`);
-        //detections.forEach((text) => console.log(text));
-        console.log(detections[0].description);
-        return detections[0].description;
-    }
-
-    async getMatchByPosition(ladder: Ladder, round: number, position: number) {
+    async getMatchByPosition(ladderId: number, round: number, position: number) {
         const match = await this.matchesRepository
             .createQueryBuilder(`match`)
             .innerJoin(`match.ladder`, `ladder`)
-            .where(`ladder.ladderId = :ladderId`, { ladderId: ladder.ladderId })
+            .leftJoinAndSelect(`match.firstTeam`, `firstTeam`)
+            .leftJoinAndSelect(`match.secondTeam`, `secondTeam`)
+            .where(`ladder.ladderId = :ladderId`, { ladderId: ladderId })
             .andWhere(`match.position = :position`, { position: position })
             .andWhere(`match.round = :round`, { round: round })
             .getOne();
         return match;
     }
 
-    async parseResults(files: Array<Express.Multer.File>) {
-        // TODO
+    async parseResults(matchId: number, results: Array<Express.Multer.File>, user: User) {
+        const match = await this.getWithRelations(matchId);
+        let tooManyScreensError = false;
+        let notEnoughScreensError = false;
+        switch (match.numberOfMaps) {
+            case 1:
+                if (results.length > 1) {
+                    tooManyScreensError = true;
+                }
+                break;
+            case 3:
+                if (results.length < 2) {
+                    notEnoughScreensError = true;
+                }
+                if (results.length > 3) {
+                    tooManyScreensError = true;
+                }
+                break;
+            case 5:
+                if (results.length < 3) {
+                    notEnoughScreensError = true;
+                }
+                if (results.length > 5) {
+                    tooManyScreensError = true;
+                }
+                break;
+        }
+        if (tooManyScreensError) {
+            throw new BadRequestException(`Too many screenshots provided!`)
+        }
+        if (notEnoughScreensError) {
+            throw new BadRequestException(`Not enough screenshots provided!`)
+        }
+        let senderTeam: Team;
+        let otherTeam: Team;
+        let firstTeamWins: number = 0;
+        let secondTeamWins: number = 0;
+        if (user.userId === match.firstTeam.captain.user.userId) {
+            senderTeam = match.firstTeam;
+            otherTeam = match.secondTeam;
+        }
+        if (user.userId === match.secondTeam.captain.user.userId) {
+            senderTeam = match.secondTeam;
+            otherTeam = match.firstTeam;
+        }
+        const client = new vision.ImageAnnotatorClient();
+        for (let i = 0; i < results.length; i++) {
+            let mapWinner: number;
+            const [result] = await client.textDetection(results[i].path);
+            const data: string = result.textAnnotations[0].description;
+            const array = data.split(/[\n]+/);
+            const timeRegex: RegExp = /\d{0,3}:\d{2}/;
+            const mapResult = array[0].toLowerCase();
+            console.log(mapResult)
+            if (mapResult === `victory`) {
+                mapWinner = senderTeam.teamId;
+                firstTeamWins++;
+            } else if (mapResult === 'defeat') {
+                mapWinner = otherTeam.teamId;
+                secondTeamWins++;
+            } else {
+                throw new BadRequestException(`Screenshot number ${i + 1} is inappropriate`);
+            }
+            const mapTime = data.match(timeRegex)[0];
+            const members: string[] = [];
+            const memberList = match.firstRoster.roster.concat(match.secondRoster.roster)
+            for (const member of memberList) {
+                const player = await this.playersService.getById(member.playerId);
+                members.push(player.summonerName)
+            };
+            const stats: CreateStatsDto[] = [];
+            members.forEach((member) => {
+                const regex = new RegExp("\\" + member, "i");
+                for (let j = 0; j < array.length; j++) {
+                    if (array[j].match(regex)) {
+                        let statsArray = array[j + 1].split(/\D/);
+                        statsArray = statsArray.filter(s => /\S/.test(s));
+                        stats.push({
+                            summonerName: member,
+                            kills: parseInt(statsArray[0]),
+                            deaths: parseInt(statsArray[1]),
+                            assists: parseInt(statsArray[2])
+                        });
+                    }
+                }
+            });
+            console.log(`id: ${matchId}, winner: ${mapWinner}, czas: ${mapTime}`)
+            stats.forEach((s) => console.log(s))
+            if (match.status !== MatchStatus.Resolving && match.status !== MatchStatus.Cancelled) {
+                await this.createMap(matchId, mapWinner, mapTime, stats);
+            }
+            if (match.status === MatchStatus.Resolving) {
+                await this.compareMaps(matchId, mapWinner, mapTime, stats, i + 1)
+            }
+        }
+        if (firstTeamWins > secondTeamWins) {
+            match.winner = 1;
+        }
+        else {
+            match.winner = 2;
+        }
+        if (match.status !== MatchStatus.Resolving && match.status !== MatchStatus.Cancelled) {
+            match.status = MatchStatus.Resolving;
+        } else if (match.status === MatchStatus.Resolving) {
+            match.status = MatchStatus.Finished;
+        }
+        await this.matchesRepository.save(match)
+        return match.winner;
     }
 }

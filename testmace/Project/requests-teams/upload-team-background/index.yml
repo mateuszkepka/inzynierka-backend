@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/teams/upload-team-background/2'
+    url: '${$env.url}/teams/1/backgrounds'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -17,7 +17,7 @@ requestData:
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\Wikidata_Map_April_2016_Big.png'
+        value: 'D:\Obrazy\Avatary\blank.png'
         name: image
         type: File
     file: ''

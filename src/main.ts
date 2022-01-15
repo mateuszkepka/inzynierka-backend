@@ -1,7 +1,5 @@
 import * as cookieParser from 'cookie-parser';
-
 import { NestFactory, Reflector } from '@nestjs/core';
-
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 
@@ -13,7 +11,7 @@ async function bootstrap() {
     });
     app.use(cookieParser());
     app.useGlobalInterceptors(
-        new ClassSerializerInterceptor(app.get(Reflector), { strategy: `excludeAll` }),
+        new ClassSerializerInterceptor(app.get(Reflector), { strategy: `excludeAll` })
     );
     await app.listen(3000);
 }

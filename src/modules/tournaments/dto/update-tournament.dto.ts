@@ -1,31 +1,48 @@
-import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
 
 export class UpdateTournamentDto {
-    @IsString()
     @IsOptional()
+    @IsString()
     name: string;
 
-    @IsNumber()
     @IsOptional()
+    @IsEnum(TournamentFormat)
+    format: TournamentFormat;
+
+    @IsOptional()
+    @IsNumber()
     numberOfPlayers: number;
 
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
     numberOfTeams: number;
 
-    @IsDateString()
     @IsOptional()
+    @IsNumber()
+    numberOfMaps: number;
+
+    @IsOptional()
+    @IsDateString()
     registerStartDate: Date;
 
-    @IsDateString()
     @IsOptional()
+    @IsDateString()
     registerEndDate: Date;
 
-    @IsDateString()
     @IsOptional()
+    @IsDateString()
     tournamentStartDate: Date;
 
-    @IsString()
     @IsOptional()
+    @IsNumber()
+    endingHour: number;
+
+    @IsOptional()
+    @IsNumber()
+    endingMinutes: number;
+
+    @IsOptional()
+    @IsString()
     description: string;
 }

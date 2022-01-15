@@ -1,0 +1,29 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/matches/1/results/1'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: FormData
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Adam\Desktop\mecz1test.png'
+        name: image
+        type: File
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: create-match-results

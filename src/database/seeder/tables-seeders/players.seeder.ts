@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 import { Role } from 'src/roles/roles.enum';
-import { getRandom, shuffle } from 'src/util';
+import { getRandom, shuffle } from 'src/utils/tournaments-util';
 
 @Injectable()
 export class PlayersSeeder {

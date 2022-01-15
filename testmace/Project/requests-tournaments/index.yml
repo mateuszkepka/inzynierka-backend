@@ -1,24 +1,25 @@
 enabled: true
 children:
-  - get-tournaments-filtered
   - get-tournament-by-id
+  - get-tournaments-filtered
   - get-tournament-teams
   - get-tournament-admins
   - get-tournament-matches
   - get-tournament-standings
   - get-admins-to-invite
+  - get-tournament-avatar
+  - get-tournament-background
   - create-tournament
   - create-tournament-prize
   - create-tournament-admin
   - create-participating-team
   - check-in
-  - update-tournament
-  - update-participating-team
-  - remove-tournament-admin (TODO)
-  - (test)
-  - (test) resolve match
-  - upload-tournament-image
+  - upload-tournament-avatar
   - upload-tournament-background
+  - update-tournament
+  - update-tournament-prize
+  - update-participating-team
+  - remove-tournament-admin
 variablesArray: []
 type: Folder
 authData:

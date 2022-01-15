@@ -165,12 +165,13 @@ export class TeamsService {
         return team;
     }
 
-    public async setTeamProfile(id, image, user) {
+
+    public async setTeamProfile(id, image) {
         const team = await this.getById(id);
-        if (team.teamProfileImage) {
-            if (team.teamProfileImage !== `default-team-profile.png`) {
+        if (team.profilePicture) {
+            if (team.profilePicture !== `default-team-avatar.png`) {
                 const fs = require(`fs`);
-                const path = `./uploads/teamProfileImages/` + team.teamProfileImage;
+                const path = `./uploads/teams/avatars/` + team.profilePicture;
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
@@ -178,7 +179,25 @@ export class TeamsService {
                 }
             }
         }
-        team.teamProfileImage = image.filename;
+        team.profilePicture = image.filename;
+        this.teamsRepository.save(team);
+        return team;
+    }
+
+    public async setTeamBackground(id, image) {
+        const team = await this.getById(id);
+        if (team.backgroundPicture) {
+            if (team.backgroundPicture !== `default-team-background.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/teams/backgrounds/` + team.backgroundPicture;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous team background failed to remove`);
+                }
+            }
+        }
+        team.backgroundPicture = image.filename;
         this.teamsRepository.save(team);
         return team;
     }

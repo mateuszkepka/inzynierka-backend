@@ -1,10 +1,7 @@
 import * as argon2 from 'argon2';
-
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import PostgresErrorCode from 'src/database/postgresErrorCodes.enum';
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from 'src/modules/users/users.service';
 
@@ -14,7 +11,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) {}
+    ) { }
 
     async register(registrationData: RegisterDto) {
         const hashedPassword = await argon2.hash(registrationData.password, {
@@ -27,10 +24,18 @@ export class AuthService {
             });
             return createdUser;
         } catch (error) {
-            if (error?.code === PostgresErrorCode.UniqueViolation) {
-                throw new BadRequestException(`User with that email already exists`);
+            const username = error.detail.search(`username`);
+            const email = error.detail.search(`email`)
+            const university = error.detail.search(`university`);
+            if (username > 0) {
+                throw new BadRequestException(`This username is already taken!`)
+            } else if (email > 0) {
+                throw new BadRequestException(`This email is already taken!`)
+            } else if (university) {
+                throw new BadRequestException(`This student id on your university is already taken!`)
+            } else {
+                throw new BadRequestException(`Something went wrong`)
             }
-            throw new InternalServerErrorException(`Something went wrong`);
         }
     }
 

@@ -16,7 +16,7 @@ import { Format } from './format.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
 import { ParticipatingTeam, TournamentAdmin } from '.';
-import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status-enum';
+import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
 
 @Entity()
 export class Tournament {
@@ -84,6 +84,7 @@ export class Tournament {
     @Column({
         type: `enum`,
         enum: TournamentStatus,
+        default: TournamentStatus.Upcoming
     })
     status: TournamentStatus;
 
@@ -134,17 +135,14 @@ export class Tournament {
     tournamentAdmins: TournamentAdmin[];
 
     @Expose()
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.name;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
-    @ManyToOne(() => Format, { nullable: true })
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.name;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
+    @ManyToOne(() => Format, { eager: true, nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;
 
@@ -157,10 +155,10 @@ export class Tournament {
     prize: Prize;
 
     @Expose()
-    @Column({ default: `default-tournament-profile.jpg` })
-    tournamentProfileImage: string;
+    @Column({ default: 'default-tournament-avatar.png' })
+    profilePicture: string;
 
     @Expose()
-    @Column({ default: `default-tournament-background.jpg` })
-    tournamentProfileBackground: string;
+    @Column({ default: 'default-tournament-background.png' })
+    backgroundPicture: string;
 }

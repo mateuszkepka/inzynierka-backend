@@ -1,7 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Performance, Report } from '.';
-
 import { Player } from './player.entity';
 import { Role } from 'src/roles/roles.enum';
 import { Suspension } from './suspension.entity';
@@ -39,6 +38,7 @@ export class User {
     @Column({ nullable: true })
     studentId: string;
 
+    @Expose()
     @Column(`text`, { array: true, default: [`user`], nullable: true })
     roles: Role[];
 
@@ -51,10 +51,6 @@ export class User {
 
     @Column({ nullable: true })
     currentRefreshToken?: string;
-
-    @Expose()
-    @OneToMany(() => Performance, (performance) => performance.user)
-    performances: Performance[];
 
     @Expose()
     @OneToMany(() => Tournament, (tournament) => tournament.organizer)
@@ -91,10 +87,10 @@ export class User {
     reportsSent: Report[];
 
     @Expose()
-    @Column({ default: `default-avatar.jpg` })
-    userProfileImage: string;
+    @Column({ default: `default-user-avatar.png` })
+    profilePicture: string;
 
     @Expose()
-    @Column({ default: `default-background.jpg` })
-    userProfileBackground: string;
+    @Column({ default: `default-user-background.png` })
+    backgroundPicture: string;
 }

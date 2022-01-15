@@ -8,14 +8,10 @@ import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
 
 @Module({
-    imports: [
-        MulterModule.register({
-            dest: `./uploads/teamProfileImages`,
-        }),
-        TypeOrmModule.forFeature([Team, Player, Invitation, User, Match]),
-        PlayersModule,
-        UsersModule,
-    ],
+    imports: [MulterModule.register({
+        dest: './uploads/teams',
+    }),
+    TypeOrmModule.forFeature([Team, Player, Invitation, User, Match]), PlayersModule, UsersModule],
     providers: [TeamsService],
     exports: [TeamsService],
     controllers: [TeamsController],

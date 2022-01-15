@@ -25,22 +25,21 @@ import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 
 @Module({
-    imports: [
-        MulterModule.register({
-            dest: `./uploads/tournamentProfileImages`,
-        }),
-        TypeOrmModule.forFeature([
-            ParticipatingTeam,
-            TournamentAdmin,
-            GroupStanding,
-            Tournament,
-            Ladder,
-            Match,
-            Prize,
-            Group,
-            User,
-            Team,
-        ]),
+    imports: [MulterModule.register({
+        dest: './uploads/tournaments',
+    }),
+    TypeOrmModule.forFeature([
+        ParticipatingTeam,
+        TournamentAdmin,
+        GroupStanding,
+        Tournament,
+        Ladder,
+        Match,
+        Prize,
+        Group,
+        User,
+        Team
+    ]),
         UsersModule,
         TeamsModule,
         GamesModule,

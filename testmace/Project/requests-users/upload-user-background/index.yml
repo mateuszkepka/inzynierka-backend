@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/users/upload-user-background'
+    url: '${$env.url}/users/1/backgrounds'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -17,7 +17,7 @@ requestData:
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
+        value: 'D:\Obrazy\Avatary\ots.jpg'
         name: image
         type: File
     file: ''
@@ -26,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: background-upload
+name: upload-user-background

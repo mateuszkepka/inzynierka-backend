@@ -5,8 +5,8 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/matches/'
+    method: PATCH
+    url: '${$env.url}/tournaments/12/prizes'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,11 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "tournamentId": 53,
-        "matchStartDate": "2030-12-16",
-        "firstRosterId": 47,
-        "secondRosterId": 1,
-        "numberOfMaps": 1
+        "currency": "PLN",
+        "distribution": "1:150, 2:50, 3-4:15, 5:8-5"
       }
     xmlBody: ''
     textBody: ''
@@ -29,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: (TO DELETE) create-match
+name: update-tournament-prize

@@ -5,25 +5,21 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: POST
-    url: '${$env.url}/teams/upload-team-image/1'
+    method: GET
+    url: '${$env.url}/tournaments/avatars/default-tournament-background.png'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: FormData
+    type: Json
     jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData:
-      - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
-        name: image
-        type: File
+    formData: []
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: upload-team-image
+name: get-tournament-avatar

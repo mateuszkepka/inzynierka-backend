@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/upload-tournament-background/5'
+    url: '${$env.url}/tournaments/1/backgrounds'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -17,7 +17,7 @@ requestData:
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\Wikidata_Map_April_2016_Big.png'
+        value: 'D:\Obrazy\Avatary\trapstar.jpg'
         name: image
         type: File
     file: ''

@@ -1,17 +1,17 @@
 enabled: true
 children:
-  - get-all-teams
   - get-team-by-id
+  - get-all-teams
   - get-team-matches
   - get-team-members
   - get-players-to-invite
+  - get-team-avatar
+  - get-team-background
   - create-team
   - update-team
-  - remove-team
-  - upload-team-image
-  - get-team-profile
+  - upload-team-avatar
   - upload-team-background
-  - get-team-background
+  - remove-team
 variablesArray: []
 type: Folder
 authData:

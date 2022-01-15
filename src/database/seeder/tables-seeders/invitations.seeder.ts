@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Player, Team } from 'src/entities';
 import { Invitation } from 'src/entities/invitation.entity';
 import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
-import { getRandom, shuffle } from 'src/util';
+import { getRandom, shuffle } from 'src/utils/tournaments-util';
 import { Repository } from 'typeorm';
 
 @Injectable()

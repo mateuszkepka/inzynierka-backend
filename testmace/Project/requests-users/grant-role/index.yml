@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/users/16/roles/grant'
+    url: '${$env.url}/users/1007/roles/grant'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "role": "organizer"
+        "role": "admin"
       }
     xmlBody: ''
     textBody: ''

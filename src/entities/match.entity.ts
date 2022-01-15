@@ -52,16 +52,13 @@ export class Match {
     tournament: Tournament;
 
     @Expose({ name: `groupId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.groupId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value != null) {
+            return value.groupId;
+        } else {
+            return
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Group, (group) => group.matches, { nullable: true })
     @JoinColumn({ name: `groupId` })
     group: Group;

@@ -1,14 +1,14 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
-import { UsersService } from 'src/modules/users/users.service';
-import { Role } from 'src/roles/roles.enum';
-import { TeamsService } from '../teams.service';
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import { UsersService } from "src/modules/users/users.service";
+import { Role } from "src/roles/roles.enum";
+import { TeamsService } from "../teams.service";
 
 @Injectable()
 export class UserIsCaptainGuard implements CanActivate {
     constructor(
-        @Inject(TeamsService) private readonly teamsService: TeamsService,
-        @Inject(UsersService) private readonly usersService: UsersService,
-    ) {}
+        private readonly teamsService: TeamsService,
+        private readonly usersService: UsersService
+    ) { }
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         console.log(request);

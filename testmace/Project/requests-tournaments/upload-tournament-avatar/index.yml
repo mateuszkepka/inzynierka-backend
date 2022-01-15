@@ -1,0 +1,29 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/tournaments/1/avatars'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: FormData
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData:
+      - isChecked: true
+        value: 'D:\Obrazy\Avatary\gaz.png'
+        name: image
+        type: File
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: upload-tournament-avatar

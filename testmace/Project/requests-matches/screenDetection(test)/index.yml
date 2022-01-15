@@ -6,7 +6,11 @@ assignVariables: []
 requestData:
   request:
     method: GET
+<<<<<<<< HEAD:testmace/Project/requests-matches/screenDetection(test)/index.yml
     url: '${$env.url}/matches/screenDetection/test1.png'
+========
+    url: '${$env.url}/teams/backgrounds/default-team-background.png'
+>>>>>>>> tournaments:testmace/Project/requests-teams/get-team-background/index.yml
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -22,4 +26,8 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
+<<<<<<<< HEAD:testmace/Project/requests-matches/screenDetection(test)/index.yml
 name: screenDetection(test)
+========
+name: get-team-background
+>>>>>>>> tournaments:testmace/Project/requests-teams/get-team-background/index.yml

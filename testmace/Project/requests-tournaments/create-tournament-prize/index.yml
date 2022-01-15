@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/1/prizes'
+    url: '${$env.url}/tournaments/12/prizes'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "currency": "bubu",
-        "distribution": "costam"
+        "currency": "USD",
+        "distribution": "1:150, 2:50, 3-4:15, 5:8-5"
       }
     xmlBody: ''
     textBody: ''

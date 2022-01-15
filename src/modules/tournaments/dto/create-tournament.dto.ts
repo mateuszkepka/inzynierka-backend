@@ -11,7 +11,7 @@ import {
     ValidateIf,
 } from 'class-validator';
 import { IsGreaterThan } from 'src/decorators/is-greater-than.validator';
-import { TournamentFormat } from '../../formats/dto/tournament-format-enum';
+import { TournamentFormat } from '../../formats/dto/tournament-format.enum';
 
 export class CreateTournamentDto {
     @IsNotEmpty()

@@ -13,14 +13,14 @@ export class AuthController {
         private readonly usersService: UsersService,
     ) {}
 
-    @Public()
     @Post(`register`)
+    @Public()
     async register(@Body() registrationData: RegisterDto) {
         return this.authService.register(registrationData);
     }
 
-    @HttpCode(200)
     @Post(`login`)
+    @HttpCode(200)
     async logIn(@Req() request: RequestWithUser) {
         const { user } = request;
         const accessTokenCookie = this.authService.getCookieWithJwtToken(user.userId);

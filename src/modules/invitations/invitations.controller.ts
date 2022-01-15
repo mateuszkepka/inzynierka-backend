@@ -27,7 +27,7 @@ export class InvitationsController {
     constructor(private readonly invitationsService: InvitationsService) {}
 
     @Get(`/:id`)
-    async getById(@Param(`id`, ParseIntPipe) id) {
+    async getById(@Param(`id`, ParseIntPipe) id: number) {
         return this.invitationsService.getById(id);
     }
 
