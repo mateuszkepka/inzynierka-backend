@@ -1,12 +1,10 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common"
-import { Role } from "src/roles/roles.enum";
-import { TeamsService } from "../teams.service";
+import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { Role } from 'src/roles/roles.enum';
+import { TeamsService } from '../teams.service';
 
 @Injectable()
 export class PlayerIsMemberGuard implements CanActivate {
-    constructor(
-        @Inject(TeamsService) private readonly teamsService: TeamsService,
-    ) { }
+    constructor(@Inject(TeamsService) private readonly teamsService: TeamsService) {}
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         if (request.user.roles.includes(Role.Admin)) {

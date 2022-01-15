@@ -27,7 +27,7 @@ export class Player {
     @Expose()
     @Column({
         type: `enum`,
-        enum: RegionsLoL
+        enum: RegionsLoL,
     })
     region: RegionsLoL;
 
@@ -41,25 +41,31 @@ export class Player {
     ownedTeams: Team[];
 
     @Expose({ name: `gameId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.gameId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.gameId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
     @Expose({ name: `invitationId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value[0].invitationId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value[0].invitationId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @OneToMany(() => Invitation, (invitation) => invitation.player)
     teams: Invitation[];
 }

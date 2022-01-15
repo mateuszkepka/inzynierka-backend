@@ -1,4 +1,12 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
@@ -29,31 +37,37 @@ export class Team {
         type: `enum`,
         enum: RegionsLoL,
         default: null,
-        nullable: true
+        nullable: true,
     })
     region: RegionsLoL;
 
     @Expose({ name: `gameId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.gameId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.gameId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
     @Expose({ name: `captainId` })
     @ManyToOne(() => Player, (player) => player.ownedTeams)
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.playerId;
-        } else {
-            return
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.playerId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @JoinColumn({ name: `captainId` })
     captain: Player;
 
@@ -66,6 +80,10 @@ export class Team {
     members: Invitation[];
 
     @Expose()
-    @Column({ default: 'default-team.png' })
+    @Column({ default: `default-team-profile.png` })
     teamProfileImage: string;
+
+    @Expose()
+    @Column({ default: `default-team-background.png` })
+    teamProfileBackground: string;
 }

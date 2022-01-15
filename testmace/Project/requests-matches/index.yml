@@ -3,6 +3,7 @@ children:
   - get-match-by-id
   - (TO DELETE) create-match
   - update-match
+  - screenDetection(test)
 variablesArray: []
 type: Folder
 authData:

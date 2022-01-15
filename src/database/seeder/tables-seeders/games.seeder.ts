@@ -5,12 +5,12 @@ import { Game } from 'src/entities';
 
 @Injectable()
 export class GamesSeeder {
-    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) { }
+    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
 
     async seed() {
         const game = this.gamesRepository.create({
-            title: 'League Of Legends',
-            genre: 'MOBA',
+            title: `League Of Legends`,
+            genre: `MOBA`,
         });
         return this.gamesRepository.save(game);
     }

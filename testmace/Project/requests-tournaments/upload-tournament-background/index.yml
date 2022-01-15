@@ -1,0 +1,29 @@
+enabled: true
+children: []
+variablesArray: []
+type: RequestStep
+assignVariables: []
+requestData:
+  request:
+    method: POST
+    url: '${$env.url}/tournaments/upload-tournament-background/5'
+  headers: []
+  disabledInheritedHeaders: []
+  params: []
+  body:
+    type: FormData
+    jsonBody: ''
+    xmlBody: ''
+    textBody: ''
+    formData:
+      - isChecked: true
+        value: 'C:\Users\Wadol\Downloads\Wikidata_Map_April_2016_Big.png'
+        name: image
+        type: File
+    file: ''
+    formURLEncoded: []
+  strictSSL: Inherit
+  followRedirect: Inherit
+authData:
+  type: inherit
+name: upload-tournament-background

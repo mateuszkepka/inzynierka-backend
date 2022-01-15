@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Tournament } from './tournament.entity';
 import { User } from './user.entity';
 
@@ -12,7 +12,7 @@ export class TournamentAdmin {
     @Expose()
     @ManyToOne(() => Tournament, (tournament) => tournament.tournamentAdmins, {
         onDelete: `CASCADE`,
-        eager: true
+        eager: true,
     })
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;
@@ -21,7 +21,7 @@ export class TournamentAdmin {
     @ManyToOne(() => User, (user) => user.tournamentAdmins, {
         onDelete: `CASCADE`,
         cascade: true,
-        eager: true
+        eager: true,
     })
     @JoinColumn({ name: `userId` })
     user: User;

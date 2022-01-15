@@ -12,4 +12,4 @@ export * from './maps.seeder';
 export * from './participating-team.seeder';
 export * from './tournament-admins.seeder';
 export * from './ladders.seeder';
-export * from './invitations.seeder'
+export * from './invitations.seeder';

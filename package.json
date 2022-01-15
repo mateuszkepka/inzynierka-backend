@@ -24,6 +24,7 @@
     "seed-n-start:prod": "ts-node -r tsconfig-paths/register src/database/seeder/seed.ts && node dist/main"
   },
   "dependencies": {
+    "@google-cloud/vision": "^2.4.2",
     "@nestjs/common": "^8.2.3",
     "@nestjs/config": "^1.1.5",
     "@nestjs/core": "^8.2.3",

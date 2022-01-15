@@ -9,8 +9,9 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class InvitationsSeeder {
     constructor(
-        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
-    ) { }
+        @InjectRepository(Invitation)
+        private readonly invitationsRepository: Repository<Invitation>,
+    ) {}
 
     async seed(players: Player[], teams: Team[]) {
         const createdInvitations = [];
@@ -20,8 +21,11 @@ export class InvitationsSeeder {
             const captain = teams[i].captain;
             const team = teams.find((team) => team.captain === captain);
             const index = teams.indexOf(team);
-            teams.splice(index, 1)
-            const numberOfPlayers = getRandom([0.2, 0.15, 0.15, 0.05, 0.05, 0.4], [0, 1, 2, 3, 4, 5]);
+            teams.splice(index, 1);
+            const numberOfPlayers = getRandom(
+                [0.2, 0.15, 0.15, 0.05, 0.05, 0.4],
+                [0, 1, 2, 3, 4, 5],
+            );
             if (numberOfPlayers === 0) {
                 continue;
             }
@@ -30,7 +34,7 @@ export class InvitationsSeeder {
                     const invitation = this.invitationsRepository.create({
                         player: players[j],
                         team: teams[i],
-                        status: InvitationStatus.Accepted
+                        status: InvitationStatus.Accepted,
                     });
                     createdInvitations.push(invitation);
                 }

@@ -45,9 +45,9 @@ export class SuspensionsService {
             default:
                 break;
         }
-        const suspensions = await queryBuilder.getMany()
+        const suspensions = await queryBuilder.getMany();
         if (suspensions.length === 0) {
-            throw new NotFoundException(`No suspensions found`)
+            throw new NotFoundException(`No suspensions found`);
         }
         return suspensions;
     }

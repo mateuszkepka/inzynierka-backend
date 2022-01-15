@@ -5,9 +5,9 @@ import { FormatsController } from './formats.controller';
 import { FormatsService } from './formats.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Format])],
-  exports: [FormatsService],
-  controllers: [FormatsController],
-  providers: [FormatsService]
+    imports: [TypeOrmModule.forFeature([Format])],
+    exports: [FormatsService],
+    controllers: [FormatsController],
+    providers: [FormatsService],
 })
-export class FormatsModule { }
+export class FormatsModule {}

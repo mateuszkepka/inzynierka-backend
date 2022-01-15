@@ -1,16 +1,16 @@
-import { IsEnum, IsNumber, IsNumberString, IsOptional } from "class-validator";
-import { ReportStatus } from "../report-status.enum";
+import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
+import { ReportStatus } from '../report-status.enum';
 
 export class ReportStatusQuery {
     @IsOptional()
     @IsNumberString()
-    reportedId: number
+    reportedId: number;
 
     @IsOptional()
     @IsNumberString()
-    reportingId: number
+    reportingId: number;
 
     @IsOptional()
     @IsEnum(ReportStatus)
-    status: ReportStatus
+    status: ReportStatus;
 }

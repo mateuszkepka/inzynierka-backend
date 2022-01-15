@@ -22,8 +22,8 @@ import { SuspensionsService } from './suspensions.service';
 @Controller(`suspensions`)
 @Roles(Role.Admin)
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) { }
-    
+    constructor(private readonly suspensionsService: SuspensionsService) {}
+
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {
         return await this.suspensionsService.getById(id);

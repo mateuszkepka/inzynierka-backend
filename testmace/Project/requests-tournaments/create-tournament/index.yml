@@ -15,8 +15,8 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "test_ladder",
-        "format": "Single Elimination Ladder",
+        "name": "test_lasssdddder",
+        "format": "Double Round Robin",
         "numberOfPlayers": 5,
         "numberOfTeams": 16,
         "numberOfMaps": 3,
