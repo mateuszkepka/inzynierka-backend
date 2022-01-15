@@ -26,6 +26,7 @@ import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import { Public } from 'src/roles/public.decorator';
+import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 
 @Controller(`teams`)
 @Roles(Role.User)
@@ -58,19 +59,7 @@ export class TeamsController {
     async get(@Param(`id`, ParseIntPipe) id: number) {
         return this.teamsService.getById(id);
     }
-
-    @Public()
-    @Get(`team-profile/:imgpath`)
-    seeUploadedProfile(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/teamProfileImages` });
-    }
-
-    @Public()
-    @Get(`team-background/:imgpath`)
-    seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/teamProfileBackgrounds` });
-    }
-
+    
     @Get()
     async getAll() {
         return this.teamsService.getAll();

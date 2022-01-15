@@ -79,18 +79,6 @@ export class TournamentsController {
         return this.tournamentsService.getById(Number(id));
     }
 
-    @Public()
-    @Get(`tournament-profile/:imgpath`)
-    seeUploadedProfile(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/tournamentProfileImages` });
-    }
-
-    @Public()
-    @Get(`tournament-background/:imgpath`)
-    seeUploadedBackground(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/tournamentProfileBackgrounds` });
-    }
-
     @Get()
     @Public()
     async getTournamentsFiltered(@Query() queryParams: TournamentQueryDto) {

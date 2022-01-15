@@ -202,24 +202,6 @@ export class TeamsService {
         return team;
     }
 
-    public async setTeamBackground(id, image, user) {
-        const team = await this.getById(id);
-        if (team.teamProfileBackground) {
-            if (team.teamProfileBackground !== `default-team-background.png`) {
-                const fs = require(`fs`);
-                const path = `./uploads/teamProfileBackgrounds/` + team.teamProfileBackground;
-                try {
-                    fs.unlinkSync(path);
-                } catch (err) {
-                    console.error(`Previous team background failed to remove`);
-                }
-            }
-        }
-        team.teamProfileBackground = image.filename;
-        this.teamsRepository.save(team);
-        return team;
-    }
-
     async update(teamId: number, attrs: Partial<UpdateTeamDto>) {
         const team = await this.getById(teamId);
         const members = await this.getMembers(teamId);
