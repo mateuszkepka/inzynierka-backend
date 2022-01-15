@@ -50,7 +50,7 @@ export class Match {
 
     @Expose({ name: `groupId` })
     @Transform(({ value }) => {
-        if (value !== undefined) {
+        if (value != null) {
             return value.groupId;
         } else {
             return

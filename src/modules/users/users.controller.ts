@@ -68,50 +68,50 @@ export class UsersController {
         return this.usersService.getById(id);
     }
 
-    @Get(`:id/profile-picture`)
-    async getProfilePicture(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/user-profile-pictures` });
+    @Get(`avatars/:imgpath`)
+    @Public()
+    async seeUploadedAvatar(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/users/avatars` });
     }
 
-    @Get(`:id/profile-background`)
-    async getProfileBackground(@Param(`imgpath`) image, @Res() res) {
-        return res.sendFile(image, { root: `./uploads/user-profile-backgrounds` });
+    @Get(`backgrounds/:imgpath`)
+    @Public()
+    async seeUploadedBackground(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/users/backgrounds` });
     }
 
-    @Post(`:id/profile-picture`)
-    @UseGuards(UserIsUserGuard)
+    @Post(`:id/avatars`)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: `./uploads/user-profile-pictures`,
+                destination: `./uploads/users/avatars`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
         }),
     )
-    async uploadProfilePicture(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
-        if (!image) {
-            throw new BadRequestException(`Invalid file provided, allowed formats jpg/png/jpeg!`);
-        }
+    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
+        console.log(image)
         return this.usersService.setProfileImage(id, image);
     }
 
-    @Post(`:id/profile-background`)
-    @UseGuards(UserIsUserGuard)
+    @Post(`:id/backgrounds`)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: `./uploads/user-profile-backgrounds`,
+                destination: `./uploads/users/backgrounds`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
         }),
     )
-    async uploadBackgroundPicture(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
+    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
         if (!image) {
-            throw new BadRequestException(`Invalid file provided, allowed formats jpg/png/jpeg!`);
+            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
         }
-        return this.usersService.setBackgroundPicture(id, image);
+        return this.usersService.setProfileBackground(id, image);
     }
 
     @Post(`/:id/roles/grant`)

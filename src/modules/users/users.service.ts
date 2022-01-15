@@ -198,16 +198,16 @@ export class UsersService {
         return this.usersRepository.remove(user);
     }
 
-    public async setProfileImage(userId, image) {
+    public async setProfileImage(userId: number, image) {
         const user = await this.getById(userId);
         if (user.profilePicture) {
-            if (user.profilePicture !== 'default-avatar.jpg') {
-                const fs = require('fs')
-                const path = './uploads/user-profile-pictures' + user.profilePicture;
+            if (user.profilePicture !== `default-user-avatar.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/users/avatars/` + user.profilePicture;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user avatar failed to remove")
+                    console.error(`Previous user avatar failed to remove`);
                 }
             }
         }
@@ -216,16 +216,16 @@ export class UsersService {
         return user;
     }
 
-    public async setBackgroundPicture(userId, image) {
+    public async setProfileBackground(userId, image) {
         const user = await this.getById(userId);
         if (user.backgroundPicture) {
-            if (user.backgroundPicture !== 'default-background.jpg') {
-                const fs = require('fs')
-                const path = './uploads/user-profile-backgrounds' + user.backgroundPicture;
+            if (user.backgroundPicture !== `default-user-background.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/users/backgrounds/` + user.backgroundPicture;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user background failed to remove")
+                    console.error(`Previous user backgrounds failed to remove`);
                 }
             }
         }

@@ -49,7 +49,6 @@ export class ReportsService {
     }
 
     async create(createReportDto: CreateReportDto, user: User) {
-        console.log(user);
         const reportedUser = await this.usersService.getById(createReportDto.userId)
         if (reportedUser.userId === user.userId) {
             throw new BadRequestException(`You cant report Yourself`);

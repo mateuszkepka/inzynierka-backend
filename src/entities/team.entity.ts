@@ -64,6 +64,11 @@ export class Team {
     @OneToMany(() => Invitation, (invitation) => invitation.team)
     members: Invitation[];
 
-    @Column({ default: 'default-team.png' })
-    teamProfileImage: string;
+    @Expose()
+    @Column({ default: 'default-team-avatar.png' })
+    profilePicture: string;
+
+    @Expose()
+    @Column({ default: 'default-team-background.png' })
+    backgroundPicture: string;
 }

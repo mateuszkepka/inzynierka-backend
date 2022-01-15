@@ -139,4 +139,12 @@ export class Tournament {
     @ManyToOne(() => Prize, { cascade: true, eager: true, nullable: true })
     @JoinColumn({ name: `prizeId` })
     prize: Prize;
+
+    @Expose()
+    @Column({ default: 'default-tournament-avatar.png' })
+    profilePicture: string;
+
+    @Expose()
+    @Column({ default: 'default-tournament-background.png' })
+    backgroundPicture: string;
 }

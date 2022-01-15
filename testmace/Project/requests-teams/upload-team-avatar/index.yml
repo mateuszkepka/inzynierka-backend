@@ -6,27 +6,24 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/users/1/profile-picture'
+    url: '${$env.url}/teams/1/avatars'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: FormData
-    jsonBody: |-
-      {
-        "country": "Somalia"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
+        value: 'D:\Obrazy\Avatary\taco.png'
         name: image
         type: File
-    file: 'C:\Users\Wadol\Downloads\dfghhh.png'
+    file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: upload-avatar
+name: upload-team-avatar

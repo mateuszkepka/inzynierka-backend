@@ -5,21 +5,25 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: GET
-    url: '${$env.url}/matches/153'
+    method: POST
+    url: '${$env.url}/tournaments/1/avatars'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
+    type: FormData
     jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData: []
+    formData:
+      - isChecked: true
+        value: 'D:\Obrazy\Avatary\gaz.png'
+        name: image
+        type: File
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-match-by-id
+name: upload-tournament-avatar

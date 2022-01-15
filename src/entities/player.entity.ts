@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Game, Invitation } from '.';
+import { Game, Invitation, Performance } from '.';
 import { Expose, Transform } from 'class-transformer';
 import { Team } from './team.entity';
 import { User } from './user.entity';
@@ -35,6 +35,10 @@ export class Player {
     @ManyToOne(() => User, (user) => user.accounts, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `userId` })
     user: User;
+
+    @Expose()
+    @OneToMany(() => Performance, (performance) => performance.player)
+    performances: Performance[];
 
     @Expose()
     @OneToMany(() => Team, (team) => team.captain)

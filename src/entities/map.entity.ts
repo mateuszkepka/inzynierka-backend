@@ -17,6 +17,10 @@ export class Map {
     mapWinner: number;
 
     @Expose()
+    @Column({ nullable: true })
+    time: string;
+
+    @Expose()
     @OneToMany(() => Performance, (performance) => performance.map)
     performances: Performance[];
 

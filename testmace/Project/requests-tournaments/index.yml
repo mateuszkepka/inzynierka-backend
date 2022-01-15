@@ -7,17 +7,19 @@ children:
   - get-tournament-matches
   - get-tournament-standings
   - get-admins-to-invite
+  - get-tournament-avatar
+  - get-tournament-background
   - create-tournament
   - create-tournament-prize
   - create-tournament-admin
   - create-participating-team
   - check-in
+  - upload-tournament-avatar
+  - upload-tournament-background
   - update-tournament
   - update-tournament-prize
   - update-participating-team
   - remove-tournament-admin
-  - (test)
-  - (test) resolve match
 variablesArray: []
 type: Folder
 authData:

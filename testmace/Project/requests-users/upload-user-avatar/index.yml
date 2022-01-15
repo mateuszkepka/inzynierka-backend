@@ -6,24 +6,27 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/users/upload-user-background'
+    url: '${$env.url}/users/1/avatars'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: FormData
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "country": "Somalia"
+      }
     xmlBody: ''
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Wadol\Downloads\dfghhh.png'
+        value: 'D:\Obrazy\Avatary\kidcudi.jpg'
         name: image
         type: File
-    file: ''
+    file: 'C:\Users\Wadol\Downloads\dfghhh.png'
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: upload-background
+name: upload-user-avatar

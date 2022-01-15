@@ -6,20 +6,24 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/matches/221/results/1'
+    url: '${$env.url}/users/1/backgrounds'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
-    type: Json
+    type: FormData
     jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData: []
+    formData:
+      - isChecked: true
+        value: 'D:\Obrazy\Avatary\ots.jpg'
+        name: image
+        type: File
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
   followRedirect: Inherit
 authData:
   type: inherit
-name: (test) resolve match
+name: upload-user-background

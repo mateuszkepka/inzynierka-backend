@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/users/1/avatar/'
+    url: '${$env.url}/users/avatars/default-user-avatar.png'
   headers: []
   disabledInheritedHeaders: []
   params: []

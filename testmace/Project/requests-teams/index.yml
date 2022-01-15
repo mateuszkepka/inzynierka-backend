@@ -5,11 +5,13 @@ children:
   - get-team-matches
   - get-team-members
   - get-players-to-invite
+  - get-team-avatar
+  - get-team-background
   - create-team
   - update-team
+  - upload-team-avatar
+  - upload-team-background
   - remove-team
-  - upload-team-image
-  - get-team-image
 variablesArray: []
 type: Folder
 authData:

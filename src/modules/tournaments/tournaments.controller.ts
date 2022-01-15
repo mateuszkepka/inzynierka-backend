@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards, UsePipes, } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, } from '@nestjs/common';
 import { Public } from 'src/roles/public.decorator';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
@@ -19,6 +19,9 @@ import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
 import { MemberIsNotSuspended } from './guards/member-is-not-suspended.guard';
 import { UserIsOrganizer } from './guards/user-is-organizer.guard';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -90,6 +93,56 @@ export class TournamentsController {
         @Req() { user }: RequestWithUser
     ) {
         return this.tournamentsService.create(body, user);
+    }
+
+    @Get(`avatars/:imgpath`)
+    @Public()
+    seeUploadedProfile(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/tournaments/avatars` });
+    }
+
+    @Get(`backgrounds/:imgpath`)
+    @Public()
+    seeUploadedBackground(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/tournaments/backgrounds` });
+    }
+
+    @Post(`:id/avatars`)
+    @UseGuards(UserIsOrganizer)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/tournaments/avatars`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
+        }),
+    )
+    async uploadedFile(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`id`, ParseIntPipe) id: number,
+    ) {
+        return this.tournamentsService.setTournamentProfile(id, image);
+    }
+
+    @Post(`:id/backgrounds`)
+    @UseGuards(UserIsOrganizer)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/tournaments/backgrounds`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
+        }),
+    )
+    async uploadedBackground(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`id`, ParseIntPipe) id: number,
+    ) {
+        return this.tournamentsService.setTournamentBackground(id, image);
     }
 
     @Post(`/:id/admins/:adminId`)

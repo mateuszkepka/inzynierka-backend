@@ -155,25 +155,38 @@ export class TeamsService {
     }
 
 
-    public async setTeamImage(id, image, user) {
+    public async setTeamProfile(id, image) {
         const team = await this.getById(id);
-        const owner = await this.playersService.getOwner(team.captain.playerId);
-        console.log(team);
-        if (owner.userId !== user.userId) {
-            throw new BadRequestException(`You need to be a captain of this team to add avatar to it`);
-        }
-        if (team.teamProfileImage) {
-            if (team.teamProfileImage !== 'default-team.png') {
-                const fs = require('fs')
-                const path = './uploads/teamProfileImages/' + team.teamProfileImage;
+        if (team.profilePicture) {
+            if (team.profilePicture !== `default-team-avatar.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/teams/avatars/` + team.profilePicture;
                 try {
-                    fs.unlinkSync(path)
+                    fs.unlinkSync(path);
                 } catch (err) {
-                    console.error("Previous user avatar failed to remove")
+                    console.error(`Previous team profile failed to remove`);
                 }
             }
         }
-        team.teamProfileImage = image.filename;
+        team.profilePicture = image.filename;
+        this.teamsRepository.save(team);
+        return team;
+    }
+
+    public async setTeamBackground(id, image) {
+        const team = await this.getById(id);
+        if (team.backgroundPicture) {
+            if (team.backgroundPicture !== `default-team-background.png`) {
+                const fs = require(`fs`);
+                const path = `./uploads/teams/backgrounds/` + team.backgroundPicture;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous team background failed to remove`);
+                }
+            }
+        }
+        team.backgroundPicture = image.filename;
         this.teamsRepository.save(team);
         return team;
     }

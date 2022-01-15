@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Map } from './map.entity';
-import { User } from './user.entity';
+import { Player } from './player.entity';
 
 @Entity()
 export class Performance {
@@ -20,17 +20,17 @@ export class Performance {
     @Column()
     assists: number;
 
-    @Expose({ name: `username` })
+    @Expose({ name: `playerId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value.username;
+            return value.playerId;
         } else {
             return
         }
     }, { toPlainOnly: true })
-    @ManyToOne(() => User, (user) => user.performances)
-    @JoinColumn({ name: `userId` })
-    user: User;
+    @ManyToOne(() => Player, (player) => player.performances)
+    @JoinColumn({ name: `playerId` })
+    player: Player;
 
     @Expose()
     @ManyToOne(() => Map, (map) => map.performances)

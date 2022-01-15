@@ -1,7 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/roles.enum';
+import { editMapName, imageFileFilter } from 'src/utils/uploads-util';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
 
@@ -15,10 +18,32 @@ export class MatchesController {
         return this.matchesService.getById(id);
     }
 
-    @Post(`/:id/results/:winnerId`)
-    @UseInterceptors(FilesInterceptor(`results`))
-    async sendResults(@Param(`id`, ParseIntPipe) id: number, @Param(`winnerId`, ParseIntPipe) winnerId: number, @UploadedFiles() results: Array<Express.Multer.File>) {
-        return this.matchesService.resolveMatch(id, winnerId, results);
+    @Post(`/:matchId/results/:winnerId`)
+    async testResults(
+        @UploadedFiles() results: Array<Express.Multer.File>,
+        @Param(`matchId`, ParseIntPipe) matchId: number,
+        @Req() { user }: RequestWithUser
+    ) {
+        return this.matchesService.parseResults(matchId, results, user);
+    }
+
+    @Post(`/:matchId/results/`)
+    @UseInterceptors(
+        FilesInterceptor(`image[]`, 5, {
+            storage: diskStorage({
+                destination: `./uploads/matches`,
+                filename: editMapName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
+        }),
+    )
+    async sendResults(
+        @UploadedFiles() results: Array<Express.Multer.File>,
+        @Param(`matchId`, ParseIntPipe) matchId: number,
+        @Req() { user }: RequestWithUser
+    ) {
+        return this.matchesService.resolveMatch(matchId, results, user);
     }
 
     @Patch(`/:id`)

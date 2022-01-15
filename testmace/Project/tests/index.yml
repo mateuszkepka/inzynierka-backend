@@ -1,8 +1,8 @@
 enabled: true
 children:
-  - get-match-by-id
-  - create-match-results
-  - update-match
+  - (test) resolve match Copy
+  - (test) resolve match
+  - (test)
 variablesArray: []
 type: Folder
 authData:
@@ -12,4 +12,4 @@ requestData:
   disabledInheritedHeaders: []
   strictSSL: Inherit
   followRedirect: Inherit
-name: requests-matches
+name: tests

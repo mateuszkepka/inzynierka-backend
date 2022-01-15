@@ -17,12 +17,13 @@ children:
   - requests-games
   - requests-reports
   - requests-formats
+  - tests
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0MjA5ODYxMSwiZXhwIjoxNjQyMTk4NjExfQ.fs3Q8YJEP80NrXjHijkkKAVQjy32RIVM-ROk1CG2V1I;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMDcsImlhdCI6MTY0MjI3MTc4NiwiZXhwIjoxNjQyMzcxNzg2fQ.XOitF_alY_WKFXaJ9c9GF-QXnwbOnZyige1yTLBzCcM;
     Expires=Infinity; Domain=localhost; Path=/;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0MjA5ODYxMSwiZXhwIjoxNjQzMDk4NjExfQ.HQ-ZS9qR7ZpOy70EoSz2ZivBRtAkWpZsSVOYwQJPJs0;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMDcsImlhdCI6MTY0MjI3MTc4NiwiZXhwIjoxNjQzMjcxNzg2fQ.SSZdUBZe9VN_leKHSH3YtwAPpq7U-BDHsrRZCLH2uig;
     Expires=Infinity; Domain=localhost; Path=/;
 variablesArray: []
 authData:

@@ -20,6 +20,7 @@ import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { GroupsService } from './groups.service';
 import { BracketsService } from './brackets.service';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
+import { TournamentStatus } from './dto/tourrnament.status.enum';
 
 @Injectable()
 export class TournamentsService {
@@ -45,11 +46,13 @@ export class TournamentsService {
     ) { }
 
     async test() {
-        const tournament = await this.getById(6);
+        const tournament = await this.getById(18);
         const participatingTeams = await this.rostersRepository
             .createQueryBuilder(`participatingTeam`)
-            .limit(31)
+            .where(`participatingTeam.tournamentId = :tournamentId`, { tournamentId: tournament.tournamentId })
+            .limit(16)
             .getMany();
+        //this.groupsService.drawGroups(tournament, participatingTeams);
         this.bracketsService.generateLadder(tournament, participatingTeams, true);
     }
 
@@ -429,6 +432,45 @@ export class TournamentsService {
         return this.tournamentAdminsRepository.remove(admin);
     }
 
+    public async setTournamentProfile(id, image) {
+        const tournament = await this.getById(id);
+        if (tournament.profilePicture) {
+            if (tournament.profilePicture !== `default-tournament-avatar.png`) {
+                const fs = require(`fs`);
+                const path =
+                    `./uploads/tournaments/avatars/` + tournament.profilePicture;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous tournament profile failed to remove`);
+                }
+            }
+        }
+        tournament.profilePicture = image.filename;
+        this.tournamentsRepository.save(tournament);
+        return tournament;
+    }
+
+    public async setTournamentBackground(id, image) {
+        const tournament = await this.getById(id);
+        if (tournament.backgroundPicture) {
+            if (tournament.backgroundPicture !== `default-tournament-background.png`) {
+                const fs = require(`fs`);
+                const path =
+                    `./uploads/tournaments/backgrounds/` +
+                    tournament.backgroundPicture;
+                try {
+                    fs.unlinkSync(path);
+                } catch (err) {
+                    console.error(`Previous tournament background failed to remove`);
+                }
+            }
+        }
+        tournament.backgroundPicture = image.filename;
+        this.tournamentsRepository.save(tournament);
+        return tournament;
+    }
+
     private async validateRoster(team: Team, roster: RosterMember[]) {
         const exceptions = [];
         for (const member of roster) {
@@ -475,6 +517,8 @@ export class TournamentsService {
                 console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`)
                 await this.bracketsService.generateLadder(tournament, teams, true);
             }
+            tournament.status = TournamentStatus.Ongoing;
+            await this.tournamentsRepository.save(tournament);
         })
         this.schedulerRegistry.addCronJob(jobName, job)
         job.start();

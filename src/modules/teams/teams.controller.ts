@@ -10,6 +10,7 @@ import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
+import { Public } from 'src/roles/public.decorator';
 
 @Controller(`teams`)
 @Roles(Role.User)
@@ -53,25 +54,66 @@ export class TeamsController {
         return this.teamsService.getAll();
     }
 
-    @Post('/upload-team-image/:id')
-    @Roles(Role.Player)
+    @Get(`avatars/:imgpath`)
+    @Public()
+    seeUploadedProfile(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/teams/avatars` });
+    }
+
+    @Get(`backgrounds/:imgpath`)
+    @Public()
+    seeUploadedBackground(@Param(`imgpath`) image: Express.Multer.File, @Res() res) {
+        return res.sendFile(image, { root: `./uploads/teams/backgrounds` });
+    }
+
+    @Post(`:id/avatars`)
     @UseGuards(UserIsCaptainGuard)
     @UseInterceptors(
-        FileInterceptor('image', {
+        FileInterceptor(`image`, {
             storage: diskStorage({
-                destination: './uploads/teamProfileImages',
+                destination: `./uploads/teams/avatars`,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
+            limits: { fileSize: 2000000 },
         }),
     )
-    uploadedFile(@UploadedFile() image, @Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
+    async uploadedFile(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`id`, ParseIntPipe) id: number
+    ) {
         if (!image) {
-            throw new BadRequestException('invalid file provided, allowed formats jpg/png/jpng!');
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
         }
-        return this.teamsService.setTeamImage(id, image, user);
+        return this.teamsService.setTeamProfile(id, image);
     }
 
+    @Post(`:id/backgrounds`)
+    @UseGuards(UserIsCaptainGuard)
+    @UseInterceptors(
+        FileInterceptor(`image`, {
+            storage: diskStorage({
+                destination: `./uploads/teams/backgrounds`,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 4000000 },
+        }),
+    )
+    async uploadedBackground(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`id`, ParseIntPipe) id: number,
+    ) {
+        if (!image) {
+            throw new BadRequestException(
+                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
+            );
+        }
+        console.log(image)
+        return this.teamsService.setTeamBackground(id, image);
+    }
 
     @Post()
     @Roles(Role.Player)

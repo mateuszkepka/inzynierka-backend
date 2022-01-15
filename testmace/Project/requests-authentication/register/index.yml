@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "test2@gmail.com",
+        "email": "test@gmail.com",
         "password": "test",
         "username": "test3",
         "country": "Poland",

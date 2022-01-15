@@ -9,8 +9,8 @@ children:
   - get-user-background
   - grant-role
   - revoke-role
-  - upload-avatar
-  - upload-background
+  - upload-user-avatar
+  - upload-user-background
   - update-user
   - remove-user
 variablesArray: []
