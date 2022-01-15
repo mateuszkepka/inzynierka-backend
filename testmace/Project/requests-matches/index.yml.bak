@@ -3,6 +3,7 @@ children:
   - get-match-by-id
   - create-match-results
   - update-match
+  - get-team-background
 variablesArray: []
 type: Folder
 authData:
