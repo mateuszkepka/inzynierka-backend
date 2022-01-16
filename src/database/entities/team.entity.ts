@@ -49,7 +49,7 @@ export class Team {
     @ManyToOne(() => Player, (player) => player.ownedTeams)
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value.gameId;
+            return value.playerId;
         } else {
             return;
         }

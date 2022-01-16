@@ -22,6 +22,7 @@ import { UpdatePrizeDto } from './dto/update-prize.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
+import { TournamentIsNotOngoing } from './guards/tournament-is-not-ongoing.guard';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
@@ -33,50 +34,50 @@ export class TournamentsController {
         return this.tournamentsService.test();
     }
 
-    @Get(`/:id/admins/available`)
+    @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer)
     async getAvailableAdmins(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Req() { user }: RequestWithUser,
     ) {
-        return this.tournamentsService.getAvailableAdmins(id, user);
+        return this.tournamentsService.getAvailableAdmins(tournamentId, user);
     }
 
-    @Get(`/:id/standings`)
+    @Get(`/:tournamentId/standings`)
     @Roles(Role.Organizer)
-    async getTournamentStandings(@Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.getStandingsByTournament(id);
+    async getTournamentStandings(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.getStandingsByTournament(tournamentId);
     }
 
-    @Get(`/:id/admins`)
+    @Get(`/:tournamentId/admins`)
     @Roles(Role.Organizer)
-    async getAdmins(@Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.getAdmins(id);
+    async getAdmins(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.getAdmins(tournamentId);
     }
 
-    @Get(`/:id/matches`)
+    @Get(`/:tournamentId/matches`)
     @Roles(Role.Organizer)
     async getTournamentMatches(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Query() { status }: MatchQuery,
     ) {
-        return this.tournamentsService.getMatchesByTournament(id, status);
+        return this.tournamentsService.getMatchesByTournament(tournamentId, status);
     }
 
-    @Get(`/:id/teams`)
+    @Get(`/:tournamentId/teams`)
     @Public()
     @Roles(Role.Organizer)
     async getTournamentTeams(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Query() { status }: ParticipatingTeamQuery,
     ) {
-        return this.tournamentsService.getTeamsByTournament(id, status);
+        return this.tournamentsService.getTeamsByTournament(tournamentId, status);
     }
 
-    @Get(`/:id`)
+    @Get(`/:tournamentId`)
     @Public()
-    async getById(@Param(`id`) id: string) {
-        return this.tournamentsService.getById(Number(id));
+    async getById(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.getById(tournamentId);
     }
 
     @Get()
@@ -104,7 +105,7 @@ export class TournamentsController {
         return res.sendFile(image, { root: `./uploads/tournaments/backgrounds` });
     }
 
-    @Post(`:id/avatars`)
+    @Post(`:tournamentId/avatars`)
     @UseGuards(UserIsOrganizer)
     @UseInterceptors(
         FileInterceptor(`image`, {
@@ -116,11 +117,11 @@ export class TournamentsController {
             limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.setTournamentProfile(id, image);
+    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.setTournamentProfile(tournamentId, image);
     }
 
-    @Post(`:id/backgrounds`)
+    @Post(`:tournamentId/backgrounds`)
     @UseGuards(UserIsOrganizer)
     @UseInterceptors(
         FileInterceptor(`image`, {
@@ -132,43 +133,43 @@ export class TournamentsController {
             limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.setTournamentBackground(id, image);
+    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.setTournamentBackground(tournamentId, image);
     }
 
-    @Post(`/:id/admins/:adminId`)
+    @Post(`/:tournamentId/admins/:adminId`)
     @Roles(Role.Organizer)
     async addAdmin(
-        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`adminId`, ParseIntPipe) adminId: number
     ) {
         return this.tournamentsService.addAdmin(tournamentId, adminId);
     }
 
-    @Post(`/:id/prizes`)
+    @Post(`/:tournamentId/prizes`)
     @Roles(Role.Organizer)
     @UseGuards(UserIsOrganizer)
     async addPrize(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) id: number,
         @Body() body: CreatePrizeDto
     ) {
         return this.tournamentsService.addPrize(id, body);
     }
 
-    @Post(`/:id/teams/:teamId`)
+    @Post(`/:tournamentId/teams/:teamId`)
     @UseGuards(UserIsCaptainGuard, MemberIsNotSuspended)
     async addTeam(
-        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
         @Body() body: CreateParticipatingTeamDto
     ) {
         return this.tournamentsService.addTeam(tournamentId, teamId, body);
     }
 
-    @Post(`/:id/teams/:teamId`)
+    @Post(`/:tournamentId/teams/:teamId`)
     @UseGuards(UserIsCaptainGuard, MemberIsNotSuspended)
     async checkIn(
-        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
         return this.tournamentsService.changeStatus(
@@ -176,50 +177,50 @@ export class TournamentsController {
         );
     }
 
-    @Patch(`/:id/teams/:teamId`)
+    @Patch(`/:tournamentId/teams/:teamId`)
     @Roles(Role.Organizer, Role.TournamentAdmin)
     @UseGuards(UserIsTournamentAdmin)
     async verifyTeam(
-        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
         @Body() { status }: VerifyTeamDto,
     ) {
         return this.tournamentsService.changeStatus(tournamentId, teamId, status);
     }
 
-    @Patch(`/:id/prizes`)
+    @Patch(`/:tournamentId/prizes`)
     @Roles(Role.Organizer)
     @UseGuards(UserIsOrganizer)
     async updatePrize(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Body() body: UpdatePrizeDto
     ) {
-        return this.tournamentsService.updatePrize(id, body);
+        return this.tournamentsService.updatePrize(tournamentId, body);
     }
 
-    @Patch(`/:id`)
+    @Patch(`/:tournamentId`)
     @Roles(Role.Organizer)
     @UsePipes(DateValidationPipe)
     @UseGuards(UserIsOrganizer)
     async update(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Body() body: UpdateTournamentDto
     ) {
-        return this.tournamentsService.update(id, body);
+        return this.tournamentsService.update(tournamentId, body);
     }
 
-    @Delete(`/:id`)
+    @Delete(`/:tournamentId`)
     @Roles(Role.Organizer)
-    @UseGuards(UserIsOrganizer)
-    async remove(@Param(`id`, ParseIntPipe) id: number) {
-        return this.tournamentsService.remove(id);
+    @UseGuards(UserIsOrganizer, TournamentIsNotOngoing)
+    async remove(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+        return this.tournamentsService.remove(tournamentId);
     }
 
-    @Delete(`/:id/admins/:adminId`)
+    @Delete(`/:tournamentId/admins/:adminId`)
     @Roles(Role.Organizer)
     @UseGuards(UserIsOrganizer)
     async removeAdmin(
-        @Param(`id`, ParseIntPipe) tournamentId: number,
+        @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`adminId`, ParseIntPipe) adminId: number
     ) {
         return this.tournamentsService.removeAdmin(tournamentId, adminId);

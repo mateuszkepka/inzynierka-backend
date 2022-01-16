@@ -11,7 +11,6 @@ export class UserIsCaptainGuard implements CanActivate {
     ) { }
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
-        console.log(request);
         if (request.user.roles.includes(Role.Admin)) {
             return true;
         }

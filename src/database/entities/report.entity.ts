@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { ReportStatus } from 'src/modules/reports/report-status.enum';
@@ -6,6 +6,11 @@ import { User } from '.';
 
 @Entity()
 export class Report {
+    @BeforeInsert()
+    setCreationDate() {
+        this.reportDate = new Date();
+    }
+    
     @Expose()
     @PrimaryGeneratedColumn()
     reportId: number;

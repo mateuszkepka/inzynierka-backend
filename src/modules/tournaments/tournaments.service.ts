@@ -360,6 +360,9 @@ export class TournamentsService {
         const { roster, subs } = body;
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
+        if (roster.length > tournament.numberOfPlayers) {
+            throw new BadRequestException(`This tournament is limited to ${tournament.numberOfPlayers} players per team`);
+        }
         if (tournament.registerStartDate > new Date()) {
             throw new BadRequestException(`Registration for this tournament is not open yet`);
         }
@@ -380,7 +383,7 @@ export class TournamentsService {
             where: { tournament: tournament, team: team }
         });
         if (ifParticipating) {
-            throw new NotFoundException(`This team is already signed up for this tournament`);
+            throw new NotFoundException(`Your team is already signed up for this tournament`);
         }
         const participatingTeam = this.rostersRepository.create({
             tournament: tournament,
