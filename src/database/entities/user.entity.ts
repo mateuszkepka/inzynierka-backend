@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
-import { Performance, Report } from '.';
+import { Report } from '.';
 import { Player } from './player.entity';
 import { Role } from 'src/roles/roles.enum';
 import { Suspension } from './suspension.entity';
@@ -61,16 +61,13 @@ export class User {
     suspensions: Suspension[];
 
     @Expose()
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value[0].playerId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value[0].playerId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @OneToMany(() => Player, (player) => player.user)
     accounts: Player[];
 

@@ -14,16 +14,13 @@ export class Ladder {
     isLosers: boolean;
 
     @Expose()
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.tournamentId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.tournamentId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Tournament, (tournament) => tournament.groups, { onDelete: `CASCADE` })
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;

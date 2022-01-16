@@ -93,31 +93,25 @@ export class Tournament {
     description: string;
 
     @Expose({ name: `gameId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.gameId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value[0].playerId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
     @Expose({ name: `organizerId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.userId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value[0].playerId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `organizerId` })
     organizer: User;
@@ -134,12 +128,12 @@ export class Tournament {
     @OneToMany(() => TournamentAdmin, (tournamentAdmin) => tournamentAdmin.tournament)
     tournamentAdmins: TournamentAdmin[];
 
-    @Expose()
+    @Expose({ name: `formatId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value.name;
+            return value[0].playerId;
         } else {
-            return
+            return;
         }
     }, { toPlainOnly: true })
     @ManyToOne(() => Format, { eager: true, nullable: true })

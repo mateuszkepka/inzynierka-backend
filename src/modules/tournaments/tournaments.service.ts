@@ -120,18 +120,14 @@ export class TournamentsService {
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
-                .addSelect([
-                    `firstTeam.teamId`,
-                    `firstTeam.teamName`,
-                    `secondTeam.teamId`,
-                    `secondTeam.teamName`,
-                ])
+                .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
                 .innerJoin(`ladder.tournament`, `tournament`)
-                .innerJoinAndSelect(`ladder.standings`, `standing`)
-                .innerJoin(`standing.match`, `match`)
+                .innerJoinAndSelect(`ladder.matches`, `match`)
                 .innerJoin(`match.firstTeam`, `firstTeam`)
                 .innerJoin(`match.secondTeam`, `secondTeam`)
                 .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
+                .orderBy(`match.round`, `DESC`)
+                .addOrderBy(`match.position`, `DESC`)
                 .getMany();
         }
         if (format === TournamentFormat.DoubleEliminationLadder) {
@@ -142,18 +138,15 @@ export class TournamentsService {
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
-                .addSelect([
-                    `firstTeam.teamId`,
-                    `firstTeam.teamName`,
-                    `secondTeam.teamId`,
-                    `secondTeam.teamName`,
-                ])
+                .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
                 .innerJoin(`ladder.tournament`, `tournament`)
-                .innerJoinAndSelect(`ladder.standings`, `standing`)
-                .innerJoin(`standing.match`, `match`)
+                .innerJoinAndSelect(`ladder.matches`, `match`)
                 .innerJoin(`match.firstTeam`, `firstTeam`)
                 .innerJoin(`match.secondTeam`, `secondTeam`)
                 .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
+                .orderBy(`ladder.ladderId`)
+                .addOrderBy(`match.round`, `DESC`)
+                .addOrderBy(`match.position`, `ASC`)
                 .getMany();
         }
         if (!standings) {
@@ -501,15 +494,11 @@ export class TournamentsService {
             }
             if (user && player) {
                 if (player.user.userId !== user.userId) {
-                    exceptions.push(
-                        `Username ${member.username} and playerId ${member.playerId} mismatch`,
-                    );
+                    exceptions.push(`Username ${member.username} and playerId ${member.playerId} mismatch`);
                 }
                 const members = await this.teamsService.getMembers(team.teamId);
                 if (!members.some((member) => member.playerId === player.playerId)) {
-                    exceptions.push(
-                        `Player with id ${player.playerId} is not a member of team ${team.teamName}`,
-                    );
+                    exceptions.push(`Player with id ${player.playerId} is not a member of team ${team.teamName}`);
                 }
             }
         }
