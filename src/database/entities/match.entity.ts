@@ -37,16 +37,13 @@ export class Match {
     numberOfMaps: number;
 
     @Expose({ name: `tournamentId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.tournamentId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.tournamentId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Tournament, (tournament) => tournament.matches)
     @JoinColumn({ name: `tournamentId` })
     tournament: Tournament;

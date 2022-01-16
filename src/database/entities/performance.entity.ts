@@ -20,6 +20,14 @@ export class Performance {
     @Column()
     assists: number;
 
+    @Expose()
+    @Column()
+    creepScore: number;
+
+    @Expose()
+    @Column()
+    gold: number;
+
     @Expose({ name: `playerId` })
     @Transform(({ value }) => {
         if (value !== undefined) {

@@ -94,11 +94,10 @@ export class Tournament {
 
     @Expose({ name: `gameId` })
     @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value[0].playerId;
-        } else {
+        if (value === undefined) {
             return;
         }
+        return value.userId;
     }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
@@ -107,7 +106,7 @@ export class Tournament {
     @Expose({ name: `organizerId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value[0].playerId;
+            return value.userId;
         } else {
             return;
         }
@@ -131,7 +130,7 @@ export class Tournament {
     @Expose({ name: `formatId` })
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value[0].playerId;
+            return value.name;
         } else {
             return;
         }
