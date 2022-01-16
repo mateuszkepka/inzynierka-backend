@@ -1,12 +1,4 @@
-import {
-    BeforeInsert,
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -97,7 +89,7 @@ export class Tournament {
         if (value === undefined) {
             return;
         }
-        return value.userId;
+        return value.gameId;
     }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
