@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tournament, TournamentAdmin, User } from 'src/entities';
+import { Tournament, TournamentAdmin, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class TournamentAdminSeeder {
     constructor(
-        @InjectRepository(TournamentAdmin)
-        private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
-    ) {}
+        @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+    ) { }
 
     async seed(numberOfRows: number, tournaments: Tournament[], users: User[]) {
         const isSeeded = await this.tournamentAdminRepository.findOne();

@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { Map, Performance, Player } from 'src/entities';
+import { Map, Performance, Player } from 'src/database/entities';
 
 @Injectable()
 export class PerformancesSeeder {
     constructor(
-        @InjectRepository(Performance)
-        private readonly performancesRepository: Repository<Performance>,
-    ) {}
+        @InjectRepository(Performance) private readonly performancesRepository: Repository<Performance>,
+    ) { }
 
     async seed(numberOfRows: number, players: Player[], maps: Map[]) {
         const isSeeded = await this.performancesRepository.findOne();

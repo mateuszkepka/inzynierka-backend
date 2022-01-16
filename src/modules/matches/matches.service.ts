@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GroupStanding, Ladder, Map, Match, ParticipatingTeam, Performance, Team, Tournament, User } from 'src/entities';
+import { GroupStanding, Ladder, Map, Match, ParticipatingTeam, Performance, Team, Tournament, User } from 'src/database/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { PlayersService } from '../players/players.service';

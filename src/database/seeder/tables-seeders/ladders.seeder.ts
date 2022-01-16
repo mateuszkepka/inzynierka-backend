@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Ladder, Tournament } from 'src/entities';
+import { Ladder, Tournament } from 'src/database/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class LadderSeeder {
-    constructor(@InjectRepository(Ladder) private readonly ladderRepository: Repository<Ladder>) {}
+    constructor(
+        @InjectRepository(Ladder) private readonly ladderRepository: Repository<Ladder>
+    ) { }
 
     async seed(numberOfRows: number, tournaments: Tournament[]) {
         const isSeeded = await this.ladderRepository.findOne();

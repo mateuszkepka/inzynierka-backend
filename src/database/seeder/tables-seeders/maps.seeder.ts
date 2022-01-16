@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Map, Match } from 'src/entities';
+import { Map, Match } from 'src/database/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class MapSeeder {
-    constructor(@InjectRepository(Map) private readonly mapRepository: Repository<Map>) {}
+    constructor(
+        @InjectRepository(Map) private readonly mapRepository: Repository<Map>
+    ) { }
 
     async seed(numberOfRows: number, matches: Match[]) {
         const isSeeded = await this.mapRepository.findOne();

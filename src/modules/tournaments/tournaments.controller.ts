@@ -26,7 +26,7 @@ import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) {}
+    constructor(private readonly tournamentsService: TournamentsService) { }
 
     @Get(`/test`)
     async test() {
@@ -116,10 +116,7 @@ export class TournamentsController {
             limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(
-        @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) id: number,
-    ) {
+    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
         return this.tournamentsService.setTournamentProfile(id, image);
     }
 
@@ -135,10 +132,7 @@ export class TournamentsController {
             limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(
-        @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) id: number,
-    ) {
+    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
         return this.tournamentsService.setTournamentBackground(id, image);
     }
 
@@ -178,9 +172,7 @@ export class TournamentsController {
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
         return this.tournamentsService.changeStatus(
-            tournamentId,
-            teamId,
-            ParticipationStatus.CheckedIn,
+            tournamentId, teamId, ParticipationStatus.CheckedIn
         );
     }
 

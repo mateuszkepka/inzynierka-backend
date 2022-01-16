@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GroupStanding, Map, Match, ParticipatingTeam, Performance, Team, Tournament } from 'src/entities';
+import { GroupStanding, Map, Match, ParticipatingTeam, Performance, Team, Tournament } from 'src/database/entities';
 import { UsersModule } from '../users/users.module';
 import { PlayersModule } from '../players/players.module';
 import { TournamentsModule } from '../tournaments/tournaments.module';

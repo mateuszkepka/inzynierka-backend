@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
-import { User } from "src/entities";
+import { User } from "src/database/entities";
 import { SuspensionStatus } from "src/modules/suspensions/dto/suspension-status.enum";
 import { SuspensionsService } from "src/modules/suspensions/suspensions.service";
 import { TeamsService } from "src/modules/teams/teams.service";

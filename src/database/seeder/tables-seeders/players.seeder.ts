@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, Player, User } from 'src/entities';
+import { Game, Player, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';

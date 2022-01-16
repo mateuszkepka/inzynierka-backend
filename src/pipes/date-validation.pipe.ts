@@ -1,6 +1,6 @@
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { Tournament } from 'src/entities';
+import { Tournament } from 'src/database/entities';
 import { CreateSuspensionDto } from 'src/modules/suspensions/dto/create-suspension.dto';
 import { CreateTournamentDto } from 'src/modules/tournaments/dto/create-tournament.dto';
 

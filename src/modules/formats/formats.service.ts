@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Format } from 'src/entities';
+import { Format } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { TournamentFormat } from './dto/tournament-format.enum';
 

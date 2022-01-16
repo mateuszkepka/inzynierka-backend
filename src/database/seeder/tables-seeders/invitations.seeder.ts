@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, Team } from 'src/entities';
-import { Invitation } from 'src/entities/invitation.entity';
+import { Player, Team } from 'src/database/entities';
+import { Invitation } from 'src/database/entities/invitation.entity';
 import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
 import { getRandom, shuffle } from 'src/utils/tournaments-util';
 import { Repository } from 'typeorm';
@@ -9,9 +9,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class InvitationsSeeder {
     constructor(
-        @InjectRepository(Invitation)
-        private readonly invitationsRepository: Repository<Invitation>,
-    ) {}
+        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>
+    ) { }
 
     async seed(players: Player[], teams: Team[]) {
         const createdInvitations = [];

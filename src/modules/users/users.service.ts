@@ -5,7 +5,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match, Player, Team, Tournament, User } from 'src/entities';
+import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
@@ -20,13 +20,12 @@ import { MatchStatus } from '../matches/interfaces/match-status.enum';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-    ) {}
+    ) { }
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne({
@@ -208,7 +207,7 @@ export class UsersService {
         let tournaments = [];
         try {
             tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) {}
+        } catch (ignore) { }
         if (tournaments.length !== 0) {
             throw new ForbiddenException(
                 `You can not delete your account when you have ongoing tournaments`,
@@ -266,11 +265,9 @@ export class UsersService {
 
     async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
         const user = await this.getById(userId);
-
         const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken, {
             type: argon2.argon2id,
         });
-
         if (isRefreshTokenMatching) {
             return user;
         }

@@ -8,14 +8,14 @@ export function imageFileFilter(req, file: Express.Multer.File, callback) {
     callback(null, true);
 };
 
-export const editFileName = (req, file: Express.Multer.File, callback) => {
+export function editFileName(req, file: Express.Multer.File, callback) {
     const name = file.originalname.split('.')[0];
     const fileExtName = extname(file.originalname);
     const randomName = uuidv4();
     callback(null, `${name}-${randomName}${fileExtName}`);
 };
 
-export const editMapName = (req, file: Express.Multer.File, callback) => {
+export function editMapName(req, file: Express.Multer.File, callback) {
     const name = 'match-'.concat(req.params.matchId).concat('-').concat(Date.now().toString());
     callback(null, `${name}${extname(file.originalname)}`);
 }

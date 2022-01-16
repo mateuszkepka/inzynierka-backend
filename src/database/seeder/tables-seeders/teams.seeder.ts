@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, Team } from 'src/entities';
+import { Player, Team } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { shuffle } from 'src/utils/tournaments-util';
 
 @Injectable()
 export class TeamsSeeder {
-    constructor(@InjectRepository(Team) private readonly teamsRepository: Repository<Team>) {}
+    constructor(
+        @InjectRepository(Team) private readonly teamsRepository: Repository<Team>
+    ) { }
 
     async seed(captains: Player[]) {
         const createdTeams = [];

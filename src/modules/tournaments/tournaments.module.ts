@@ -1,18 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-    Group,
-    GroupStanding,
-    Ladder,
-    Match,
-    ParticipatingTeam,
-    Prize,
-    Team,
-    Tournament,
-    TournamentAdmin,
-    User,
-} from 'src/entities';
+import { Group, GroupStanding, Ladder, Match, ParticipatingTeam, Prize, Team, Tournament, TournamentAdmin, User } from 'src/database/entities';
 import { FormatsModule } from '../formats/formats.module';
 import { GamesModule } from '../games/games.module';
 import { PlayersModule } from '../players/players.module';
@@ -51,4 +40,4 @@ import { TournamentsService } from './tournaments.service';
     exports: [TournamentsService],
     controllers: [TournamentsController],
 })
-export class TournamentsModule {}
+export class TournamentsModule { }

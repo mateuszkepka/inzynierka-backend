@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Format } from 'src/entities';
+import { Format } from 'src/database/entities';
 import { FormatsController } from './formats.controller';
 import { FormatsService } from './formats.service';
 

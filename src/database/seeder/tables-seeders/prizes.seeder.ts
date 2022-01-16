@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Prize } from 'src/entities';
+import { Prize } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
 @Injectable()
 export class PrizesSeeder {
-    constructor(@InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>) {}
+    constructor(
+        @InjectRepository(Prize) private readonly prizesRepository: Repository<Prize>
+    ) { }
 
     async seed(numberOfRows: number) {
         const createdPrizes = [];

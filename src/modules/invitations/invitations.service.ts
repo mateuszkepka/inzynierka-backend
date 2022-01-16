@@ -5,7 +5,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Invitation, User } from 'src/entities';
+import { Invitation, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { PlayersService } from '../players/players.service';
 import { TeamsService } from '../teams/teams.service';

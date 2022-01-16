@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player, User } from 'src/entities';
+import { Player, User } from 'src/database/entities';
 import { Role } from 'src/roles/roles.enum';
 import { Connection, Repository } from 'typeorm';
 import { GamesService } from '../games/games.service';

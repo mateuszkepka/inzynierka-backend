@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/entities";
+import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/database/entities";
 import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
 import { Repository } from "typeorm";
 import { TournamentFormat } from "../formats/dto/tournament-format.enum";
@@ -10,14 +10,12 @@ import { TeamsService } from "../teams/teams.service";
 @Injectable()
 export class GroupsService {
     constructor(
-        @InjectRepository(ParticipatingTeam)
-        private readonly rostersRepository: Repository<ParticipatingTeam>,
-        @InjectRepository(GroupStanding)
-        private readonly standingsRepository: Repository<GroupStanding>,
+        @InjectRepository(ParticipatingTeam) private readonly rostersRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(GroupStanding) private readonly standingsRepository: Repository<GroupStanding>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Group) private readonly groupsRepository: Repository<Group>,
         private readonly teamsService: TeamsService,
-    ) {}
+    ) { }
 
     async drawGroups(tournament: Tournament, participatingTeams: ParticipatingTeam[]) {
         // shuffling teams array

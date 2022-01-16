@@ -1,4 +1,4 @@
-import { Tournament } from "../entities/tournament.entity";
+import { Tournament } from "../database/entities/tournament.entity";
 
 export function getRandom(weights: number[], results: number[]) {
     let num = Math.random(),

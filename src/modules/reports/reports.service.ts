@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, Report } from 'src/entities';
+import { User, Report } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateReportDto } from './dto/create-report-dto';

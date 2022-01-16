@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Suspension, User } from 'src/entities';
+import { Suspension, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';

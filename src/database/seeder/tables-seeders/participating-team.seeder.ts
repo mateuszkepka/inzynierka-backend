@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ParticipatingTeam, Player, Team, Tournament } from 'src/entities';
+import { ParticipatingTeam, Player, Team, Tournament } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
@@ -11,11 +11,10 @@ import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-
 @Injectable()
 export class ParticipatingTeamSeeder {
     constructor(
-        @InjectRepository(ParticipatingTeam)
-        private readonly rosterRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(ParticipatingTeam) private readonly rosterRepository: Repository<ParticipatingTeam>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-    ) {}
+    ) { }
 
     async seed(tournaments: Tournament[]) {
         const createdRosters = [];

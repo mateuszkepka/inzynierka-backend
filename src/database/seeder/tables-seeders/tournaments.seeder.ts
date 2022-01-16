@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, Format, Prize, Tournament, User } from 'src/entities';
+import { Game, Format, Prize, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { getRandom } from 'src/utils/tournaments-util';
@@ -11,9 +11,8 @@ import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status
 @Injectable()
 export class TournamentsSeeder {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
-    ) {}
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+    ) { }
 
     async seed(
         numberOfRows: number,

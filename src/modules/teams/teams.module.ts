@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Player, Invitation, Team, User, Match } from 'src/entities';
+import { Player, Invitation, Team, User, Match } from 'src/database/entities';
 import { PlayersModule } from '../players/players.module';
 import { UsersModule } from '../users/users.module';
 import { TeamsController } from './teams.controller';

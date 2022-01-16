@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { Suspension } from 'src/entities';
+import { Suspension } from 'src/database/entities';
 import { SuspensionsController } from './suspensions.controller';
 import { SuspensionsService } from './suspensions.service';
 import { TypeOrmModule } from '@nestjs/typeorm';

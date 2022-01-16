@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Format } from 'src/entities';
+import { Format } from 'src/database/entities';
 
 @Injectable()
 export class FormatsSeeder {
-    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) {}
+    constructor(
+        @InjectRepository(Format) private readonly formatsRepository: Repository<Format>
+    ) { }
 
     async seed() {
         const formats = [];

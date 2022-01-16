@@ -1,6 +1,5 @@
 import * as Joi from 'joi';
-import * as entities from './entities';
-
+import * as entities from './database/entities';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';

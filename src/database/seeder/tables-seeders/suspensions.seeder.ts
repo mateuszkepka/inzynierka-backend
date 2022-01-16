@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Suspension, User } from 'src/entities';
+import { Suspension, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 
 @Injectable()
 export class SuspensionsSeeder {
     constructor(
-        @InjectRepository(Suspension)
-        private readonly suspensionsRepository: Repository<Suspension>,
-    ) {}
+        @InjectRepository(Suspension) private readonly suspensionsRepository: Repository<Suspension>
+    ) { }
 
     async seed(users: User[]) {
         const createdSuspensions = [];

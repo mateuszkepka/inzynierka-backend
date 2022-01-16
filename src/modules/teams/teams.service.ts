@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Invitation, Match, Player, Team, User } from 'src/entities';
+import { Invitation, Match, Player, Team, User } from 'src/database/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
@@ -12,13 +12,12 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 export class TeamsService {
     constructor(
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
-        @InjectRepository(Invitation)
-        private readonly invitationsRepository: Repository<Invitation>,
+        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
-    ) {}
+    ) { }
 
     async getAll() {
         const teams = await this.teamsRepository.find({
@@ -113,12 +112,7 @@ export class TeamsService {
             .createQueryBuilder(`match`)
             .addSelect([`firstRoster.team`, `secondRoster.team`])
             .addSelect([`firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`])
-            .addSelect([
-                `firstTeam.teamId`,
-                `firstTeam.teamName`,
-                `secondTeam.teamId`,
-                `secondTeam.teamName`,
-            ])
+            .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
             .innerJoin(`match.firstRoster`, `firstRoster`)
             .innerJoin(`match.secondRoster`, `secondRoster`)
             .innerJoin(`firstRoster.team`, `firstTeam`)
@@ -165,8 +159,7 @@ export class TeamsService {
         return team;
     }
 
-
-    public async setTeamProfile(id, image) {
+    public async setTeamProfile(id: number, image: Express.Multer.File) {
         const team = await this.getById(id);
         if (team.profilePicture) {
             if (team.profilePicture !== `default-team-avatar.png`) {
@@ -184,7 +177,7 @@ export class TeamsService {
         return team;
     }
 
-    public async setTeamBackground(id, image) {
+    public async setTeamBackground(id: number, image: Express.Multer.File) {
         const team = await this.getById(id);
         if (team.backgroundPicture) {
             if (team.backgroundPicture !== `default-team-background.png`) {

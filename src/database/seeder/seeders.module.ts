@@ -1,6 +1,5 @@
-import * as entities from 'src/entities';
-import * as seeders from './tables-seeders';
-
+import * as entities from 'src/database/entities';
+import * as seeders from './tables-seeders'
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
