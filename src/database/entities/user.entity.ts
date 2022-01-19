@@ -6,7 +6,7 @@ import { Role } from 'src/roles/roles.enum';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { UserStatus } from 'src/modules/users/interfaces/user-status.enum';
+import { UserStatus } from 'src/modules/users/dto/user-status.enum';
 
 @Entity()
 @Unique([`university`, `studentId`])
