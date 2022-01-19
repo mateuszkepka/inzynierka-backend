@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import RequestWithUser from './interfaces/request-with-user.interface';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
-import { Public } from 'src/roles/public.decorator';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller(`auth`)
 export class AuthController {

@@ -4,7 +4,7 @@ import { Game, Player, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';
-import { Role } from 'src/roles/roles.enum';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { getRandom, shuffle } from 'src/utils/tournaments-util';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { Public } from 'src/roles/public.decorator';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/roles.enum';
+import { Public } from 'src/decorators/public.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { GamesService } from './games.service';

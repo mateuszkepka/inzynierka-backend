@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/roles.enum';
+import { Public } from 'src/decorators/public.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { editMapName, imageFileFilter } from 'src/utils/uploads-util';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateMatchDto } from './dto/update-match.dto';
@@ -14,6 +15,7 @@ export class MatchesController {
     constructor(private readonly matchesService: MatchesService) {}
 
     @Get(`/:id`)
+    @Public()
     async getById(@Param(`id`, ParseIntPipe) id: number) {
         return this.matchesService.getById(id);
     }

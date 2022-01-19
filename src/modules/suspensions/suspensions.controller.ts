@@ -1,19 +1,7 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Req,
-    UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UsePipes } from '@nestjs/common';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/roles.enum';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { CreateSuspensionDto } from './dto/create-suspension.dto';
 import { SuspensionStatus } from './dto/suspension-status.enum';
@@ -23,7 +11,7 @@ import { SuspensionsService } from './suspensions.service';
 @Controller(`suspensions`)
 @Roles(Role.Admin)
 export class SuspensionsController {
-    constructor(private readonly suspensionsService: SuspensionsService) {}
+    constructor(private readonly suspensionsService: SuspensionsService) { }
 
     @Get(`/:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {

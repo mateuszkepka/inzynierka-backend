@@ -3,7 +3,7 @@ import { User } from "src/database/entities";
 import { SuspensionStatus } from "src/modules/suspensions/dto/suspension-status.enum";
 import { SuspensionsService } from "src/modules/suspensions/suspensions.service";
 import { TeamsService } from "src/modules/teams/teams.service";
-import { Role } from "src/roles/roles.enum";
+import { Role } from "src/modules/auth/dto/roles.enum";
 
 @Injectable()
 export class MemberIsNotSuspended implements CanActivate {

@@ -1,65 +1,51 @@
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Req,
-    Res,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/roles.enum';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
-import { Public } from 'src/roles/public.decorator';
+import { Public } from 'src/decorators/public.decorator';
 import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
 
 @Controller(`teams`)
 @Roles(Role.User)
 export class TeamsController {
-    constructor(private readonly teamsService: TeamsService) {}
+    constructor(private readonly teamsService: TeamsService) { }
 
-    @Get(`/:id/players/available`)
+    @Get(`/:teamId/players/available`)
     async getAvailablePlayers(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
         @Req() { user }: RequestWithUser,
     ) {
-        return this.teamsService.getAvailablePlayers(id, user);
+        return this.teamsService.getAvailablePlayers(teamId, user);
     }
 
-    @Get(`/:id/members`)
-    async getMembers(@Param(`id`, ParseIntPipe) id: number) {
-        return this.teamsService.getMembers(id);
+    @Get(`/:teamId/members`)
+    @Public()
+    async getMembers(@Param(`teamId`, ParseIntPipe) teamId: number) {
+        return this.teamsService.getMembers(teamId);
     }
 
-    @Get(`/:id/matches`)
+    @Get(`/:teamId/matches`)
     @Roles(Role.Organizer)
     async getMatchesByTeams(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`id`, ParseIntPipe) teamId: number,
         @Query() { status }: MatchQuery,
     ) {
-        return this.teamsService.getMatchesByTeams(id, status);
+        return this.teamsService.getMatchesByTeams(teamId, status);
     }
 
-    @Get(`/:id`)
-    async get(@Param(`id`, ParseIntPipe) id: number) {
-        return this.teamsService.getById(id);
+    @Get(`/:teamId`)
+    @Public()
+    async get(@Param(`teamId`, ParseIntPipe) teamId: number) {
+        return this.teamsService.getById(teamId);
     }
-    
+
     @Get()
     async getAll() {
         return this.teamsService.getAll();
@@ -91,14 +77,14 @@ export class TeamsController {
     )
     async uploadedFile(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) id: number
+        @Param(`id`, ParseIntPipe) teamId: number
     ) {
         if (!image) {
             throw new BadRequestException(
                 `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
             );
         }
-        return this.teamsService.setTeamProfile(id, image);
+        return this.teamsService.setTeamProfile(teamId, image);
     }
 
     @Post(`:id/backgrounds`)
@@ -115,7 +101,7 @@ export class TeamsController {
     )
     async uploadedBackground(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
         if (!image) {
             throw new BadRequestException(
@@ -123,7 +109,7 @@ export class TeamsController {
             );
         }
         console.log(image)
-        return this.teamsService.setTeamBackground(id, image);
+        return this.teamsService.setTeamBackground(teamId, image);
     }
 
     @Post()

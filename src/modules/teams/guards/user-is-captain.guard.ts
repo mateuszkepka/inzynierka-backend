@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { UsersService } from "src/modules/users/users.service";
-import { Role } from "src/roles/roles.enum";
+import { Role } from "src/modules/auth/dto/roles.enum";
 import { TeamsService } from "../teams.service";
 
 @Injectable()

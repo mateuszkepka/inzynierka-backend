@@ -1,9 +1,4 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
@@ -11,7 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
-import { Role } from 'src/roles/roles.enum';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';

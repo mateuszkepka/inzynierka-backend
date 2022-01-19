@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeo
 import { Expose, Transform } from 'class-transformer';
 import { Report } from '.';
 import { Player } from './player.entity';
-import { Role } from 'src/roles/roles.enum';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { Suspension } from './suspension.entity';
 import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';

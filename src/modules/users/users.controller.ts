@@ -1,42 +1,19 @@
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Res,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-    UsePipes,
-    ValidationPipe,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/roles.enum';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
-import { Public } from 'src/roles/public.decorator';
+import { Public } from 'src/decorators/public.decorator';
 import { UserIsUserGuard } from './guards/user-is-user.guard';
 
 @Controller(`users`)
 @Roles(Role.User)
-@UsePipes(
-    new ValidationPipe({
-        whitelist: true,
-        transform: true,
-    }),
-)
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 

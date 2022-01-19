@@ -1,7 +1,7 @@
 import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { shouldBypassAuth } from 'src/roles/public.decorator';
+import { shouldBypassAuth } from 'src/decorators/public.decorator';
 
 @Injectable()
 export default class JwtAuthGuard extends AuthGuard([`strategy_local`, `strategy_jwt`]) {

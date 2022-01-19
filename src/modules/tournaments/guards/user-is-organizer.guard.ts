@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
-import { Role } from "src/roles/roles.enum";
+import { Role } from "src/modules/auth/dto/roles.enum";
 import { TournamentsService } from "../tournaments.service";
 
 @Injectable()

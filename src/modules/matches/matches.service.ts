@@ -162,7 +162,6 @@ export class MatchesService {
 
     async compareMaps(matchId: number, mapWinner: number, mapTime: string, rawPerformances: CreateStatsDto[], iterator: number) {
         const match = await this.getById(matchId);
-        console.log(matchId, mapTime, mapWinner)
         const map = await this.mapsRepository.findOne({
             mapWinner: mapWinner,
             time: mapTime,
@@ -199,10 +198,7 @@ export class MatchesService {
         match.winner = winnerId;
         const tournament = await this.tournamentsService.getById(match.tournament.tournamentId);
         const format = tournament.format.name;
-        if (
-            format === TournamentFormat.SingleRoundRobin ||
-            format === TournamentFormat.DoubleRoundRobin
-        ) {
+        if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleRoundRobin) {
             const group = await this.tournamentsService.getGroupById(match.group.groupId);
             let standings = group.standings;
             const firstRoster = standings.find(
@@ -239,14 +235,18 @@ export class MatchesService {
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
             // deciding the winner
-            let winningRoster = null;
+            let winningTeam: Team = null;
+            let winningRoster: ParticipatingTeam = null;
+
             if (match.winner === 1) {
                 winningRoster = match.firstRoster;
+                winningTeam = match.firstTeam;
             }
             if (match.winner === 2) {
                 winningRoster = match.secondRoster;
+                winningTeam = match.secondTeam;
             }
-            const ladder = match.tournament.ladders.find((ladder) => (ladder.isLosers = false));
+            const ladder = await this.tournamentsService.getLadder(tournament, false);
 
             // setting next round for the winner
             const nextRound = match.round - 1;
@@ -255,18 +255,20 @@ export class MatchesService {
                 // setting next match position
                 let nextPosition: number;
                 if (match.position % 2 === 0) {
-                    nextPosition === match.position / 2;
+                    nextPosition = match.position / 2;
                 }
                 if (match.position % 2 !== 0) {
-                    nextPosition === (match.position + 1) / 2;
+                    nextPosition = (match.position + 1) / 2;
                 }
+
                 // promoting winner to the next stage
                 const nextMatch = await this.getMatchByPosition(ladder.ladderId, nextRound, nextPosition);
-                if (nextMatch.firstRoster === null) {
-                    nextMatch.firstRoster === winningRoster;
-                }
-                if (nextMatch.secondRoster === null) {
-                    nextMatch.secondRoster === winningRoster;
+                if (nextMatch.firstTeam === null) {
+                    nextMatch.firstTeam = winningTeam;
+                    nextMatch.firstRoster = winningRoster;
+                } else if (nextMatch.secondTeam === null) {
+                    nextMatch.secondTeam = winningTeam;
+                    nextMatch.secondRoster = winningRoster;
                 }
                 await this.matchesRepository.save(nextMatch);
             }

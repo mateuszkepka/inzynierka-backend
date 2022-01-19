@@ -4,7 +4,7 @@ import { Game, Format, Prize, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import * as faker from 'faker';
 import { getRandom } from 'src/utils/tournaments-util';
-import { Role } from 'src/roles/roles.enum';
+import { Role } from 'src/modules/auth/dto/roles.enum';
 import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
 import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
 
