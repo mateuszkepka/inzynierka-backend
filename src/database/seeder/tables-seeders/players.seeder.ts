@@ -26,7 +26,7 @@ export class PlayersSeeder {
                     region = RegionsLoL.EUW;
                 }
                 const player = this.playersRepository.create({
-                    summonerName: faker.internet.userName(),
+                    summonerName: `${faker.internet.userName()}${faker.random.word()}`,
                     region: region,
                     user: users[i],
                     game: game,
