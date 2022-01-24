@@ -1,5 +1,7 @@
 import * as argon2 from 'argon2';
+
 import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
@@ -11,7 +13,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) { }
+    ) {}
 
     async register(registrationData: RegisterDto) {
         const hashedPassword = await argon2.hash(registrationData.password, {
@@ -25,16 +27,18 @@ export class AuthService {
             return createdUser;
         } catch (error) {
             const username = error.detail.search(`username`);
-            const email = error.detail.search(`email`)
+            const email = error.detail.search(`email`);
             const university = error.detail.search(`university`);
             if (username > 0) {
-                throw new BadRequestException(`This username is already taken!`)
+                throw new BadRequestException(`This username is already taken!`);
             } else if (email > 0) {
-                throw new BadRequestException(`This email is already taken!`)
+                throw new BadRequestException(`This email is already taken!`);
             } else if (university) {
-                throw new BadRequestException(`This student id on your university is already taken!`)
+                throw new BadRequestException(
+                    `This student id on your university is already taken!`,
+                );
             } else {
-                throw new BadRequestException(`Something went wrong`)
+                throw new BadRequestException(`Something went wrong`);
             }
         }
     }
@@ -55,8 +59,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_EXPIRATION_TIME`),
         });
-        // TODO: HttpOnly should be true on prod and false on dev environment
-        return `Authentication=${token}; Path=/; Max-Age=${this.configService.get<string>(
+        return `Authentication=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
             `JWT_EXPIRATION_TIME`,
         )}`;
     }
@@ -67,8 +70,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_REFRESH_TOKEN_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_REFRESH_TOKEN_EXPIRATION_TIME`),
         });
-        // TODO: HttpOnly should be true on prod and false on dev environment
-        const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get<string>(
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
             `JWT_REFRESH_TOKEN_EXPIRATION_TIME`,
         )}`;
         return { cookie, token };
@@ -76,8 +78,8 @@ export class AuthService {
 
     getCookiesForLogOut() {
         return [
-            `Authentication=; HttpOnly; Path=/; Max-Age=0`,
-            `Refresh=; HttpOnly; Path=/; Max-Age=0`,
+            `Authentication=; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=0`,
+            `Refresh=; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=0`,
         ];
     }
 

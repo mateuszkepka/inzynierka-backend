@@ -1,5 +1,7 @@
 import * as entities from '../entities';
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { Module } from '@nestjs/common';
 import { Seeder } from './seeder';
 import { SeedersModule } from './seeders.module';
@@ -16,9 +18,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    database: config.get<string>(`DB_NAME`),
-                    username: config.get<string>(`DB_USER`),
-                    password: config.get<string>(`DB_PASSWORD`),
+                    url: process.env.DATABASE_URL,
+                    // database: config.get<string>(`DB_NAME`),
+                    // username: config.get<string>(`DB_USER`),
+                    // password: config.get<string>(`DB_PASSWORD`),
                     dropSchema: true,
                     synchronize: true,
                     logging: true,
