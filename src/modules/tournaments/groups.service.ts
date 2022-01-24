@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/database/entities";
 import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
@@ -14,45 +14,36 @@ export class GroupsService {
         @InjectRepository(GroupStanding) private readonly standingsRepository: Repository<GroupStanding>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
         @InjectRepository(Group) private readonly groupsRepository: Repository<Group>,
-        private readonly teamsService: TeamsService,
     ) { }
 
-    async drawGroups(tournament: Tournament, participatingTeams: ParticipatingTeam[]) {
-        // shuffling teams array
+    async drawGroups(
+        tournament: Tournament,
+        participatingTeams: ParticipatingTeam[],
+        numberOfGames: number
+    ) {
         participatingTeams = shuffle(participatingTeams);
 
-        // creating group names for the tournament
+        const groups: Group[] = [];
         for (let i = 0; i < tournament.numberOfGroups; i++) {
-            await this.groupsRepository.save({
+            const group = await this.groupsRepository.save({
                 name: String.fromCharCode(i + 65),
                 tournament: tournament,
             });
+            groups.push(group);
         }
-        const groups = await this.getGroupsByTournament(tournament);
 
-        // assigning teams to particular groups
         for (let i = 0; i < participatingTeams.length; i++) {
             const roster = participatingTeams[i];
-            const team = await this.teamsService.getByParticipatingTeam(roster.participatingTeamId);
-            const groupNumber = i % 4;
+            const groupNumber = i % groups.length;
             await this.standingsRepository.save({
                 place: 0,
                 points: 0,
                 group: groups[groupNumber],
-                team: team,
+                team: roster.team,
                 roster: roster,
             });
         }
 
-        let numberOfGames = 0;
-        if (tournament.format.name === TournamentFormat.SingleRoundRobin) {
-            numberOfGames = 1;
-        }
-        if (tournament.format.name === TournamentFormat.DoubleRoundRobin) {
-            numberOfGames = 2;
-        }
-
-        // scheduling matches for each group
         groups.forEach(async (group) => {
             await this.makeRoundRobinPairings(tournament, group, numberOfGames);
         });
@@ -61,7 +52,7 @@ export class GroupsService {
     private async makeRoundRobinPairings(
         tournament: Tournament,
         group: Group,
-        numberOfGames: number,
+        numberOfGames: number
     ) {
         const teams = await this.getTeamsInGroup(group.groupId);
         if (teams.length % 2 == 1) {
@@ -81,12 +72,6 @@ export class GroupsService {
             for (let i = 0; i < firstHalf.length; i++) {
                 const firstRoster = teams[firstHalf[i]];
                 const secondRoster = teams[secondHalf[i]];
-                const firstTeam = await this.teamsService.getByParticipatingTeam(
-                    firstRoster.participatingTeamId,
-                );
-                const secondTeam = await this.teamsService.getByParticipatingTeam(
-                    secondRoster.participatingTeamId,
-                );
                 const match = this.matchesRepository.create({
                     matchStartDate: new Date(hour),
                     status: MatchStatus.Scheduled,
@@ -95,8 +80,8 @@ export class GroupsService {
                     group: group,
                     firstRoster: firstRoster,
                     secondRoster: secondRoster,
-                    firstTeam: firstTeam,
-                    secondTeam: secondTeam,
+                    firstTeam: firstRoster.team,
+                    secondTeam: secondRoster.team,
                     maps: [],
                 });
                 hour = setNextPhaseDate(hour, tournament);
@@ -105,16 +90,6 @@ export class GroupsService {
             indexes.push(indexes.shift());
         }
         await this.matchesRepository.save(matches);
-    }
-
-    private async getGroupsByTournament(tournament: Tournament) {
-        const groups = await this.groupsRepository.find({
-            where: { tournament: tournament },
-        });
-        if (groups.length === 0) {
-            throw new BadRequestException(`There are no groups in this tournament!`);
-        }
-        return groups;
     }
 
     private async getTeamsInGroup(groupId: number) {

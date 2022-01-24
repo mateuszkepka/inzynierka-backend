@@ -1,18 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Ladder, Match, ParticipatingTeam, Team, Tournament } from "src/database/entities";
+import { Ladder, Match, ParticipatingTeam, Tournament } from "src/database/entities";
 import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
 import { Repository } from "typeorm";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
-import { TeamsService } from "../teams/teams.service";
 
 @Injectable()
 export class BracketsService {
     constructor(
         @InjectRepository(Ladder) private readonly laddersRepository: Repository<Ladder>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-        private readonly teamsService: TeamsService,
-    ) {}
+    ) { }
 
     async generateLadder(
         tournament: Tournament,
@@ -21,16 +19,13 @@ export class BracketsService {
     ) {
         let matches: Match[] = [];
 
-        // variables to control the flow of match dates
         let upperDate: Date = new Date(tournament.tournamentStartDate);
-        const lowerDate: Date = new Date(tournament.tournamentStartDate);
+        let lowerDate: Date = new Date(tournament.tournamentStartDate);
         lowerDate.setHours(lowerDate.getHours() + tournament.numberOfMaps);
 
-        // copying participating teams into another array
         let teams: ParticipatingTeam[] = [];
         participatingTeams.forEach((team) => teams.push(Object.assign({}, team)));
 
-        // calculating the size of a bracket
         let bracketSize = 2;
         let numberOfPhases = 1;
         while (bracketSize < participatingTeams.length) {
@@ -39,22 +34,17 @@ export class BracketsService {
         }
         numberOfPhases -= 1;
 
-        // filling a bracket with bye rounds
         const numberOfByes = bracketSize - participatingTeams.length;
         for (let i = 0; i < numberOfByes; i++) {
             teams.push(null);
         }
-
-        // shuffling teams array
         teams = shuffle(teams);
 
-        // creating upper bracket
         const upperBracket = await this.laddersRepository.save({
             isLosers: false,
             tournament: tournament,
         });
 
-        // generating upper bracket matches
         let phasesIfLower = numberOfPhases;
         if (isLosers) {
             phasesIfLower += 1;
@@ -83,15 +73,13 @@ export class BracketsService {
                 upperBracket,
                 doubleEliminationRound,
                 numberOfUpperMatches,
-                upperDate,
+                upperDate
             );
             upperDate = setNextPhaseDate(upperDate, tournament);
             matches = matches.concat(upperRound);
         }
 
-        // if tournament has losing bracket
         if (isLosers) {
-            // creating lower bracket
             const lowerBracket = await this.laddersRepository.save({
                 isLosers: true,
                 tournament: tournament,
@@ -99,7 +87,6 @@ export class BracketsService {
 
             let numberOfLowerMatches = bracketSize / 2;
 
-            // generating lower bracket matches
             for (let round = numberOfPhases * 2 - 2; round > 0; round -= 2) {
                 numberOfLowerMatches = numberOfLowerMatches / 2;
                 const lowerFullRound = await this.generateRound(
@@ -109,7 +96,7 @@ export class BracketsService {
                     numberOfLowerMatches,
                     lowerDate,
                 );
-                upperDate = setNextPhaseDate(upperDate, tournament);
+                lowerDate = setNextPhaseDate(lowerDate, tournament);
                 const lowerHalfRound = await this.generateRound(
                     tournament,
                     lowerBracket,
@@ -117,11 +104,10 @@ export class BracketsService {
                     numberOfLowerMatches,
                     lowerDate,
                 );
-                upperDate = setNextPhaseDate(upperDate, tournament);
+                lowerDate = setNextPhaseDate(lowerDate, tournament);
                 matches = matches.concat(lowerFullRound, lowerHalfRound);
             }
 
-            // generating grand final
             const grandFinalMatch = this.matchesRepository.create({
                 matchStartDate: new Date(upperDate),
                 status: MatchStatus.Scheduled,
@@ -137,31 +123,18 @@ export class BracketsService {
         await this.matchesRepository.save(matches);
     }
 
-    private async generateFirstRound(
+    private generateFirstRound(
         teams: ParticipatingTeam[],
         tournament: Tournament,
         ladder: Ladder,
         round: number,
         numberOfMatches: number,
-        date: Date,
-    ): Promise<Match[]> {
+        date: Date): Match[] {
         const matches: Match[] = [];
         let position = 1;
         for (let i = 0; i < numberOfMatches; i += 2) {
-            let firstTeam: Team = null;
-            let secondTeam: Team = null;
             const firstRoster = teams[i];
             const secondRoster = teams[i + 1];
-            if (firstRoster !== null) {
-                firstTeam = await this.teamsService.getByParticipatingTeam(
-                    firstRoster.participatingTeamId,
-                );
-            }
-            if (secondRoster !== null) {
-                secondTeam = await this.teamsService.getByParticipatingTeam(
-                    secondRoster.participatingTeamId,
-                );
-            }
             const match = this.matchesRepository.create({
                 matchStartDate: new Date(date),
                 status: MatchStatus.Scheduled,
@@ -169,8 +142,8 @@ export class BracketsService {
                 tournament: tournament,
                 firstRoster: firstRoster,
                 secondRoster: secondRoster,
-                firstTeam: firstTeam,
-                secondTeam: secondTeam,
+                firstTeam: firstRoster.team,
+                secondTeam: secondRoster.team,
                 round: round,
                 position: position++,
                 ladder: ladder,
@@ -181,13 +154,13 @@ export class BracketsService {
         return matches;
     }
 
-    private async generateRound(
+    private generateRound(
         tournament: Tournament,
         ladder: Ladder,
         round: number,
         numberOfMatches: number,
         date: Date,
-    ): Promise<Match[]> {
+    ): Match[] {
         const matches: Match[] = [];
         for (let i = 0; i < numberOfMatches; i++) {
             const match = this.matchesRepository.create({

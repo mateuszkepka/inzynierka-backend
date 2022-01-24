@@ -46,14 +46,14 @@ export class TournamentsService {
     ) { }
 
     async test() {
-        const tournament = await this.getById(18);
+        const tournament = await this.getById(3);
         const participatingTeams = await this.rostersRepository
             .createQueryBuilder(`participatingTeam`)
             .where(`participatingTeam.tournamentId = :tournamentId`, { tournamentId: tournament.tournamentId })
             .limit(16)
             .getMany();
-        //this.groupsService.drawGroups(tournament, participatingTeams);
-        this.bracketsService.generateLadder(tournament, participatingTeams, true);
+        this.groupsService.drawGroups(tournament, participatingTeams, 1);
+        //this.bracketsService.generateLadder(tournament, participatingTeams, true);
     }
 
     async getById(tournamentId: number) {
@@ -159,10 +159,10 @@ export class TournamentsService {
         await this.getById(tournamentId);
         const response = this.rostersRepository
             .createQueryBuilder(`participating_team`)
-            .addSelect(`team.teamId`)
-            .addSelect(`team.teamName`)
+            // .addSelect(`team.teamId`)
+            // .addSelect(`team.teamName`)
             .innerJoin(`participating_team.tournament`, `tournament`)
-            .innerJoin(`participating_team.team`, `team`)
+            .innerJoinAndSelect(`participating_team.team`, `team`)
             .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId });
         if (status) {
             response.andWhere(`participating_team.status = :status`, { status });
@@ -512,11 +512,15 @@ export class TournamentsService {
         const { tournamentId } = tournament;
         const jobName = `tournament${tournament.tournamentId}`;
         const job = new CronJob(tournament.checkInCloseDate, async () => {
-            const teams = await this.getTeamsByTournament(tournamentId, undefined);
+            const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.CheckedIn);
             const format = tournament.format.name;
-            if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleRoundRobin) {
+            if (format === TournamentFormat.SingleRoundRobin) {
                 console.log(`Group draw scheduled at ${tournament.checkInCloseDate}`);
-                await this.groupsService.drawGroups(tournament, teams);
+                await this.groupsService.drawGroups(tournament, teams, 1);
+            }
+            if (format === TournamentFormat.DoubleRoundRobin) {
+                console.log(`Group draw scheduled at ${tournament.checkInCloseDate}`);
+                await this.groupsService.drawGroups(tournament, teams, 2);
             }
             if (format === TournamentFormat.SingleEliminationLadder) {
                 console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`);

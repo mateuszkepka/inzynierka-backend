@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
@@ -7,11 +7,6 @@ import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Entity()
 export class Team {
-    @BeforeInsert()
-    setCreationDate() {
-        this.creationDate = new Date();
-    }
-
     @Expose()
     @PrimaryGeneratedColumn()
     teamId: number;
@@ -21,15 +16,13 @@ export class Team {
     teamName: string;
 
     @Expose()
-    @Column()
+    @CreateDateColumn()
     creationDate: Date;
 
     @Expose()
     @Column({
         type: `enum`,
         enum: RegionsLoL,
-        default: null,
-        nullable: true,
     })
     region: RegionsLoL;
 

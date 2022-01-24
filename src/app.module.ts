@@ -21,6 +21,7 @@ import { FormatsModule } from './modules/formats/formats.module';
 
 @Module({
     imports: [
+        ScheduleModule.forRoot(),
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: `.env`,
@@ -34,18 +35,16 @@ import { FormatsModule } from './modules/formats/formats.module';
                 JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
             }),
         }),
-        ScheduleModule.forRoot(),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    // URL is needed for docker purposes
-                    // url: process.env.DATABASE_URL,
+                    url: process.env.DATABASE_URL,
                     database: config.get<string>(`DB_NAME`),
                     username: config.get<string>(`DB_USER`),
                     password: config.get<string>(`DB_PASSWORD`),
-                    synchronize: true,
+                    synchronize: false,
                     logging: false,
                     entities: [
                         entities.Game,
@@ -100,4 +99,4 @@ import { FormatsModule } from './modules/formats/formats.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule { }

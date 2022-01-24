@@ -30,7 +30,8 @@ export function setNextPhaseDate(date: Date, tournament: Tournament): Date {
     endDate.setHours(tournament.endingHour);
     endDate.setMinutes(tournament.endingMinutes);
     let newDay = false;
-    if (((date > endDate || date.getTime() === endDate.getTime()) && date.getDate() === endDate.getDate()) || (date < startDate)) {
+    if (((date > endDate || date.getTime() === endDate.getTime()) &&
+        date.getDate() === endDate.getDate()) || (date < startDate)) {
         newDay = true;
         startDate.setDate(date.getDate());
         startDate.setDate(startDate.getDate() + 1);

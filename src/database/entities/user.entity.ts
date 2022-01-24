@@ -39,7 +39,11 @@ export class User {
     studentId: string;
 
     @Expose()
-    @Column(`text`, { array: true, default: [`user`], nullable: true })
+    @Column({
+        type: `text`,
+        array: true,
+        default: [`user`],
+    })
     roles: Role[];
 
     @Column({

@@ -78,22 +78,23 @@ export class TeamsService {
         const players = await this.playersRepository
             .createQueryBuilder(`player`)
             .innerJoin(`player.user`, `user`)
-            .innerJoin(`player.teams`, `invitation`)
-            .innerJoin(`invitation.team`, `team`)
+            .leftJoin(`player.teams`, `invitation`)
+            .leftJoin(`invitation.team`, `team`)
             .where(`user.userId != :userId`, { userId: user.userId })
             .andWhere((qb) => {
                 const subQuery = qb
                     .subQuery()
                     .select(`player.playerId`)
                     .from(Player, `player`)
-                    .innerJoin(`player.teams`, `invitation`)
-                    .innerJoin(`invitation.team`, `team`)
+                    .leftJoin(`player.teams`, `invitation`)
+                    .leftJoin(`invitation.team`, `team`)
                     .where(`team.teamId = :teamId`, { teamId: team.teamId })
                     .andWhere(
                         new Brackets((qb) => {
                             qb.where(`invitation.status = :s1`, {
-                                s1: InvitationStatus.Accepted,
-                            }).orWhere(`invitation.status = :s2`, { s2: InvitationStatus.Pending });
+                                s1: InvitationStatus.Accepted
+                            }).orWhere(`invitation.status = :s2`,
+                                { s2: InvitationStatus.Pending });
                         }),
                     )
                     .getQuery();

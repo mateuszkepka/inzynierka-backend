@@ -73,7 +73,7 @@ export class UsersController {
         return this.usersService.setProfileImage(id, image);
     }
 
-    @Post(`:id/backgrounds`)
+    @Post(`:userId/backgrounds`)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
@@ -84,11 +84,11 @@ export class UsersController {
             limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
-        if (!image) {
-            throw new BadRequestException(`invalid file provided, allowed formats jpg/png/jpng!`);
-        }
-        return this.usersService.setProfileBackground(id, image);
+    async uploadedBackground(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`userId`, ParseIntPipe) userId: number
+    ) {
+        return this.usersService.setProfileBackground(userId, image);
     }
 
     @Post(`/:id/roles/grant`)

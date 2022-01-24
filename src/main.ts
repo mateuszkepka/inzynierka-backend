@@ -11,7 +11,9 @@ async function bootstrap() {
     });
     app.use(cookieParser());
     app.useGlobalInterceptors(
-        new ClassSerializerInterceptor(app.get(Reflector), { strategy: `excludeAll` })
+        new ClassSerializerInterceptor(
+            app.get(Reflector),
+            { strategy: `excludeAll` })
     );
     await app.listen(3000);
 }
