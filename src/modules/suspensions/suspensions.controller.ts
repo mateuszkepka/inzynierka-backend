@@ -13,9 +13,9 @@ import { SuspensionsService } from './suspensions.service';
 export class SuspensionsController {
     constructor(private readonly suspensionsService: SuspensionsService) { }
 
-    @Get(`/:id`)
-    async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.suspensionsService.getById(id);
+    @Get(`/:suspensionId`)
+    async getById(@Param(`suspensionId`, ParseIntPipe) suspensionId: number) {
+        return await this.suspensionsService.getById(suspensionId);
     }
 
     @Get()
@@ -29,14 +29,14 @@ export class SuspensionsController {
         return await this.suspensionsService.create(body, user);
     }
 
-    @Patch(`/:id`)
+    @Patch(`/:suspensionId`)
     @UsePipes(DateValidationPipe)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateSuspensionDto) {
-        return await this.suspensionsService.update(id, body);
+    async update(@Param(`suspensionId`, ParseIntPipe) suspensionId: number, @Body() body: UpdateSuspensionDto) {
+        return await this.suspensionsService.update(suspensionId, body);
     }
 
-    @Delete(`/:id`)
-    async remove(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.suspensionsService.remove(id);
+    @Delete(`/:suspensionId`)
+    async remove(@Param(`suspensionId`, ParseIntPipe) suspensionId: number) {
+        return await this.suspensionsService.remove(suspensionId);
     }
 }

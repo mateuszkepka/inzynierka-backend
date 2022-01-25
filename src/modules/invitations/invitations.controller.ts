@@ -14,9 +14,9 @@ import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 export class InvitationsController {
     constructor(private readonly invitationsService: InvitationsService) { }
 
-    @Get(`/:id`)
-    async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return this.invitationsService.getById(id);
+    @Get(`/:invitationId`)
+    async getById(@Param(`invitationId`, ParseIntPipe) invitationId: number) {
+        return this.invitationsService.getById(invitationId);
     }
 
     @Get()
@@ -30,14 +30,15 @@ export class InvitationsController {
         return this.invitationsService.create(createInvitationDto);
     }
 
-    @Patch(`/:id`)
+    @Patch(`/:invitationId`)
     @UseGuards(UserIsInvitedGuard)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateInvitationDto) {
-        return this.invitationsService.update(id, body);
+    async update(@Param(`invitationId`, ParseIntPipe) invitationId: number, @Body() body: UpdateInvitationDto) {
+        return this.invitationsService.update(invitationId, body);
     }
 
-    @Delete(`/:id`)
-    async remove(@Param(`id`, ParseIntPipe) id: number, @Req() { user }: RequestWithUser) {
-        return this.invitationsService.remove(id, user);
+    @Delete(`/:invitationId`)
+    @UseGuards(UserIsCaptainGuard)
+    async remove(@Param(`invitationId`, ParseIntPipe) invitationId: number, @Req() { user }: RequestWithUser) {
+        return this.invitationsService.remove(invitationId, user);
     }
 }

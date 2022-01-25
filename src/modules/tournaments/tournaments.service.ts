@@ -134,7 +134,6 @@ export class TournamentsService {
             // if (new Date() < tournament.checkInCloseDate) {
             //     throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
             // }
-            // TODO
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
@@ -446,8 +445,7 @@ export class TournamentsService {
         if (tournament.profilePicture) {
             if (tournament.profilePicture !== `default-tournament-avatar.png`) {
                 const fs = require(`fs`);
-                const path =
-                    `./uploads/tournaments/avatars/` + tournament.profilePicture;
+                const path = `./uploads/tournaments/avatars/` + tournament.profilePicture;
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {
@@ -465,9 +463,7 @@ export class TournamentsService {
         if (tournament.backgroundPicture) {
             if (tournament.backgroundPicture !== `default-tournament-background.png`) {
                 const fs = require(`fs`);
-                const path =
-                    `./uploads/tournaments/backgrounds/` +
-                    tournament.backgroundPicture;
+                const path = `./uploads/tournaments/backgrounds/` + tournament.backgroundPicture;
                 try {
                     fs.unlinkSync(path);
                 } catch (err) {

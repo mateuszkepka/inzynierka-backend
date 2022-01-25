@@ -29,11 +29,6 @@ import { TournamentIsNotOngoing } from './guards/tournament-is-not-ongoing.guard
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
-    @Get(`/test`)
-    async test() {
-        return this.tournamentsService.test();
-    }
-
     @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer)
     async getAvailableAdmins(
@@ -116,7 +111,7 @@ export class TournamentsController {
             limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+    async uploadFile(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
         return this.tournamentsService.setTournamentProfile(tournamentId, image);
     }
 
@@ -132,7 +127,7 @@ export class TournamentsController {
             limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
+    async uploadBackground(@UploadedFile() image: Express.Multer.File, @Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
         return this.tournamentsService.setTournamentBackground(tournamentId, image);
     }
 
@@ -215,13 +210,13 @@ export class TournamentsController {
         return this.tournamentsService.remove(tournamentId);
     }
 
-    @Delete(`/:tournamentId/admins/:adminId`)
+    @Delete(`/:tournamentId/admins/:userId`)
     @Roles(Role.Organizer)
     @UseGuards(UserIsOrganizer)
     async removeAdmin(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
-        @Param(`adminId`, ParseIntPipe) adminId: number
+        @Param(`userId`, ParseIntPipe) userId: number
     ) {
-        return this.tournamentsService.removeAdmin(tournamentId, adminId);
+        return this.tournamentsService.removeAdmin(tournamentId, userId);
     }
 }

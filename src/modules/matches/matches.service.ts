@@ -168,7 +168,6 @@ export class MatchesService {
             match: match
         })
         for (const raw of rawPerformances) {
-            // TODO error handling
             const player = await this.playersService.getByNickname(raw.summonerName);
             const performance = await this.performancesRepository.findOne({
                 kills: raw.kills,

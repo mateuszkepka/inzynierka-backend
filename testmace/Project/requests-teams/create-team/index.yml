@@ -14,8 +14,8 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "teamName": "KlanikNaaLanik",
-        "playerId": 2
+        "name": "KlanikNaaLanikv2",
+        "playerId": 1264
       }
     xmlBody: ''
     textBody: ''

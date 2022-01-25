@@ -12,10 +12,10 @@ import { Public } from 'src/decorators/public.decorator';
 export class PlayersController {
     constructor(private readonly playersService: PlayersService) { }
 
-    @Get(`/:id`)
+    @Get(`/:playerId`)
     @Public()
-    async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.playersService.getById(id);
+    async getById(@Param(`playerId`, ParseIntPipe) playerId: number) {
+        return await this.playersService.getById(playerId);
     }
 
     @Get()
@@ -28,13 +28,13 @@ export class PlayersController {
         return this.playersService.create(body, user);
     }
 
-    @Patch(`/:id`)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdatePlayerDto) {
-        return await this.playersService.update(id, body);
+    @Patch(`/:playerId`)
+    async update(@Param(`playerId`, ParseIntPipe) playerId: number, @Body() body: UpdatePlayerDto) {
+        return await this.playersService.update(playerId, body);
     }
 
-    @Delete(`/:id`)
-    async remove(@Param(`id`, ParseIntPipe) id: number) {
-        return await this.playersService.remove(id);
+    @Delete(`/:playerId`)
+    async remove(@Param(`playerId`, ParseIntPipe) playerId: number) {
+        return await this.playersService.remove(playerId);
     }
 }

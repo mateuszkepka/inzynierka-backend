@@ -11,6 +11,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import { Public } from 'src/decorators/public.decorator';
 import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
+import { UserIsAccountOwner } from '../players/guard/user-is-account-owner.guard';
 
 @Controller(`teams`)
 @Roles(Role.User)
@@ -63,7 +64,7 @@ export class TeamsController {
         return res.sendFile(image, { root: `./uploads/teams/backgrounds` });
     }
 
-    @Post(`:id/avatars`)
+    @Post(`:teamId/avatars`)
     @UseGuards(UserIsCaptainGuard)
     @UseInterceptors(
         FileInterceptor(`image`, {
@@ -75,19 +76,14 @@ export class TeamsController {
             limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(
+    async uploadAvatar(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) teamId: number
+        @Param(`teamId`, ParseIntPipe) teamId: number
     ) {
-        if (!image) {
-            throw new BadRequestException(
-                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
-            );
-        }
         return this.teamsService.setTeamProfile(teamId, image);
     }
 
-    @Post(`:id/backgrounds`)
+    @Post(`:teamId/backgrounds`)
     @UseGuards(UserIsCaptainGuard)
     @UseInterceptors(
         FileInterceptor(`image`, {
@@ -99,21 +95,16 @@ export class TeamsController {
             limits: { fileSize: 4000000 },
         }),
     )
-    async uploadedBackground(
+    async uploadBackground(
         @UploadedFile() image: Express.Multer.File,
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
-        if (!image) {
-            throw new BadRequestException(
-                `invalid file provided, allowed formats jpg/png/jpng and max size 4mb`,
-            );
-        }
-        console.log(image)
         return this.teamsService.setTeamBackground(teamId, image);
     }
 
     @Post()
     @Roles(Role.Player)
+    @UseGuards(UserIsAccountOwner)
     async create(@Body() teamData: CreateTeamDto) {
         return this.teamsService.create(teamData);
     }
@@ -121,14 +112,14 @@ export class TeamsController {
     @Patch(`/:teamId`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async update(@Param(`teamId`, ParseIntPipe) id: number, @Body() body: UpdateTeamDto) {
-        return this.teamsService.update(id, body);
+    async update(@Param(`teamId`, ParseIntPipe) teamId: number, @Body() body: UpdateTeamDto) {
+        return this.teamsService.update(teamId, body);
     }
 
     @Delete(`/:teamId`)
     @Roles(Role.Player)
     @UseGuards(UserIsCaptainGuard)
-    async remove(@Param(`teamId`, ParseIntPipe) id: number) {
-        return this.teamsService.remove(id);
+    async remove(@Param(`teamId`, ParseIntPipe) teamId: number) {
+        return this.teamsService.remove(teamId);
     }
 }

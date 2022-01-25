@@ -40,15 +40,14 @@ import { UsersModule } from './modules/users/users.module';
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    // URL is needed for docker purposes
-                    ssl: {
-                        rejectUnauthorized: false,
-                    },
-                    url: process.env.DATABASE_URL,
-                    // database: config.get<string>(`DB_NAME`),
-                    // username: config.get<string>(`DB_USER`),
-                    // password: config.get<string>(`DB_PASSWORD`),
-                    synchronize: true,
+                    // ssl: {
+                    //     rejectUnauthorized: false,
+                    // },
+                    // url: process.env.DATABASE_URL,
+                    database: config.get<string>(`DB_NAME`),
+                    username: config.get<string>(`DB_USER`),
+                    password: config.get<string>(`DB_PASSWORD`),
+                    synchronize: false,
                     logging: false,
                     entities: [
                         entities.Game,

@@ -15,11 +15,7 @@ requestData:
     jsonBody: ''
     xmlBody: ''
     textBody: ''
-    formData:
-      - isChecked: true
-        value: 'D:\Obrazy\Avatary\taco.png'
-        name: image
-        type: File
+    formData: []
     file: ''
     formURLEncoded: []
   strictSSL: Inherit
