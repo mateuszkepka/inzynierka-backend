@@ -39,6 +39,6 @@ COPY --from=development /inzynierka/backend/src/app/ .
 EXPOSE 3000
 
 RUN npm run clean
-RUN sh setup.sh
+CMD ["sh", "setup.sh"]
 # CMD ["npm", "run", "seed"]
 CMD ["npm", "run", "start:prod"]

@@ -1,4 +1,6 @@
-import * as argon2 from 'argon2';
+// import * as argon2 from 'argon2';
+
+import * as bcrypt from 'bcrypt';
 
 import { BadRequestException, Injectable } from '@nestjs/common';
 
@@ -16,9 +18,11 @@ export class AuthService {
     ) {}
 
     async register(registrationData: RegisterDto) {
-        const hashedPassword = await argon2.hash(registrationData.password, {
-            type: argon2.argon2id,
-        });
+        // const hashedPassword = await argon2.hash(registrationData.password, {
+        //     type: argon2.argon2id,
+        // });
+
+        const hashedPassword = await bcrypt.hash(registrationData.password, 10);
         try {
             const createdUser = await this.usersService.create({
                 ...registrationData,
@@ -84,9 +88,11 @@ export class AuthService {
     }
 
     private async verifyPassword(hashedPassword: string, plainTextPassword: string) {
-        const isPasswordMatching = await argon2.verify(hashedPassword, plainTextPassword, {
-            type: argon2.argon2id,
-        });
+        // const isPasswordMatching = await argon2.verify(hashedPassword, plainTextPassword, {
+        //     type: argon2.argon2id,
+        // });
+
+        const isPasswordMatching = await bcrypt.compare(plainTextPassword, hashedPassword);
         if (!isPasswordMatching) {
             throw new BadRequestException(`Wrong credentials provided`);
         }

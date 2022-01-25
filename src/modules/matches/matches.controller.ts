@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Req,
+    UploadedFiles,
+    UseInterceptors,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Public } from 'src/decorators/public.decorator';
@@ -24,7 +35,7 @@ export class MatchesController {
     async testResults(
         @UploadedFiles() results: Array<Express.Multer.File>,
         @Param(`matchId`, ParseIntPipe) matchId: number,
-        @Req() { user }: RequestWithUser
+        @Req() { user }: RequestWithUser,
     ) {
         return this.matchesService.parseResults(matchId, results, user);
     }
@@ -43,7 +54,7 @@ export class MatchesController {
     async sendResults(
         @UploadedFiles() results: Array<Express.Multer.File>,
         @Param(`matchId`, ParseIntPipe) matchId: number,
-        @Req() { user }: RequestWithUser
+        @Req() { user }: RequestWithUser,
     ) {
         return this.matchesService.resolveMatch(matchId, results, user);
     }

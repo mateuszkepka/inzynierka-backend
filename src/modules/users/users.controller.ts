@@ -1,4 +1,18 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Res,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -15,7 +29,12 @@ import { UserIsUserGuard } from './guards/user-is-user.guard';
 @Controller(`users`)
 @Roles(Role.User)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
+
+    @Get()
+    async getAllUsers() {
+        return this.usersService.getAll();
+    }
 
     @Get(`/:id/accounts`)
     async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
@@ -68,8 +87,10 @@ export class UsersController {
             limits: { fileSize: 2000000 },
         }),
     )
-    async uploadedFile(@UploadedFile() image: Express.Multer.File, @Param(`id`, ParseIntPipe) id: number) {
-        console.log(image)
+    async uploadedFile(
+        @UploadedFile() image: Express.Multer.File,
+        @Param(`id`, ParseIntPipe) id: number,
+    ) {
         return this.usersService.setProfileImage(id, image);
     }
 
@@ -86,7 +107,7 @@ export class UsersController {
     )
     async uploadedBackground(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`userId`, ParseIntPipe) userId: number
+        @Param(`userId`, ParseIntPipe) userId: number,
     ) {
         return this.usersService.setProfileBackground(userId, image);
     }
