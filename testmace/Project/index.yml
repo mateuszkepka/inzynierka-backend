@@ -20,11 +20,11 @@ children:
   - tests
 cookies:
   - >-
-    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0Mjc4OTEzNCwiZXhwIjoxNjQyODg5MTM0fQ.Q5F2B_vHay7Uj_NLlPU4piAfb8ijv9YodbfjrwWAWDE;
-    Expires=Infinity; Domain=localhost; Path=/;
+    Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMDcsImlhdCI6MTY0MzE0MTk5NywiZXhwIjoxNjQzMjQxOTk3fQ.X3w2kRIECz9ZqCUUmkY2FpyAWi6iqk6JPhqP_e1vliI;
+    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
   - >-
-    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY0Mjc4OTEzNCwiZXhwIjoxNjQzNzg5MTM0fQ.3m2fZcZoxahQLc3Cn1ZkhAPhc0y0kUtcjcF3QuPOdsY;
-    Expires=Infinity; Domain=localhost; Path=/;
+    Refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMDcsImlhdCI6MTY0MzE0MTk5NywiZXhwIjoxNjQ0MTQxOTk3fQ.G_bSP7hztpzshXLGw9CC4LEuJzfHu5t_Z0xOH-vrCBc;
+    Expires=Infinity; Domain=localhost; Path=/; HttpOnly;
 variablesArray: []
 authData:
   type: inherit

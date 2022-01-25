@@ -24,11 +24,10 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(registrationData.password, 10);
         try {
-            const createdUser = await this.usersService.create({
+            return await this.usersService.create({
                 ...registrationData,
                 password: hashedPassword,
             });
-            return createdUser;
         } catch (error) {
             const username = error.detail.search(`username`);
             const email = error.detail.search(`email`);
@@ -63,7 +62,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_EXPIRATION_TIME`),
         });
-        return `Authentication=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_EXPIRATION_TIME`,
         )}`;
     }
@@ -74,7 +73,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_REFRESH_TOKEN_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_REFRESH_TOKEN_EXPIRATION_TIME`),
         });
-        const cookie = `Refresh=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_REFRESH_TOKEN_EXPIRATION_TIME`,
         )}`;
         return { cookie, token };
@@ -82,8 +81,8 @@ export class AuthService {
 
     getCookiesForLogOut() {
         return [
-            `Authentication=; HttpOnly; SameSite=None; Secure; Path=/; Max-Age=0`,
-            `Refresh=; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=0`,
+            `Authentication=; HttpOnly; Path=/; Max-Age=0`,
+            `Refresh=; HttpOnly; Path=/; Max-Age=0`,
         ];
     }
 

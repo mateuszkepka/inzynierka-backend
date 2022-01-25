@@ -10,11 +10,10 @@ import {
     TournamentsSeeder,
     ParticipatingTeamSeeder,
     MatchesSeeder,
+    TournamentAdminSeeder,
     // LadderSeeder,
     // LadderStandingSeeder,
-    // MapSeeder,
-    // PerformancesSeeder,
-    // TournamentAdminSeeder,
+    // MapSeeder,PerformancesSeeder,
 } from './tables-seeders';
 import { Injectable } from '@nestjs/common';
 
@@ -32,8 +31,8 @@ export class Seeder {
         private readonly tournamentsSeeder: TournamentsSeeder,
         private readonly rosterSeeder: ParticipatingTeamSeeder,
         private readonly matchesSeeder: MatchesSeeder,
+        private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         // private readonly performancesSeeder: PerformancesSeeder,
-        // private readonly tournamentAdminSeeder: TournamentAdminSeeder,
         // private readonly mapSeeder: MapSeeder,
         // private readonly ladderStandingSeeder: LadderStandingSeeder,
         // private readonly ladderSeeder: LadderSeeder,

@@ -119,8 +119,8 @@ export class InvitationsService {
                 throw new BadRequestException(`The player is not a team member`);
             }
             // A CAPTAIN CANNOT KICK HIMSELF
-            if (playerOnInvitation) {
-                throw new ForbiddenException(`You can not kick a team's captain`);
+            if (accounts.some((account) => account.playerId === playerOnInvitation.playerId)) {
+                throw new ForbiddenException(`You can not kick yourself from the team`);
             }
             // THE CAPTAIN KICKS A TEAM MEMBER
             return this.invitationsRepository.remove(invitation);

@@ -7,27 +7,16 @@ import { Repository } from 'typeorm';
 export class TournamentAdminSeeder {
     constructor(
         @InjectRepository(TournamentAdmin) private readonly tournamentAdminRepository: Repository<TournamentAdmin>,
+        @InjectRepository(User) private readonly usersRepository: Repository<User>
     ) { }
 
-    async seed(numberOfRows: number, tournaments: Tournament[], users: User[]) {
-        const isSeeded = await this.tournamentAdminRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"TournamentAdmin" table seems to be seeded...`);
-            return;
-        }
-
-        console.log(`Seeding "TournamentAdmin" table...`);
+    async seed(numberOfRows: number, tournaments: Tournament[]) {
         const createdTournamentAdmins = [];
-
+        //const organizers = 
         for (let i = 0; i < numberOfRows; ++i) {
             const tournamentAdmin: Partial<TournamentAdmin> = {
                 tournament: tournaments[i],
-                user: users[i],
-                //isAccepted: true,
             };
-
             const newTournamentAdmin = await this.tournamentAdminRepository.create(tournamentAdmin);
             createdTournamentAdmins.push(newTournamentAdmin);
             await this.tournamentAdminRepository.save(newTournamentAdmin);

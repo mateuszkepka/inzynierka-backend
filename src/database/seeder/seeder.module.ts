@@ -1,7 +1,5 @@
 import * as entities from '../entities';
-
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { Module } from '@nestjs/common';
 import { Seeder } from './seeder';
 import { SeedersModule } from './seeders.module';

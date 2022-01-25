@@ -65,7 +65,7 @@ export class UsersService {
         await this.getById(userId);
         const accounts = await this.playersRepository
             .createQueryBuilder(`player`)
-            .innerJoin(`player.user`, `user`)
+            .innerJoinAndSelect(`player.user`, `user`)
             .innerJoinAndSelect(`player.game`, `game`)
             .where(`user.userId = :userId`, { userId: userId })
             .getMany();

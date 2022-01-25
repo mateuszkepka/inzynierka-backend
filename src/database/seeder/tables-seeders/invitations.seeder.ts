@@ -16,9 +16,7 @@ export class InvitationsSeeder {
         const createdInvitations = [];
         let numberOfSeeded = 0;
         players = shuffle(players);
-        for (let i = 0; i < teams.length; i++) {
-            const captain = teams[i].captain;
-            const team = teams.find((team) => team.captain === captain);
+        for (let team of teams) {
             const index = teams.indexOf(team);
             teams.splice(index, 1);
             const numberOfPlayers = getRandom(
@@ -32,7 +30,7 @@ export class InvitationsSeeder {
                 if (players[j]) {
                     const invitation = this.invitationsRepository.create({
                         player: players[j],
-                        team: teams[i],
+                        team: team,
                         status: InvitationStatus.Accepted,
                     });
                     createdInvitations.push(invitation);

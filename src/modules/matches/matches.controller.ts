@@ -25,10 +25,10 @@ import { MatchesService } from './matches.service';
 export class MatchesController {
     constructor(private readonly matchesService: MatchesService) {}
 
-    @Get(`/:id`)
+    @Get(`/:matchId`)
     @Public()
-    async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return this.matchesService.getById(id);
+    async getById(@Param(`matchId`, ParseIntPipe) matchId: number) {
+        return this.matchesService.getById(matchId);
     }
 
     @Post(`/:matchId/results/:winnerId`)
@@ -59,8 +59,8 @@ export class MatchesController {
         return this.matchesService.resolveMatch(matchId, results, user);
     }
 
-    @Patch(`/:id`)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateMatchDto) {
-        return this.matchesService.update(id, body);
+    @Patch(`/:matchId`)
+    async update(@Param(`matchId`, ParseIntPipe) matchId: number, @Body() body: UpdateMatchDto) {
+        return this.matchesService.update(matchId, body);
     }
 }

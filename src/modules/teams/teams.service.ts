@@ -81,6 +81,7 @@ export class TeamsService {
             .leftJoin(`player.teams`, `invitation`)
             .leftJoin(`invitation.team`, `team`)
             .where(`user.userId != :userId`, { userId: user.userId })
+            .andWhere(`player.region = :region`, { region: team.region })
             .andWhere((qb) => {
                 const subQuery = qb
                     .subQuery()
@@ -147,7 +148,6 @@ export class TeamsService {
             await manager.save(team);
             const insertedTeam = await manager.findOne(Team, {
                 teamName: team.teamName,
-                creationDate: team.creationDate,
                 captain: team.captain,
             });
             const invitation = this.invitationsRepository.create({

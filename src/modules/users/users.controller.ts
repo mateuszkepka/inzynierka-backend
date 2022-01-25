@@ -36,32 +36,35 @@ export class UsersController {
         return this.usersService.getAll();
     }
 
-    @Get(`/:id/accounts`)
-    async getAccounts(@Param(`id`, ParseIntPipe) id: number) {
-        return this.usersService.getAccounts(id);
+    @Get(`/:userId/accounts`)
+    async getAccounts(@Param(`userId`, ParseIntPipe) userId: number) {
+        return this.usersService.getAccounts(userId);
     }
 
-    @Get(`/:id/tournaments`)
+    @Get(`/:userId/tournaments`)
     async getTournaments(
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`userId`, ParseIntPipe) userId: number,
         @Query() queryParams: GetUsersTournamentsQuery,
     ) {
-        return this.usersService.getTournamentsByUser(id, queryParams);
+        return this.usersService.getTournamentsByUser(userId, queryParams);
     }
 
-    @Get(`/:id/matches`)
-    async getMatches(@Param(`id`, ParseIntPipe) id: number, @Query() { status }: MatchQuery) {
-        return this.usersService.getMatchesByUser(id, status);
+    @Get(`/:userId/matches`)
+    async getMatches(
+        @Param(`userId`, ParseIntPipe) userId: number,
+        @Query() { status }: MatchQuery,
+    ) {
+        return this.usersService.getMatchesByUser(userId, status);
     }
 
-    @Get(`/:id/teams`)
-    async getTeams(@Param(`id`, ParseIntPipe) id: number) {
-        return this.usersService.getTeamsByUser(id);
+    @Get(`/:userId/teams`)
+    async getTeams(@Param(`userId`, ParseIntPipe) userId: number) {
+        return this.usersService.getTeamsByUser(userId);
     }
 
-    @Get(`/:id`)
-    async getById(@Param(`id`, ParseIntPipe) id: number) {
-        return this.usersService.getById(id);
+    @Get(`/:userId`)
+    async getById(@Param(`userId`, ParseIntPipe) userId: number) {
+        return this.usersService.getById(userId);
     }
 
     @Get(`avatars/:imgpath`)
@@ -76,7 +79,8 @@ export class UsersController {
         return res.sendFile(image, { root: `./uploads/users/backgrounds` });
     }
 
-    @Post(`:id/avatars`)
+    @Post(`:userId/avatars`)
+    @Public()
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
@@ -89,12 +93,13 @@ export class UsersController {
     )
     async uploadedFile(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`id`, ParseIntPipe) id: number,
+        @Param(`userId`, ParseIntPipe) userId: number,
     ) {
-        return this.usersService.setProfileImage(id, image);
+        return this.usersService.setProfileImage(userId, image);
     }
 
     @Post(`:userId/backgrounds`)
+    @Public()
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
@@ -112,27 +117,27 @@ export class UsersController {
         return this.usersService.setProfileBackground(userId, image);
     }
 
-    @Post(`/:id/roles/grant`)
+    @Post(`/:userId/roles/grant`)
     @Roles(Role.Admin)
-    async grantRole(@Param(`id`, ParseIntPipe) id: number, @Body() body: RolesDto) {
-        return this.usersService.grantRole(id, body);
+    async grantRole(@Param(`userId`, ParseIntPipe) userId: number, @Body() body: RolesDto) {
+        return this.usersService.grantRole(userId, body);
     }
 
-    @Patch(`/:id`)
+    @Patch(`/:userId`)
     @UseGuards(UserIsUserGuard)
-    async update(@Param(`id`, ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
-        return this.usersService.update(id, body);
+    async update(@Param(`userId`, ParseIntPipe) userId: number, @Body() body: UpdateUserDto) {
+        return this.usersService.update(userId, body);
     }
 
-    @Delete(`/:id`)
+    @Delete(`/:userId`)
     @UseGuards(UserIsUserGuard)
-    async remove(@Param(`id`, ParseIntPipe) id: number) {
-        return this.usersService.remove(id);
+    async remove(@Param(`userId`, ParseIntPipe) userId: number) {
+        return this.usersService.remove(userId);
     }
 
-    @Post(`/:id/roles/revoke`)
+    @Post(`/:userId/roles/revoke`)
     @Roles(Role.Admin)
-    async revokeRole(@Param(`id`, ParseIntPipe) id: number, @Body() body: RolesDto) {
-        return this.usersService.revokeRole(id, body);
+    async revokeRole(@Param(`userId`, ParseIntPipe) userId: number, @Body() body: RolesDto) {
+        return this.usersService.revokeRole(userId, body);
     }
 }
