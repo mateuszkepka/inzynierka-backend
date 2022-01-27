@@ -6,7 +6,7 @@ import { Repository } from "typeorm";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
 
 @Injectable()
-export class BracketsService {
+export class LaddersService {
     constructor(
         @InjectRepository(Ladder) private readonly laddersRepository: Repository<Ladder>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
@@ -49,13 +49,13 @@ export class BracketsService {
         if (isLosers) {
             phasesIfLower += 1;
         }
-        const firstUpperRound = await this.generateFirstRound(
+        const firstUpperRound = this.generateFirstRound(
             teams,
             tournament,
             upperBracket,
             phasesIfLower,
             Math.pow(2, numberOfPhases),
-            upperDate,
+            upperDate
         );
         upperDate = setNextPhaseDate(upperDate, tournament);
         matches = matches.concat(firstUpperRound);
@@ -68,7 +68,7 @@ export class BracketsService {
             if (isLosers) {
                 doubleEliminationRound += 1;
             }
-            const upperRound = await this.generateRound(
+            const upperRound = this.generateRound(
                 tournament,
                 upperBracket,
                 doubleEliminationRound,
@@ -89,20 +89,20 @@ export class BracketsService {
 
             for (let round = numberOfPhases * 2 - 2; round > 0; round -= 2) {
                 numberOfLowerMatches = numberOfLowerMatches / 2;
-                const lowerFullRound = await this.generateRound(
+                const lowerFullRound = this.generateRound(
                     tournament,
                     lowerBracket,
                     round,
                     numberOfLowerMatches,
-                    lowerDate,
+                    lowerDate
                 );
                 lowerDate = setNextPhaseDate(lowerDate, tournament);
-                const lowerHalfRound = await this.generateRound(
+                const lowerHalfRound = this.generateRound(
                     tournament,
                     lowerBracket,
                     round - 1,
                     numberOfLowerMatches,
-                    lowerDate,
+                    lowerDate
                 );
                 lowerDate = setNextPhaseDate(lowerDate, tournament);
                 matches = matches.concat(lowerFullRound, lowerHalfRound);
@@ -133,8 +133,16 @@ export class BracketsService {
         const matches: Match[] = [];
         let position = 1;
         for (let i = 0; i < numberOfMatches; i += 2) {
-            const firstRoster = teams[i];
-            const secondRoster = teams[i + 1];
+            let firstRoster = teams[i];
+            let secondRoster = teams[i + i];
+            let firstTeam = null;
+            let secondTeam = null;
+            if (firstRoster !== null) {
+                firstTeam = firstRoster.team;
+            }
+            if (secondRoster != null) {
+                secondTeam = secondRoster.team;
+            }
             const match = this.matchesRepository.create({
                 matchStartDate: new Date(date),
                 status: MatchStatus.Scheduled,
@@ -142,8 +150,8 @@ export class BracketsService {
                 tournament: tournament,
                 firstRoster: firstRoster,
                 secondRoster: secondRoster,
-                firstTeam: firstRoster.team,
-                secondTeam: secondRoster.team,
+                firstTeam: firstTeam,
+                secondTeam: secondTeam,
                 round: round,
                 position: position++,
                 ladder: ladder,

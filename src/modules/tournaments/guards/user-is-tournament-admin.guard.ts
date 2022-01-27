@@ -14,6 +14,10 @@ export class UserIsTournamentAdmin implements CanActivate {
             return true;
         }
         const tournamentId = Number(request.params.tournamentId);
+        const tournament = await this.tournamentsService.getById(tournamentId);
+        if (user.userId === tournament.organizer.userId) {
+            return true;
+        }
         const admins = await this.tournamentsService.getAdmins(tournamentId);
         if (admins.some((admin) => admin.userId === user.userId)) {
             return true;

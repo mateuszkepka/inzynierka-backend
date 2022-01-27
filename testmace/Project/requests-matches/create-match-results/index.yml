@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/matches/1/results/1'
+    url: '${$env.url}/matches/593/results/'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -17,8 +17,20 @@ requestData:
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Adam\Desktop\mecz1test.png'
-        name: image
+        value: 'C:\Users\Adam\Desktop\team2\team2_lose.png'
+        name: 'image[]'
+        type: File
+      - isChecked: true
+        value: 'C:\Users\Adam\Desktop\team2\team2_lose2.png'
+        name: 'image[]'
+        type: File
+      - isChecked: true
+        value: 'C:\Users\Adam\Desktop\team2\team2_lose3.png'
+        name: 'image[]'
+        type: File
+      - isChecked: true
+        value: 'C:\Users\Adam\Desktop\team2\team2_win.png'
+        name: 'image[]'
         type: File
     file: ''
     formURLEncoded: []

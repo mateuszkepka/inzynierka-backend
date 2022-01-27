@@ -8,7 +8,7 @@ import { PlayersModule } from '../players/players.module';
 import { SuspensionsModule } from '../suspensions/suspensions.module';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
-import { BracketsService } from './brackets.service';
+import { LaddersService } from './ladders.service';
 import { GroupsService } from './groups.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
@@ -36,8 +36,8 @@ import { TournamentsService } from './tournaments.service';
         SuspensionsModule,
         FormatsModule,
     ],
-    providers: [TournamentsService, BracketsService, GroupsService],
-    exports: [TournamentsService],
+    providers: [TournamentsService, LaddersService, GroupsService],
+    exports: [TournamentsService, LaddersService, GroupsService],
     controllers: [TournamentsController],
 })
 export class TournamentsModule { }

@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "email": "test@gmail.com",
+        "email": "test2@gmail.com",
         "password": "test"
       }
     xmlBody: ''

@@ -18,7 +18,7 @@ import { CronJob } from 'cron';
 import { ParticipationStatus } from '../teams/dto/participation-status';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { GroupsService } from './groups.service';
-import { BracketsService } from './brackets.service';
+import { LaddersService } from './ladders.service';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
 import { TournamentStatus } from './dto/tourrnament.status.enum';
 
@@ -37,24 +37,13 @@ export class TournamentsService {
         private readonly schedulerRegistry: SchedulerRegistry,
         private readonly formatsService: FormatsService,
         private readonly playersService: PlayersService,
-        private readonly bracketsService: BracketsService,
+        private readonly laddersService: LaddersService,
         private readonly groupsService: GroupsService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
         private readonly gamesService: GamesService,
         private readonly connection: Connection
     ) { }
-
-    async test() {
-        const tournament = await this.getById(3);
-        const participatingTeams = await this.rostersRepository
-            .createQueryBuilder(`participatingTeam`)
-            .where(`participatingTeam.tournamentId = :tournamentId`, { tournamentId: tournament.tournamentId })
-            .limit(16)
-            .getMany();
-        this.groupsService.drawGroups(tournament, participatingTeams, 1);
-        //this.bracketsService.generateLadder(tournament, participatingTeams, true);
-    }
 
     async getById(tournamentId: number) {
         const tournament = await this.tournamentsRepository.findOne({
@@ -82,6 +71,7 @@ export class TournamentsService {
             .innerJoinAndSelect(`tournament.game`, `game`)
             .innerJoinAndSelect(`tournament.organizer`, `organizer`)
             .innerJoinAndSelect(`tournament.prize`, `prize`)
+            .innerJoinAndSelect(`tournament.format`, `format`)
             .where(`1=1`);
         if (status) {
             queryBuilder.andWhere(`tournament.status = :status`, { status: status })
@@ -98,10 +88,9 @@ export class TournamentsService {
         const format = tournament.format.name;
         let standings: Group[] | Ladder[];
         if (format === TournamentFormat.SingleRoundRobin || format === TournamentFormat.DoubleRoundRobin) {
-            // TODO uncomment date check for production
-            // if (new Date() < tournament.checkInCloseDate) {
-            //     throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
-            // }
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
+            }
             standings = await this.groupsRepository
                 .createQueryBuilder(`group`)
                 .addSelect([`team.teamId`, `team.teamName`])
@@ -114,9 +103,9 @@ export class TournamentsService {
                 .getMany();
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
-            // if (new Date() < tournament.checkInCloseDate) {
-            //     throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
-            // }
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
+            }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
@@ -131,9 +120,9 @@ export class TournamentsService {
                 .getMany();
         }
         if (format === TournamentFormat.DoubleEliminationLadder) {
-            // if (new Date() < tournament.checkInCloseDate) {
-            //     throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
-            // }
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Brackets for this tournament aren't drawn yet`);
+            }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
@@ -158,12 +147,10 @@ export class TournamentsService {
         await this.getById(tournamentId);
         const response = this.rostersRepository
             .createQueryBuilder(`participating_team`)
-            // .addSelect(`team.teamId`)
-            // .addSelect(`team.teamName`)
             .innerJoin(`participating_team.tournament`, `tournament`)
             .innerJoinAndSelect(`participating_team.team`, `team`)
             .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId });
-        if (status) {
+        if (status != null) {
             response.andWhere(`participating_team.status = :status`, { status });
         }
         const teams = await response.getMany();
@@ -369,7 +356,7 @@ export class TournamentsService {
             throw new BadRequestException(`Registration time for this tournament is over`);
         }
         const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.Signed).catch((ignore) => ignore);
-        if (teams.length + 1 >= tournament.numberOfTeams) {
+        if (teams.length + 1 > tournament.numberOfTeams) {
             throw new NotFoundException(`Maximum numer of accepted teams has been reached`);
         }
         const rosterExceptions = await this.validateRoster(team, roster);
@@ -520,11 +507,11 @@ export class TournamentsService {
             }
             if (format === TournamentFormat.SingleEliminationLadder) {
                 console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`);
-                await this.bracketsService.generateLadder(tournament, teams, false);
+                await this.laddersService.generateLadder(tournament, teams, false);
             }
             if (format === TournamentFormat.DoubleEliminationLadder) {
                 console.log(`Bracket draw scheduled at ${tournament.checkInCloseDate}`);
-                await this.bracketsService.generateLadder(tournament, teams, true);
+                await this.laddersService.generateLadder(tournament, teams, true);
             }
             tournament.status = TournamentStatus.Ongoing;
             await this.tournamentsRepository.save(tournament);

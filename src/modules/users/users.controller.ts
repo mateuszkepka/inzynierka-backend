@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import { Public } from 'src/decorators/public.decorator';
 import { UserIsUserGuard } from './guards/user-is-user.guard';
+import { GetUsersQuery } from './dto/get-users-filtered.dto';
 
 @Controller(`users`)
 @Roles(Role.User)
@@ -43,6 +44,11 @@ export class UsersController {
     @Get(`/:userId`)
     async getById(@Param(`userId`, ParseIntPipe) userId: number) {
         return this.usersService.getById(userId);
+    }
+
+    @Get()
+    async getFiltered(@Query() queryParams: GetUsersQuery) {
+        return this.usersService.getUsersFiltered(queryParams);
     }
 
     @Get(`avatars/:imgpath`)

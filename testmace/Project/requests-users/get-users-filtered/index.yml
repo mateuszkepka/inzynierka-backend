@@ -6,10 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/test/'
+    url: '${$env.url}/users?role=organizer'
   headers: []
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - name: role
+      value: organizer
+      isChecked: true
   body:
     type: Json
     jsonBody: ''
@@ -22,4 +25,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: (test)
+name: get-users-filtered

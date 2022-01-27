@@ -45,7 +45,7 @@ export class CreateTournamentDto {
 
     @IsNotEmpty()
     @IsNumber()
-    @IsIn([1, 3, 5])
+    @IsIn([1, 2, 3, 5])
     numberOfMaps: number;
 
     @IsNotEmpty()

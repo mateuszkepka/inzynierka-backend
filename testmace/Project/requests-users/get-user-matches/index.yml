@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/users/1/matches?status=scheduled'
+    url: '${$env.url}/users/266/matches?status=scheduled'
   headers: []
   disabledInheritedHeaders: []
   params:

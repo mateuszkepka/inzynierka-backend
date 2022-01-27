@@ -6,15 +6,12 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/users/18/tournaments?role=tournament-admin'
+    url: '${$env.url}/users/266/tournaments?role=player'
   headers: []
   disabledInheritedHeaders: []
   params:
-    - name: status
-      value: upcoming
-      isChecked: false
     - name: role
-      value: tournament-admin
+      value: player
       isChecked: true
   body:
     type: Json
