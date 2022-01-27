@@ -1,4 +1,18 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Res,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -16,7 +30,12 @@ import { GetUsersQuery } from './dto/get-users-filtered.dto';
 @Controller(`users`)
 @Roles(Role.User)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
+
+    @Get()
+    async getAllUsers() {
+        return this.usersService.getAll();
+    }
 
     @Get(`/:userId/accounts`)
     async getAccounts(@Param(`userId`, ParseIntPipe) userId: number) {
@@ -32,7 +51,10 @@ export class UsersController {
     }
 
     @Get(`/:userId/matches`)
-    async getMatches(@Param(`userId`, ParseIntPipe) userId: number, @Query() { status }: MatchQuery) {
+    async getMatches(
+        @Param(`userId`, ParseIntPipe) userId: number,
+        @Query() { status }: MatchQuery,
+    ) {
         return this.usersService.getMatchesByUser(userId, status);
     }
 
@@ -77,7 +99,7 @@ export class UsersController {
     )
     async uploadedFile(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`userId`, ParseIntPipe) userId: number
+        @Param(`userId`, ParseIntPipe) userId: number,
     ) {
         return this.usersService.setProfileImage(userId, image);
     }
@@ -96,7 +118,7 @@ export class UsersController {
     )
     async uploadedBackground(
         @UploadedFile() image: Express.Multer.File,
-        @Param(`userId`, ParseIntPipe) userId: number
+        @Param(`userId`, ParseIntPipe) userId: number,
     ) {
         return this.usersService.setProfileBackground(userId, image);
     }

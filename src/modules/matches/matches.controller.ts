@@ -36,7 +36,7 @@ export class MatchesController {
     async sendResults(
         @UploadedFiles() results: Array<Express.Multer.File>,
         @Param(`matchId`, ParseIntPipe) matchId: number,
-        @Req() { user }: RequestWithUser
+        @Req() { user }: RequestWithUser,
     ) {
         return this.matchesService.resolveMatch(matchId, results, user);
     }

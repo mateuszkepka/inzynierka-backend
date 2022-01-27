@@ -1,9 +1,15 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as argon2 from 'argon2';
+// import * as argon2 from 'argon2';
+import * as bcrypt from 'bcrypt';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
 import { Role } from 'src/modules/auth/dto/roles.enum';
@@ -16,12 +22,18 @@ import { GetUsersQuery } from './dto/get-users-filtered.dto';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Tournament)
+        private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-    ) { }
+    ) {}
+
+    async getAll() {
+        const users = await this.usersRepository.find();
+        return users;
+    }
 
     async getById(userId: number) {
         const user = await this.usersRepository.findOne({
@@ -218,7 +230,7 @@ export class UsersService {
         let tournaments = [];
         try {
             tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) { }
+        } catch (ignore) {}
         if (tournaments.length !== 0) {
             throw new ForbiddenException(
                 `You can not delete your account when you have ongoing tournaments`,
@@ -268,17 +280,21 @@ export class UsersService {
     /* -------------------------------------------------------------------------- */
 
     async setCurrentRefreshToken(refreshToken: string, userId: number) {
-        const currentRefreshToken = await argon2.hash(refreshToken, {
-            type: argon2.argon2id,
-        });
+        // const currentRefreshToken = await argon2.hash(refreshToken, {
+        //     type: argon2.argon2id,
+        // });
+
+        const currentRefreshToken = await bcrypt.hash(refreshToken, 10);
         await this.usersRepository.update(userId, { currentRefreshToken });
     }
 
     async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
         const user = await this.getById(userId);
-        const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken, {
-            type: argon2.argon2id,
-        });
+        // const isRefreshTokenMatching = await argon2.verify(user.currentRefreshToken, refreshToken, {
+        //     type: argon2.argon2id,
+        // });
+
+        const isRefreshTokenMatching = await bcrypt.compare(refreshToken, user.currentRefreshToken);
         if (isRefreshTokenMatching) {
             return user;
         }
