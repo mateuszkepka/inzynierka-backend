@@ -1,8 +1,10 @@
 import * as Joi from 'joi';
 import * as entities from './database/entities';
+
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
+
 import { AuthModule } from './modules/auth/auth.module';
 import { FormatsModule } from './modules/formats/formats.module';
 import { GamesModule } from './modules/games/games.module';
@@ -40,14 +42,14 @@ import { UsersModule } from './modules/users/users.module';
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    // ssl: {
-                    //     rejectUnauthorized: false,
-                    // },
-                    // url: process.env.DATABASE_URL,
-                    database: config.get<string>(`DB_NAME`),
-                    username: config.get<string>(`DB_USER`),
-                    password: config.get<string>(`DB_PASSWORD`),
-                    synchronize: false,
+                    ssl: {
+                        rejectUnauthorized: false,
+                    },
+                    url: process.env.DATABASE_URL,
+                    // database: config.get<string>(`DB_NAME`),
+                    // username: config.get<string>(`DB_USER`),
+                    // password: config.get<string>(`DB_PASSWORD`),
+                    synchronize: true,
                     logging: false,
                     entities: [
                         entities.Game,
@@ -102,4 +104,4 @@ import { UsersModule } from './modules/users/users.module';
         },
     ],
 })
-export class AppModule { }
+export class AppModule {}
