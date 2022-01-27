@@ -7,7 +7,6 @@ import { MatchesService } from "../matches.service";
 export class MatchResultsGuard implements CanActivate {
     constructor(
         private readonly matchesService: MatchesService,
-        private readonly usersService: UsersService
     ) { }
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
@@ -24,7 +23,7 @@ export class MatchResultsGuard implements CanActivate {
         if (matchId === undefined) {
             return false;
         }
-        const user = await this.usersService.getById(194)
+        const user = request.user;
         const match = await this.matchesService.getWithRelations(matchId);
         if (match.firstTeam.captain.user.userId === user.userId && match.firstCaptainDate === null) {
             return true;

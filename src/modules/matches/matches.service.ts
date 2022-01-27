@@ -126,7 +126,6 @@ export class MatchesService {
     }
 
     async resolveMatch(matchId: number, files: Array<Express.Multer.File>, user: User) {
-        user = await this.usersService.getById(194);
         const { winner, confirmed } = await this.parseResults(matchId, files, user);
         const match = await this.getWithRelations(matchId);
         if (!confirmed) {
