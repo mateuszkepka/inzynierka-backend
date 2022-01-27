@@ -16,9 +16,11 @@ export class InvitationsSeeder {
         const createdInvitations = [];
         let numberOfSeeded = 0;
         players = shuffle(players);
-        for (let team of teams) {
-            const index = teams.indexOf(team);
-            teams.splice(index, 1);
+        for (const team of teams) {
+            const index = players.indexOf(team.captain);
+            players.splice(index, 1);
+        }
+        for (const team of teams) {
             const numberOfPlayers = getRandom(
                 [0.2, 0.15, 0.15, 0.05, 0.05, 0.4],
                 [0, 1, 2, 3, 4, 5],
@@ -27,7 +29,8 @@ export class InvitationsSeeder {
                 continue;
             }
             for (let j = numberOfSeeded; j < numberOfSeeded + numberOfPlayers; j++) {
-                if (players[j]) {
+                const ifExists = await this.invitationsRepository.findOne({ where: { team: team, player: players[j] } });
+                if (players[j] && players[j].region === team.region && !ifExists) {
                     const invitation = this.invitationsRepository.create({
                         player: players[j],
                         team: team,
@@ -37,7 +40,8 @@ export class InvitationsSeeder {
                 }
             }
             numberOfSeeded += numberOfPlayers;
+            numberOfSeeded += 1;
         }
-        return this.invitationsRepository.save(createdInvitations);
+        await this.invitationsRepository.save(createdInvitations);
     }
 }

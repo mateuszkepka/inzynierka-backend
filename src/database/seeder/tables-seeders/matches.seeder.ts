@@ -1,42 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { GroupsService } from 'src/modules/tournaments/groups.service';
+import { LaddersService } from 'src/modules/tournaments/ladders.service';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
 import { Match, ParticipatingTeam, Tournament } from 'src/database/entities';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as faker from 'faker';
 
 @Injectable()
 export class MatchesSeeder {
-    constructor(@InjectRepository(Match) private readonly matchesRepository: Repository<Match>) {}
+    constructor(
+        @InjectRepository(ParticipatingTeam) private readonly rostersRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
+        private readonly groupsService: GroupsService,
+        private readonly laddersService: LaddersService
+    ) { }
 
-    async seed(numberOfRows: number, rosters: ParticipatingTeam[], tournaments: Tournament[]) {
-        const isSeeded = await this.matchesRepository.findOne();
-
-        if (isSeeded) {
-            // TODO: add logger
-            console.log(`"Match" table seems to be seeded...`);
-            return;
+    async seed(tournaments: Tournament[]) {
+        for (const tournament of tournaments) {
+            const format = tournament.format.name;
+            const teams = await this.rostersRepository.find({
+                where: { tournament: tournament },
+                relations: [`team`]
+            });
+            if (format === TournamentFormat.SingleRoundRobin) {
+                await this.groupsService.drawGroups(tournament, teams, 1);
+            }
+            if (format === TournamentFormat.DoubleRoundRobin) {
+                await this.groupsService.drawGroups(tournament, teams, 2);
+            }
+            if (format === TournamentFormat.SingleEliminationLadder) {
+                await this.laddersService.generateLadder(tournament, teams, false);
+            }
+            if (format === TournamentFormat.DoubleEliminationLadder) {
+                await this.laddersService.generateLadder(tournament, teams, true);
+            }
         }
-
-        console.log(`Seeding "Match" table...`);
-        const createdMatches = [];
-
-        for (let i = 0; i < numberOfRows; ++i) {
-            const rand = Math.floor(Math.random() * 10);
-            const rand2 = Math.floor(Math.random() * 10);
-            const match: Partial<Match> = {
-                matchStartDate: faker.datatype.datetime(),
-                matchEndDate: faker.datatype.datetime(),
-                //tournamentStage: faker.hacker.verb(),
-                //matchResult: faker.hacker.adjective(),
-                tournament: tournaments[i],
-                firstRoster: rosters[rand],
-                secondRoster: rosters[rand2],
-            };
-
-            const newMatch = await this.matchesRepository.create(match);
-            createdMatches.push(newMatch);
-            await this.matchesRepository.save(newMatch);
-        }
-        return createdMatches;
     }
 }

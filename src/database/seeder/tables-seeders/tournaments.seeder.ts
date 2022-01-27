@@ -72,7 +72,6 @@ export class TournamentsSeeder {
             });
             createdTournaments.push(tournament);
         }
-
         return this.tournamentsRepository.save(createdTournaments);
     }
 }

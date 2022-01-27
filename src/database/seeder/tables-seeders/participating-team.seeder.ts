@@ -72,6 +72,6 @@ export class ParticipatingTeamSeeder {
                 }
             }
         }
-        return this.rosterRepository.save(createdRosters);
+        await this.rosterRepository.save(createdRosters);
     }
 }
