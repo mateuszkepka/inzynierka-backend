@@ -16,4 +16,12 @@ export class CreateStatsDto {
     @IsNotEmpty()
     @IsNumber()
     assists: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    gold: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    creepScore: number;
 }

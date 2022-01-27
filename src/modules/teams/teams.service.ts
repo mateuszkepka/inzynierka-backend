@@ -94,13 +94,15 @@ export class TeamsService {
                         new Brackets((qb) => {
                             qb.where(`invitation.status = :s1`, {
                                 s1: InvitationStatus.Accepted
-                            }).orWhere(`invitation.status = :s2`,
-                                { s2: InvitationStatus.Pending });
+                            }).orWhere(`invitation.status = :s2`, {
+                                s2: InvitationStatus.Pending
+                            });
                         }),
                     )
                     .getQuery();
                 return `player.playerId NOT IN ` + subQuery;
             })
+            .orderBy(`player.playerId`)
             .getMany();
         if (players.length === 0) {
             throw new NotFoundException(`No players to invite found`);

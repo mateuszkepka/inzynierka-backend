@@ -10,7 +10,7 @@ export class UserIsInvitedGuard implements CanActivate {
     ) { }
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
-        const invitationId = Number(request.params.id);
+        const invitationId = Number(request.params.invitationId);
         const user = request.user;
         const accountList = await this.usersService.getAccounts(user.userId);
         const invitation = await this.invitationsService.getById(invitationId);

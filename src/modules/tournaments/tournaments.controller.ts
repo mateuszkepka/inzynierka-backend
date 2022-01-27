@@ -33,7 +33,6 @@ import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
 import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
 import { MemberIsNotSuspended } from './guards/member-is-not-suspended.guard';
-import { UserIsOrganizer } from './guards/user-is-organizer.guard';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -121,7 +120,7 @@ export class TournamentsController {
     }
 
     @Post(`:tournamentId/avatars`)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
@@ -140,7 +139,7 @@ export class TournamentsController {
     }
 
     @Post(`:tournamentId/backgrounds`)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     @UseInterceptors(
         FileInterceptor(`image`, {
             storage: diskStorage({
@@ -169,7 +168,7 @@ export class TournamentsController {
 
     @Post(`/:tournamentId/prizes`)
     @Roles(Role.Organizer)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     async addPrize(@Param(`tournamentId`, ParseIntPipe) id: number, @Body() body: CreatePrizeDto) {
         return this.tournamentsService.addPrize(id, body);
     }
@@ -210,7 +209,7 @@ export class TournamentsController {
 
     @Patch(`/:tournamentId/prizes`)
     @Roles(Role.Organizer)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     async updatePrize(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Body() body: UpdatePrizeDto,
@@ -219,9 +218,9 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.TournamentAdmin)
     @UsePipes(DateValidationPipe)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     async update(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Body() body: UpdateTournamentDto,
@@ -231,14 +230,14 @@ export class TournamentsController {
 
     @Delete(`/:tournamentId`)
     @Roles(Role.Organizer)
-    @UseGuards(UserIsOrganizer, TournamentIsNotOngoing)
+    @UseGuards(TournamentIsNotOngoing)
     async remove(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
         return this.tournamentsService.remove(tournamentId);
     }
 
     @Delete(`/:tournamentId/admins/:userId`)
     @Roles(Role.Organizer)
-    @UseGuards(UserIsOrganizer)
+    @UseGuards(UserIsTournamentAdmin)
     async removeAdmin(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`userId`, ParseIntPipe) userId: number,

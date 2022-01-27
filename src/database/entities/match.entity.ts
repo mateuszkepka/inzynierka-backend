@@ -93,6 +93,12 @@ export class Match {
     @JoinColumn({ name: `secondTeamId` })
     secondTeam: Team;
 
+    @Column({ nullable: true, default: null })
+    firstCaptainDate: Date;
+
+    @Column({ nullable: true, default: null })
+    secondCaptainDate: Date;
+
     @Expose()
     @OneToMany(() => Map, (map) => map.match)
     maps: Map[];

@@ -15,7 +15,7 @@ requestData:
     jsonBody: |-
       {
         "name": "KlanikNaaLanikv2",
-        "playerId": 1264
+        "playerId": 400
       }
     xmlBody: ''
     textBody: ''

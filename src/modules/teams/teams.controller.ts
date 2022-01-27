@@ -19,6 +19,7 @@ export class TeamsController {
     constructor(private readonly teamsService: TeamsService) { }
 
     @Get(`/:teamId/players/available`)
+    @UseGuards(UserIsCaptainGuard)
     async getAvailablePlayers(
         @Param(`teamId`, ParseIntPipe) teamId: number,
         @Req() { user }: RequestWithUser,
@@ -33,9 +34,8 @@ export class TeamsController {
     }
 
     @Get(`/:teamId/matches`)
-    @Roles(Role.Organizer)
     async getMatchesByTeams(
-        @Param(`id`, ParseIntPipe) teamId: number,
+        @Param(`teamId`, ParseIntPipe) teamId: number,
         @Query() { status }: MatchQuery,
     ) {
         return this.teamsService.getMatchesByTeams(teamId, status);

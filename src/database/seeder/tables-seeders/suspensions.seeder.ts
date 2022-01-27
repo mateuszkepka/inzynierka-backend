@@ -25,6 +25,6 @@ export class SuspensionsSeeder {
                 createdSuspensions.push(suspension);
             }
         }
-        return this.suspensionsRepository.save(createdSuspensions);
+        await this.suspensionsRepository.save(createdSuspensions);
     }
 }

@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Group, GroupStanding, Match, ParticipatingTeam, Team, Tournament } from "src/database/entities";
+import { Group, GroupStanding, Match, ParticipatingTeam, Tournament } from "src/database/entities";
 import { setNextPhaseDate, shuffle } from "src/utils/tournaments-util";
 import { Repository } from "typeorm";
-import { TournamentFormat } from "../formats/dto/tournament-format.enum";
 import { MatchStatus } from "../matches/interfaces/match-status.enum";
-import { TeamsService } from "../teams/teams.service";
 
 @Injectable()
 export class GroupsService {
@@ -70,8 +68,16 @@ export class GroupsService {
             const firstHalf = newIndexes.slice(0, half);
             const secondHalf = newIndexes.slice(half, numberOfTeams).reverse();
             for (let i = 0; i < firstHalf.length; i++) {
-                const firstRoster = teams[firstHalf[i]];
-                const secondRoster = teams[secondHalf[i]];
+                let firstRoster = teams[firstHalf[i]];
+                let secondRoster = teams[secondHalf[i]];
+                let firstTeam = null;
+                let secondTeam = null;
+                if (firstRoster !== null) {
+                    firstTeam = firstRoster.team;
+                }
+                if (secondRoster !== null) {
+                    secondTeam = secondRoster.team;
+                }
                 const match = this.matchesRepository.create({
                     matchStartDate: new Date(hour),
                     status: MatchStatus.Scheduled,
@@ -80,8 +86,8 @@ export class GroupsService {
                     group: group,
                     firstRoster: firstRoster,
                     secondRoster: secondRoster,
-                    firstTeam: firstRoster.team,
-                    secondTeam: secondRoster.team,
+                    firstTeam: firstTeam,
+                    secondTeam: secondTeam,
                     maps: [],
                 });
                 hour = setNextPhaseDate(hour, tournament);

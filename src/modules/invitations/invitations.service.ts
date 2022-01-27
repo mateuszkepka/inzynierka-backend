@@ -1,9 +1,4 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
@@ -17,13 +12,11 @@ import { InvitationStatus } from './interfaces/invitation-status.enum';
 @Injectable()
 export class InvitationsService {
     constructor(
-        @InjectRepository(Invitation)
-        private readonly invitationsRepository: Repository<Invitation>,
-        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        @InjectRepository(Invitation) private readonly invitationsRepository: Repository<Invitation>,
         private readonly playersService: PlayersService,
         private readonly usersService: UsersService,
         private readonly teamsService: TeamsService,
-    ) {}
+    ) { }
 
     async getById(id: number) {
         const invitation = await this.invitationsRepository.findOne({
@@ -66,10 +59,10 @@ export class InvitationsService {
             where: { team: team, player: player },
         });
         if (ifInvited?.status === InvitationStatus.Accepted) {
-            throw new NotFoundException(`This player is already in the team`);
+            throw new BadRequestException(`This player is already in the team`);
         }
         if (ifInvited?.status === InvitationStatus.Pending) {
-            throw new NotFoundException(`This player is already invited to this team`);
+            throw new BadRequestException(`This player is already invited to this team`);
         }
         if (ifInvited?.status === InvitationStatus.Refused) {
             await this.invitationsRepository.update(ifInvited.invitationId, {
@@ -91,7 +84,7 @@ export class InvitationsService {
             throw new BadRequestException(`You have already responded this invitation`);
         }
         Object.assign(invitation, attrs);
-        return await this.invitationsRepository.save(invitation);
+        return this.invitationsRepository.save(invitation);
     }
 
     async remove(id: number, user: User) {

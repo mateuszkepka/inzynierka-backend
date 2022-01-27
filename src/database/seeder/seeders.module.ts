@@ -2,14 +2,16 @@ import * as entities from 'src/database/entities';
 import * as seeders from './tables-seeders'
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TournamentsModule } from 'src/modules/tournaments/tournaments.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MatchesModule } from 'src/modules/matches/matches.module';
 
 @Module({
     imports: [
+        ScheduleModule.forRoot(),
         TypeOrmModule.forFeature([
             entities.Game,
-            entities.Group,
             entities.GroupStanding,
-            entities.Ladder,
             entities.Map,
             entities.Match,
             entities.Performance,
@@ -25,20 +27,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             entities.User,
             entities.Report,
         ]),
+        TournamentsModule,
+        MatchesModule
     ],
     providers: [
         seeders.FormatsSeeder,
         seeders.UsersSeeder,
         seeders.GamesSeeder,
         seeders.MatchesSeeder,
-        seeders.PerformancesSeeder,
         seeders.PlayersSeeder,
         seeders.PrizesSeeder,
         seeders.SuspensionsSeeder,
         seeders.TeamsSeeder,
         seeders.ParticipatingTeamSeeder,
         seeders.TournamentsSeeder,
-        seeders.LadderSeeder,
         seeders.MapSeeder,
         seeders.InvitationsSeeder,
         seeders.TournamentAdminSeeder,
@@ -47,7 +49,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         seeders.UsersSeeder,
         seeders.GamesSeeder,
         seeders.MatchesSeeder,
-        seeders.PerformancesSeeder,
         seeders.PlayersSeeder,
         seeders.FormatsSeeder,
         seeders.PrizesSeeder,
@@ -55,7 +56,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         seeders.TeamsSeeder,
         seeders.ParticipatingTeamSeeder,
         seeders.TournamentsSeeder,
-        seeders.LadderSeeder,
         seeders.MapSeeder,
         seeders.InvitationsSeeder,
         seeders.TournamentAdminSeeder,

@@ -42,4 +42,4 @@ lerna-debug.log*
 # Google Api Key
 setup.ps1
 setup.sh
-key.json
+google-key.json

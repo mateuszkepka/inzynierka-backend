@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from './dto/roles.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { GetUsersQuery } from './dto/get-users-filtered.dto';
 
 @Injectable()
 export class UsersService {
@@ -42,6 +43,21 @@ export class UsersService {
             throw new NotFoundException(`User with this id does not exist`);
         }
         return user;
+    }
+
+    async getUsersFiltered(queryParams: GetUsersQuery) {
+        const { role } = queryParams;
+        const queryBuilder = this.usersRepository
+            .createQueryBuilder(`user`)
+            .where(`1=1`);
+        if (role) {
+            queryBuilder.andWhere(`:role = any("user"."roles")`, { role: role })
+        }
+        const users = await queryBuilder.getMany();
+        if (users.length === 0) {
+            throw new NotFoundException(`No tournaments found`);
+        }
+        return users;
     }
 
     async getByUsername(username: string) {

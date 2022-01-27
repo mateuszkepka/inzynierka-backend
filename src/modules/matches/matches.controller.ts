@@ -1,15 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Req,
-    UploadedFiles,
-    UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Public } from 'src/decorators/public.decorator';
@@ -18,12 +7,13 @@ import { Role } from 'src/modules/auth/dto/roles.enum';
 import { editMapName, imageFileFilter } from 'src/utils/uploads-util';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { UpdateMatchDto } from './dto/update-match.dto';
+import { MatchResultsGuard } from './guards/match-results.guard';
 import { MatchesService } from './matches.service';
 
 @Controller(`matches`)
 @Roles(Role.Player)
 export class MatchesController {
-    constructor(private readonly matchesService: MatchesService) {}
+    constructor(private readonly matchesService: MatchesService) { }
 
     @Get(`/:matchId`)
     @Public()
@@ -31,16 +21,8 @@ export class MatchesController {
         return this.matchesService.getById(matchId);
     }
 
-    @Post(`/:matchId/results/:winnerId`)
-    async testResults(
-        @UploadedFiles() results: Array<Express.Multer.File>,
-        @Param(`matchId`, ParseIntPipe) matchId: number,
-        @Req() { user }: RequestWithUser,
-    ) {
-        return this.matchesService.parseResults(matchId, results, user);
-    }
-
     @Post(`/:matchId/results/`)
+    @UseGuards(MatchResultsGuard)
     @UseInterceptors(
         FilesInterceptor(`image[]`, 5, {
             storage: diskStorage({

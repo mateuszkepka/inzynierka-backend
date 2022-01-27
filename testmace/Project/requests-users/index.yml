@@ -1,6 +1,7 @@
 enabled: true
 children:
   - get-user-by-id
+  - get-users-filtered
   - get-user-accounts
   - get-user-matches
   - get-user-teams
