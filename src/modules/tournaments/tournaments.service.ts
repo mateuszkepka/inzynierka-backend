@@ -360,9 +360,7 @@ export class TournamentsService {
         const tournament = await this.getById(tournamentId);
         const team = await this.teamsService.getById(teamId);
         if (roster.length > tournament.numberOfPlayers) {
-            throw new BadRequestException(
-                `This tournament is limited to ${tournament.numberOfPlayers} players per team`,
-            );
+            throw new BadRequestException(`This tournament is limited to ${tournament.numberOfPlayers} players per team`);
         }
         if (tournament.registerStartDate > new Date()) {
             throw new BadRequestException(`Registration for this tournament is not open yet`);
@@ -486,9 +484,8 @@ export class TournamentsService {
     private async validateRoster(team: Team, roster: RosterMember[]) {
         const exceptions = [];
         for (const member of roster) {
-            var user: User;
-            var player: Player;
-            user = await this.usersService.getByUsername(member.username);
+            let player: Player;
+            const user = await this.usersService.getByUsername(member.username);
             if (!user) {
                 exceptions.push(`User with username ${member.username} does not exist`);
             }
@@ -497,18 +494,15 @@ export class TournamentsService {
             } catch (ignore) {
                 exceptions.push(`Player with id ${member.playerId} does not exist`);
             }
-            if (user && player) {
-                if (player.user.userId !== user.userId) {
-                    exceptions.push(
-                        `Username ${member.username} and playerId ${member.playerId} mismatch`,
-                    );
-                }
-                const members = await this.teamsService.getMembers(team.teamId);
-                if (!members.some((member) => member.playerId === player.playerId)) {
-                    exceptions.push(
-                        `Player with id ${player.playerId} is not a member of team ${team.teamName}`,
-                    );
-                }
+            if (!(user && player)) {
+                return;
+            }
+            if (player.user.userId !== user.userId) {
+                exceptions.push(`Username ${member.username} and playerId ${member.playerId} mismatch`);
+            }
+            const members = await this.teamsService.getMembers(team.teamId);
+            if (!members.some((member) => member.playerId === player.playerId)) {
+                exceptions.push(`Player with id ${player.playerId} is not a member of team ${team.teamName}`);
             }
         }
         return exceptions;

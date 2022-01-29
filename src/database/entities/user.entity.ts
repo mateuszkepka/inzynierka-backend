@@ -67,7 +67,11 @@ export class User {
     @Expose()
     @Transform(({ value }) => {
         if (value !== undefined) {
-            return value[0].playerId;
+            const returnValue: number[] = [];
+            value.forEach((player: Player) => {
+                returnValue.push(player.playerId)
+            });
+            return returnValue;
         } else {
             return;
         }
