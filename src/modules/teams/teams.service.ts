@@ -30,26 +30,12 @@ export class TeamsService {
     }
 
     async getById(teamId: number) {
-        const team = await this.teamsRepository.findOne({
+        let team = await this.teamsRepository.findOne({
             relations: [`captain`, `captain.game`],
             where: { teamId: teamId },
         });
         if (!team) {
             throw new NotFoundException(`Team with given id does not exist`);
-        }
-        return team;
-    }
-
-    async getByParticipatingTeam(participatingId: number) {
-        const team = await this.teamsRepository
-            .createQueryBuilder(`team`)
-            .innerJoin(`team.rosters`, `roster`)
-            .where(`roster.participatingTeamId = :participatingId`, {
-                participatingId: participatingId,
-            })
-            .getOne();
-        if (!team) {
-            throw new NotFoundException(`Team with given participation id was not found`);
         }
         return team;
     }

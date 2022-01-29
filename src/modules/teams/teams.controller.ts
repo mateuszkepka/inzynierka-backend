@@ -1,17 +1,17 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-team.dto';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { Public } from 'src/decorators/public.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/dto/roles.enum';
-import RequestWithUser from '../auth/interfaces/request-with-user.interface';
-import { UpdateTeamDto } from './dto/update-team.dto';
-import { MatchQuery } from '../matches/dto/get-matches.dto';
-import { diskStorage } from 'multer';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
-import { Public } from 'src/decorators/public.decorator';
-import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { MatchQuery } from '../matches/dto/get-matches.dto';
 import { UserIsAccountOwner } from '../players/guard/user-is-account-owner.guard';
+import { CreateTeamDto } from './dto/create-team.dto';
+import { UpdateTeamDto } from './dto/update-team.dto';
+import { UserIsCaptainGuard } from './guards/user-is-captain.guard';
+import { TeamsService } from './teams.service';
 
 @Controller(`teams`)
 @Roles(Role.User)

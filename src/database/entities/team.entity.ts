@@ -1,12 +1,18 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam } from './participating-team.entity';
 import { Player } from './player.entity';
 import { Game, Invitation } from '.';
 import { RegionsLoL } from 'src/modules/games/interfaces/regions';
+import { adjustTimeZone } from 'src/utils/date-util';
 
 @Entity()
 export class Team {
+    @BeforeInsert()
+    setDates() {
+        this.creationDate = new Date();
+    }    
+
     @Expose()
     @PrimaryGeneratedColumn()
     teamId: number;
@@ -16,7 +22,16 @@ export class Team {
     teamName: string;
 
     @Expose()
-    @CreateDateColumn()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     creationDate: Date;
 
     @Expose()

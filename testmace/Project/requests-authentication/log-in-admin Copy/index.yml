@@ -5,14 +5,18 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: DELETE
-    url: '${$env.url}/teams/115'
+    method: POST
+    url: 'https://inzynierka-turnieje.herokuapp.com/auth/login'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: ''
+    jsonBody: |-
+      {
+        "email": "admin@admin.com",
+        "password": "admin"
+      }
     xmlBody: ''
     textBody: ''
     formData: []
@@ -22,4 +26,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: remove-team
+name: log-in-admin Copy

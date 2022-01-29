@@ -12,7 +12,7 @@ export class SuspensionsService {
         @InjectRepository(Suspension)
         private readonly suspensionsRepository: Repository<Suspension>,
         private readonly usersService: UsersService,
-    ) {}
+    ) { }
 
     async getById(suspensionId: number) {
         const suspension = await this.suspensionsRepository.findOne({
@@ -47,9 +47,6 @@ export class SuspensionsService {
                 break;
         }
         const suspensions = await queryBuilder.getMany();
-        if (suspensions.length === 0) {
-            throw new NotFoundException(`No suspensions found`);
-        }
         return suspensions;
     }
 

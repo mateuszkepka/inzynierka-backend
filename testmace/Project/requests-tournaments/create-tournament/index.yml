@@ -15,16 +15,15 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "test3",
+        "name": ";fsd",
         "format": "Single Elimination Ladder",
-        "numberOfPlayers": 5,
+        "numberOfPlayers": 1,
         "numberOfTeams": 16,
         "numberOfMaps": 3,
         "endingHour": 21,
         "endingMinutes": 0,
-        "registerStartDate": "2022-02-02T22:01:00+0000",
-        "registerEndDate": "2022-02-02T22:05:00+0000",
-        "tournamentStartDate": "2022-02-02T23:05:00+0000",
+        "registerEndDate": "2022-01-28T22:40:00Z",
+        "tournamentStartDate": "2022-01-29T23:40:00Z",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

@@ -6,10 +6,13 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/1/teams/'
+    url: '${$env.url}/tournaments/19/teams/?status=checked'
   headers: []
   disabledInheritedHeaders: []
-  params: []
+  params:
+    - name: status
+      value: checked
+      isChecked: true
   body:
     type: Json
     jsonBody: ''

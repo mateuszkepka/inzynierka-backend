@@ -1,6 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { adjustTimeZone } from 'src/utils/date-util';
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Group, Ladder, Team } from '.';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -8,16 +9,41 @@ import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Match {
+    @BeforeInsert()
+    setDates() {
+        this.matchStartDate = new Date();
+    }
+
     @Expose()
     @PrimaryGeneratedColumn()
     matchId: number;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     matchStartDate: Date;
 
     @Expose()
-    @Column({ default: null, nullable: true })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true,
+        default: null
+    })
     matchEndDate: Date;
 
     @Expose()
@@ -93,10 +119,32 @@ export class Match {
     @JoinColumn({ name: `secondTeamId` })
     secondTeam: Team;
 
-    @Column({ nullable: true, default: null })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true,
+        default: null
+    })
     firstCaptainDate: Date;
 
-    @Column({ nullable: true, default: null })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true,
+        default: null
+    })
     secondCaptainDate: Date;
 
     @Expose()

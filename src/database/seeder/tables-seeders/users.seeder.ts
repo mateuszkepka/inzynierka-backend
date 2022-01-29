@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/database/entities';
-import { Repository } from 'typeorm';
-import * as faker from 'faker';
 // import * as argon2 from 'argon2';
 import * as bcrypt from 'bcrypt';
+import * as faker from 'faker';
+import { User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersSeeder {

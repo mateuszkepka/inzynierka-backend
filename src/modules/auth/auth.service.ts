@@ -1,9 +1,6 @@
 // import * as argon2 from 'argon2';
-
 import * as bcrypt from 'bcrypt';
-
 import { BadRequestException, Injectable } from '@nestjs/common';
-
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
@@ -62,7 +59,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_EXPIRATION_TIME`),
         });
-        return `Authentication=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_EXPIRATION_TIME`,
         )}`;
     }
@@ -73,7 +70,7 @@ export class AuthService {
             secret: this.configService.get<string>(`JWT_REFRESH_TOKEN_SECRET`),
             expiresIn: this.configService.get<string>(`JWT_REFRESH_TOKEN_EXPIRATION_TIME`),
         });
-        const cookie = `Refresh=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get<string>(
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>(
             `JWT_REFRESH_TOKEN_EXPIRATION_TIME`,
         )}`;
         return { cookie, token };
@@ -81,8 +78,8 @@ export class AuthService {
 
     getCookiesForLogOut() {
         return [
-            `Authentication=; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=0`,
-            `Refresh=; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=0`,
+            `Authentication=; HttpOnly; Path=/; Max-Age=0`,
+            `Refresh=; HttpOnly; Path=/; Max-Age=0`,
         ];
     }
 

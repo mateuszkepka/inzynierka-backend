@@ -1,16 +1,17 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-
 import { Expose } from 'class-transformer';
 import { ReportStatus } from 'src/modules/reports/report-status.enum';
+import { adjustTimeZone } from 'src/utils/date-util';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '.';
+
 
 @Entity()
 export class Report {
     @BeforeInsert()
-    setCreationDate() {
+    setDates() {
         this.reportDate = new Date();
     }
-    
+
     @Expose()
     @PrimaryGeneratedColumn()
     reportId: number;
@@ -24,7 +25,16 @@ export class Report {
     status: ReportStatus;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     reportDate: Date;
 
     @Expose()
@@ -32,7 +42,17 @@ export class Report {
     description: string;
 
     @Expose()
-    @Column({ nullable: true })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true
+    })
     responseDate: Date;
 
     @Expose()

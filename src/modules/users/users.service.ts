@@ -1,9 +1,4 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
@@ -22,13 +17,12 @@ import { GetUsersQuery } from './dto/get-users-filtered.dto';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-    ) {}
+    ) { }
 
     async getAll() {
         const users = await this.usersRepository.find();
@@ -64,9 +58,6 @@ export class UsersService {
         const user = await this.usersRepository.findOne({
             where: { username: username },
         });
-        if (!user) {
-            throw new NotFoundException(`User with this username does not exist`);
-        }
         return user;
     }
 
@@ -230,7 +221,7 @@ export class UsersService {
         let tournaments = [];
         try {
             tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) {}
+        } catch (ignore) { }
         if (tournaments.length !== 0) {
             throw new ForbiddenException(
                 `You can not delete your account when you have ongoing tournaments`,

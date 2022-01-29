@@ -1,11 +1,12 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
+import { adjustTimeZone } from 'src/utils/date-util';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
 export class Suspension {
     @BeforeInsert()
-    setStartDate() {
+    setDates() {
         this.startDate = new Date();
     }
 
@@ -14,11 +15,29 @@ export class Suspension {
     suspensionId: number;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     startDate: Date;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     endDate: Date;
 
     @Expose()

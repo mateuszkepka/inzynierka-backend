@@ -9,15 +9,16 @@ import { Prize } from './prize.entity';
 import { User } from './user.entity';
 import { ParticipatingTeam, TournamentAdmin } from '.';
 import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
+import { adjustTimeZone } from 'src/utils/date-util';
 
 @Entity()
 export class Tournament {
     @BeforeInsert()
     setDates() {
-        this.checkInCloseDate = new Date(this.tournamentStartDate);
+        this.checkInCloseDate = new Date(this.tournamentStartDate.valueOf());
         this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
-        this.checkInOpenDate = new Date(this.checkInCloseDate);
-        this.checkInOpenDate.setMinutes(this.checkInCloseDate.getMinutes() - 50);
+        this.checkInOpenDate = new Date(this.tournamentStartDate.valueOf());
+        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 35);
     }
 
     @Expose()
@@ -45,23 +46,71 @@ export class Tournament {
     numberOfMaps: number;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     registerStartDate: Date;
 
     @Expose()
-    @Column({ nullable: true })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true
+    })
     registerEndDate: Date;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        }
+    })
     tournamentStartDate: Date;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true
+    })
     checkInOpenDate: Date;
 
     @Expose()
-    @Column()
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                return adjustTimeZone(value.valueOf(), true);
+            }
+        },
+        nullable: true
+    })
     checkInCloseDate: Date;
 
     @Expose()
