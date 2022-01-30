@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { ReportStatus } from 'src/modules/reports/report-status.enum';
-import { adjustTimeZone } from 'src/utils/date-util';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '.';
 
@@ -24,16 +24,7 @@ export class Report {
     status: ReportStatus;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     reportDate: Date;
 
     @Expose()
@@ -41,17 +32,7 @@ export class Report {
     description: string;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true
-    })
+    @AdjustDate({ nullable: true, default: null })
     responseDate: Date;
 
     @Expose()
