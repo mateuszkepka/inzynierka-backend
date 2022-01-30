@@ -83,7 +83,7 @@ export class TeamsService {
                             }).orWhere(`invitation.status = :s2`, {
                                 s2: InvitationStatus.Pending
                             });
-                        }),
+                        })
                     )
                     .getQuery();
                 return `player.playerId NOT IN ` + subQuery;

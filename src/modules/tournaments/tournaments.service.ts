@@ -161,20 +161,23 @@ export class TournamentsService {
             .where(`match.tournamentId = :tournamentId`, { tournamentId: tournamentId })
         if (status === MatchStatus.Scheduled) {
             qb.andWhere(
-                new Brackets((qubQuery) => {
-                    qubQuery.where(`match.status = :status1`, {
-                        status1: MatchStatus.Scheduled,
+                new Brackets((subQuery) => {
+                    subQuery.orWhere(`match.status = :status`, {
+                        status: MatchStatus.Scheduled,
+                    }).orWhere(`match.status = :status1`, {
+                        status1: MatchStatus.Resolving,
                     }).orWhere(`match.status = :status2`, {
-                        status2: MatchStatus.Resolving,
+                        status2: MatchStatus.Unresolved,
                     }).orWhere(`match.status = :status3`, {
-                        status3: MatchStatus.Unresolved,
-                    }).orWhere(`match.status = :status4`, {
-                        status4: MatchStatus.Postponed,
+                        status3: MatchStatus.Postponed,
                     })
-                }),
+                })
             )
+        } else {
+            qb.andWhere(`match.status = :status`, { status: status })
         }
         qb.orderBy(`match.matchId`);
+        console.log(qb.getQuery())
         return qb.getMany();
     }
 

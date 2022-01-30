@@ -20,7 +20,6 @@ children:
   - update-tournament-prize
   - update-participating-team
   - remove-tournament-admin
-  - test
 variablesArray: []
 type: Folder
 authData:
