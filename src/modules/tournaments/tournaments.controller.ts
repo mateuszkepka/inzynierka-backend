@@ -102,7 +102,7 @@ export class TournamentsController {
 
     @Post()
     @Roles(Role.Organizer)
-    @UsePipes(DateValidationPipe)
+    // @UsePipes(DateValidationPipe)
     async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
     }

@@ -1,23 +1,32 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    BeforeInsert,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
+import { ParticipatingTeam, TournamentAdmin } from '.';
+
+import { Format } from './format.entity';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
 import { Ladder } from './ladder.entity';
 import { Match } from './match.entity';
-import { Format } from './format.entity';
 import { Prize } from './prize.entity';
-import { User } from './user.entity';
-import { ParticipatingTeam, TournamentAdmin } from '.';
 import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
+import { User } from './user.entity';
 
 @Entity()
 export class Tournament {
     @BeforeInsert()
     setDates() {
         this.checkInCloseDate = new Date(this.tournamentStartDate);
-        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 1);
         this.checkInOpenDate = new Date(this.checkInCloseDate);
-        this.checkInOpenDate.setMinutes(this.checkInCloseDate.getMinutes() - 50);
+        this.checkInOpenDate.setMinutes(this.checkInCloseDate.getMinutes() - 3);
     }
 
     @Expose()
@@ -76,7 +85,7 @@ export class Tournament {
     @Column({
         type: `enum`,
         enum: TournamentStatus,
-        default: TournamentStatus.Upcoming
+        default: TournamentStatus.Upcoming,
     })
     status: TournamentStatus;
 
@@ -85,24 +94,30 @@ export class Tournament {
     description: string;
 
     @Expose({ name: `gameId` })
-    @Transform(({ value }) => {
-        if (value === undefined) {
-            return;
-        }
-        return value.gameId;
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value === undefined) {
+                return;
+            }
+            return value.gameId;
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;
 
     @Expose({ name: `organizerId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.userId;
-        } else {
-            return;
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.userId;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `organizerId` })
     organizer: User;
@@ -120,13 +135,16 @@ export class Tournament {
     tournamentAdmins: TournamentAdmin[];
 
     @Expose({ name: `formatId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.name;
-        } else {
-            return;
-        }
-    }, { toPlainOnly: true })
+    @Transform(
+        ({ value }) => {
+            if (value !== undefined) {
+                return value.name;
+            } else {
+                return;
+            }
+        },
+        { toPlainOnly: true },
+    )
     @ManyToOne(() => Format, { eager: true, nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;
@@ -140,10 +158,10 @@ export class Tournament {
     prize: Prize;
 
     @Expose()
-    @Column({ default: 'default-tournament-avatar.png' })
+    @Column({ default: `default-tournament-avatar.png` })
     profilePicture: string;
 
     @Expose()
-    @Column({ default: 'default-tournament-background.png' })
+    @Column({ default: `default-tournament-background.png` })
     backgroundPicture: string;
 }
