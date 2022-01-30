@@ -16,7 +16,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) { }
+    ) {}
 
     async register(registrationData: RegisterDto) {
         // const hashedPassword = await argon2.hash(registrationData.password, {
@@ -24,17 +24,34 @@ export class AuthService {
         // });
         const exceptions = [];
         const hashedPassword = await bcrypt.hash(registrationData.password, 10);
-        await this.usersRepository.findOne({ where: { email: registrationData.email } })
-            .catch(() => exceptions.push(`This email is already taken!`));
-        await this.usersRepository.findOne({ where: { username: registrationData.username } })
-            .catch(() => exceptions.push(`This username is already taken!`));
-        await this.usersRepository.findOne({
-            where: { university: registrationData.university, studentId: registrationData.studentId }
-        }).catch(() => exceptions.push(`This student id on your university is already taken!`));
-        if (exceptions) {
+        const emailCheck = await this.usersRepository.findOne({
+            where: { email: registrationData.email },
+        });
+
+        if (emailCheck) {
+            exceptions.push(`This email is already taken!`);
+        }
+        const usernameCheck = await this.usersRepository.findOne({
+            where: { username: registrationData.username },
+        });
+
+        if (usernameCheck) {
+            exceptions.push(`This username is already taken!`);
+        }
+        const universityCheck = await this.usersRepository.findOne({
+            where: {
+                university: registrationData.university,
+                studentId: registrationData.studentId,
+            },
+        });
+
+        if (universityCheck) {
+            exceptions.push(`This student id on your university is already taken!`);
+        }
+        if (exceptions.length > 0) {
             throw new BadRequestException(exceptions);
         }
-        return this.usersService.create({
+        return await this.usersService.create({
             ...registrationData,
             password: hashedPassword,
         });
