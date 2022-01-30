@@ -4,7 +4,6 @@ import { adjustTimeZone } from 'src/utils/date-util';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '.';
 
-
 @Entity()
 export class Report {
     @BeforeInsert()

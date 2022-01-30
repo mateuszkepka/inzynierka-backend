@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Invitation, Player, Team } from 'src/database/entities';
-import { Connection, Repository } from 'typeorm';
 import * as faker from 'faker';
-import { shuffle } from 'src/utils/tournaments-util';
+import { Invitation, Player, Team } from 'src/database/entities';
 import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
+import { shuffle } from 'src/utils/tournaments-util';
+import { Connection, Repository } from 'typeorm';
 
 @Injectable()
 export class TeamsSeeder {

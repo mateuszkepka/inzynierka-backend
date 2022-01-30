@@ -1,46 +1,43 @@
 // import * as argon2 from 'argon2';
-import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterDto } from './dto/register.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { User } from 'src/database/entities';
 import { UsersService } from 'src/modules/users/users.service';
+import { Repository } from 'typeorm';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
     constructor(
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) {}
+    ) { }
 
     async register(registrationData: RegisterDto) {
         // const hashedPassword = await argon2.hash(registrationData.password, {
         //     type: argon2.argon2id,
         // });
-
+        const exceptions = [];
         const hashedPassword = await bcrypt.hash(registrationData.password, 10);
-        try {
-            return await this.usersService.create({
-                ...registrationData,
-                password: hashedPassword,
-            });
-        } catch (error) {
-            const username = error.detail.search(`username`);
-            const email = error.detail.search(`email`);
-            const university = error.detail.search(`university`);
-            if (username > 0) {
-                throw new BadRequestException(`This username is already taken!`);
-            } else if (email > 0) {
-                throw new BadRequestException(`This email is already taken!`);
-            } else if (university) {
-                throw new BadRequestException(
-                    `This student id on your university is already taken!`,
-                );
-            } else {
-                throw new BadRequestException(`Something went wrong`);
-            }
+        await this.usersRepository.findOne({ where: { email: registrationData.email } })
+            .catch(() => exceptions.push(`This email is already taken!`));
+        await this.usersRepository.findOne({ where: { username: registrationData.username } })
+            .catch(() => exceptions.push(`This username is already taken!`));
+        await this.usersRepository.findOne({
+            where: { university: registrationData.university, studentId: registrationData.studentId }
+        }).catch(() => exceptions.push(`This student id on your university is already taken!`));
+        if (exceptions) {
+            throw new BadRequestException(exceptions);
         }
+        return this.usersService.create({
+            ...registrationData,
+            password: hashedPassword,
+        });
     }
 
     async getAuthenticatedUser(email: string, plainTextPassword: string) {

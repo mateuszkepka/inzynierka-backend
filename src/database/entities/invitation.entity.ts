@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { Team } from './team.entity';
-import { Player } from './player.entity';
 import { Expose, Transform } from 'class-transformer';
 import { InvitationStatus, Status } from 'src/modules/invitations/interfaces/invitation-status.enum';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Player } from './player.entity';
+import { Team } from './team.entity';
 
 @Entity()
 @Unique([`player`, `team`])

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { InvitationsService } from './invitations.service';
-import { InvitationsController } from './invitations.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invitation, User } from 'src/database/entities';
 import { PlayersModule } from '../players/players.module';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
+import { InvitationsController } from './invitations.controller';
+import { InvitationsService } from './invitations.service';
 
 @Module({
     imports: [
@@ -17,4 +17,4 @@ import { UsersModule } from '../users/users.module';
     controllers: [InvitationsController],
     providers: [InvitationsService],
 })
-export class InvitationsModule {}
+export class InvitationsModule { }

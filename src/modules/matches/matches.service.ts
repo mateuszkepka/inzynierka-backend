@@ -594,7 +594,7 @@ export class MatchesService {
             await this.connection.manager.delete(Performance, performanceIds);
             await this.connection.manager.delete(MatchMap, mapIds);
             await this.matchesRepository.save(match);
-            throw new BadRequestException(`Screenshots are not matching your opponent's ones`);;
+            throw new BadRequestException(`Screenshots are not matching your opponent's ones`);
         }
         await this.matchesRepository.save(match);
     }

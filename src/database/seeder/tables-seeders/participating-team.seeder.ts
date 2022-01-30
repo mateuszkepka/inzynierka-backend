@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ParticipatingTeam, Player, Team, Tournament } from 'src/database/entities';
-import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
-import { shuffle } from 'src/utils/tournaments-util';
-import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
+import { ParticipatingTeam, Player, Team, Tournament } from 'src/database/entities';
 import { InvitationStatus } from 'src/modules/invitations/interfaces/invitation-status.enum';
+import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
+import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
+import { shuffle } from 'src/utils/tournaments-util';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ParticipatingTeamSeeder {

@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
-import { adjustTimeZone } from 'src/utils/date-util';
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Group, Ladder, Team } from '.';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -19,31 +19,11 @@ export class Match {
     matchId: number;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     matchStartDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true,
-        default: null
-    })
+    @AdjustDate({ nullable: true, default: null })
     matchEndDate: Date;
 
     @Expose()
@@ -119,32 +99,10 @@ export class Match {
     @JoinColumn({ name: `secondTeamId` })
     secondTeam: Team;
 
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true,
-        default: null
-    })
+    @AdjustDate({ nullable: true, default: null })
     firstCaptainDate: Date;
 
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true,
-        default: null
-    })
+    @AdjustDate({ nullable: true, default: null })
     secondCaptainDate: Date;
 
     @Expose()

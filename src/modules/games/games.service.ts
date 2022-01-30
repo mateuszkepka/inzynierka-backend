@@ -7,7 +7,7 @@ import { UpdateGameDto } from './dto/update-game.dto';
 
 @Injectable()
 export class GamesService {
-    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) {}
+    constructor(@InjectRepository(Game) private readonly gamesRepository: Repository<Game>) { }
 
     async getById(gameId: number) {
         const game = await this.gamesRepository.findOne({ where: { gameId: gameId } });

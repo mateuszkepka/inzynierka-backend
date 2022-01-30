@@ -45,16 +45,17 @@ export class TournamentsService {
     ) { }
 
     async test() {
-        const tournament = await this.getById(26);
+        const tournament = await this.getById(1);
         const participatingTeams = await this.rostersRepository
             .createQueryBuilder(`participatingTeam`)
+            .innerJoinAndSelect(`participatingTeam.team`, `team`)
             .where(`participatingTeam.tournamentId = :tournamentId`, {
                 tournamentId: tournament.tournamentId,
             })
-            .limit(2)
+            .limit(9)
             .getMany();
         // this.groupsService.drawGroups(tournament, participatingTeams, 1);
-        this.laddersService.generateLadder(tournament, participatingTeams, false);
+        this.laddersService.generateLadder(tournament, participatingTeams, true);
     }
 
     async getById(tournamentId: number) {
@@ -339,7 +340,7 @@ export class TournamentsService {
             status: TournamentStatus.Upcoming,
         });
         await this.tournamentsRepository.save(tournament);
-        this.scheduleTournament(tournament);
+        await this.scheduleTournament(tournament);
         return tournament;
     }
 
@@ -509,12 +510,10 @@ export class TournamentsService {
     }
 
     private async scheduleTournament(tournament: Tournament) {
-        const { tournamentId } = tournament;
         const jobName = `tournament${tournament.tournamentId}`;
-        const job = new CronJob(tournament.checkInCloseDate, async () => {
-            const teams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.CheckedIn);
-            console.log(teams)
-            console.log(`zapisane teamy`)
+        const time = new Date(tournament.registerEndDate.valueOf());
+        const job = new CronJob(time, async () => {
+            const teams = await this.getTeamsByTournament(tournament.tournamentId, ParticipationStatus.CheckedIn);
             const format = tournament.format.name;
             if (format === TournamentFormat.SingleRoundRobin) {
                 await this.groupsService.drawGroups(tournament, teams, 1);

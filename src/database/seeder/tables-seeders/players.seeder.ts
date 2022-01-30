@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, Player, User } from 'src/database/entities';
-import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { RegionsLoL } from 'src/modules/games/interfaces/regions';
+import { Game, Player, User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 import { getRandom, shuffle } from 'src/utils/tournaments-util';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PlayersSeeder {
     constructor(
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    ) {}
+    ) { }
 
     async seed(users: User[], game: Game) {
         const createdPlayers = [];

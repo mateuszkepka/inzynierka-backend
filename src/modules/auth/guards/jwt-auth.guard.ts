@@ -1,6 +1,6 @@
-import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { AuthGuard } from '@nestjs/passport';
 import { shouldBypassAuth } from 'src/decorators/public.decorator';
 
 @Injectable()

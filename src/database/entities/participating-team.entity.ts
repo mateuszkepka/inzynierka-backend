@@ -1,4 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
 import { adjustTimeZone } from 'src/utils/date-util';
@@ -34,26 +35,21 @@ export class ParticipatingTeam {
     team: Team;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-    })
+    @AdjustDate()
     signDate: Date;
 
     @Expose()
     @Column({
         transformer: {
             to(value) {
-                return adjustTimeZone(value.valueOf());
+                if (value) {
+                    return adjustTimeZone(value.valueOf());
+                }
             },
             from(value) {
-                return adjustTimeZone(value.valueOf(), true);
+                if (value) {
+                    return adjustTimeZone(value.valueOf(), true);
+                }
             }
         },
         nullable: true,
@@ -68,7 +64,9 @@ export class ParticipatingTeam {
                 return adjustTimeZone(value.valueOf());
             },
             from(value) {
-                return adjustTimeZone(value.valueOf(), true);
+                if (value) {
+                    return adjustTimeZone(value.valueOf(), true);
+                }
             }
         },
         nullable: true,

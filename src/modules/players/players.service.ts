@@ -15,7 +15,7 @@ export class PlayersService {
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         private readonly gamesService: GamesService,
         private readonly connection: Connection,
-    ) {}
+    ) { }
 
     async getAll() {
         const players = await this.playersRepository.find({

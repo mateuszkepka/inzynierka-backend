@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersSeeder {
-    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
+    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
 
     async seed(numberOfRows: number) {
         const createdUsers = [];

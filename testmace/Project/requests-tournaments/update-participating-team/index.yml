@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: PATCH
-    url: '${$env.url}/tournaments/48/teams/26'
+    url: '${$env.url}/tournaments/30/teams/14'
   headers: []
   disabledInheritedHeaders: []
   params: []

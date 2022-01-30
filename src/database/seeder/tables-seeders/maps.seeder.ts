@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Map as MatchMap, Match, Player, Performance } from 'src/database/entities';
+import { Map as MatchMap, Match, Performance, Player } from 'src/database/entities';
 import { MatchesService } from 'src/modules/matches/matches.service';
 import { Repository } from 'typeorm';
 

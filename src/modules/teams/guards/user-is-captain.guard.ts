@@ -1,6 +1,6 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
-import { UsersService } from "src/modules/users/users.service";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { Role } from "src/modules/auth/dto/roles.enum";
+import { UsersService } from "src/modules/users/users.service";
 import { TeamsService } from "../teams.service";
 
 @Injectable()

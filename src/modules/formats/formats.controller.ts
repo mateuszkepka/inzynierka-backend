@@ -6,7 +6,7 @@ import { FormatsService } from './formats.service';
 @Controller(`formats`)
 @Roles(Role.Organizer)
 export class FormatsController {
-    constructor(private readonly formatsService: FormatsService) {}
+    constructor(private readonly formatsService: FormatsService) { }
 
     @Get(`:id`)
     async getById(@Param(`id`, ParseIntPipe) id: number) {

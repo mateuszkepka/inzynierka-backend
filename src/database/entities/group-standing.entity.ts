@@ -1,7 +1,6 @@
 import { Expose } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ParticipatingTeam, Team } from '.';
-
 import { Group } from './group.entity';
 
 @Entity()

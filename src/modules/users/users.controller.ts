@@ -1,36 +1,22 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Res,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { Public } from 'src/decorators/public.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/dto/roles.enum';
+import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
+import { GetUsersQuery } from './dto/get-users-filtered.dto';
 import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
 import { RolesDto } from './dto/roles.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
-import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
-import { Public } from 'src/decorators/public.decorator';
 import { UserIsUserGuard } from './guards/user-is-user.guard';
-import { GetUsersQuery } from './dto/get-users-filtered.dto';
+import { UsersService } from './users.service';
 
 @Controller(`users`)
 @Roles(Role.User)
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) { }
 
     @Get()
     async getAllUsers() {

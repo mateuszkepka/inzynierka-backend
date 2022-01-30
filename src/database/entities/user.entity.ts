@@ -1,12 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
+import { Role } from 'src/modules/auth/dto/roles.enum';
+import { UserStatus } from 'src/modules/users/dto/user-status.enum';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Report } from '.';
 import { Player } from './player.entity';
-import { Role } from 'src/modules/auth/dto/roles.enum';
 import { Suspension } from './suspension.entity';
-import { Tournament } from './tournament.entity';
 import { TournamentAdmin } from './tournament-admin.entity';
-import { UserStatus } from 'src/modules/users/dto/user-status.enum';
+import { Tournament } from './tournament.entity';
 
 @Entity()
 @Unique([`university`, `studentId`])

@@ -1,19 +1,8 @@
-import {
-    GamesSeeder,
-    FormatsSeeder,
-    UsersSeeder,
-    PlayersSeeder,
-    SuspensionsSeeder,
-    TeamsSeeder,
-    InvitationsSeeder,
-    PrizesSeeder,
-    TournamentsSeeder,
-    ParticipatingTeamSeeder,
-    MatchesSeeder,
-    TournamentAdminSeeder,
-    MapSeeder,
-} from './tables-seeders';
 import { Injectable } from '@nestjs/common';
+import {
+    FormatsSeeder, GamesSeeder, InvitationsSeeder, MapSeeder, MatchesSeeder, ParticipatingTeamSeeder, PlayersSeeder, PrizesSeeder, SuspensionsSeeder,
+    TeamsSeeder, TournamentAdminSeeder, TournamentsSeeder, UsersSeeder
+} from './tables-seeders';
 
 @Injectable()
 export class Seeder {

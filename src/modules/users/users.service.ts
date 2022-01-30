@@ -1,18 +1,18 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match, Player, Team, Tournament, User } from 'src/database/entities';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 // import * as argon2 from 'argon2';
 import * as bcrypt from 'bcrypt';
-import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
+import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RolesDto } from './dto/roles.dto';
-import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
+import { Repository } from 'typeorm';
+import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersQuery } from './dto/get-users-filtered.dto';
+import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
+import { RolesDto } from './dto/roles.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {

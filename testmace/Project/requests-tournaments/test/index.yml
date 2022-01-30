@@ -6,13 +6,10 @@ assignVariables: []
 requestData:
   request:
     method: GET
-    url: '${$env.url}/tournaments/48/matches/?status=scheduled'
+    url: '${$env.url}/tournaments/test'
   headers: []
   disabledInheritedHeaders: []
-  params:
-    - name: status
-      value: scheduled
-      isChecked: true
+  params: []
   body:
     type: Json
     jsonBody: ''
@@ -25,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: get-tournament-matches
+name: test

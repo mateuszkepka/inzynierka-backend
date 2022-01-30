@@ -26,7 +26,7 @@ import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) {}
+    constructor(private readonly tournamentsService: TournamentsService) { }
 
     @Get(`/test`)
     async test() {

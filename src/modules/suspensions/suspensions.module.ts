@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Suspension } from 'src/database/entities';
+import { UsersModule } from '../users/users.module';
 import { SuspensionsController } from './suspensions.controller';
 import { SuspensionsService } from './suspensions.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Suspension]), UsersModule],
@@ -11,4 +11,4 @@ import { UsersModule } from '../users/users.module';
     exports: [SuspensionsService],
     controllers: [SuspensionsController],
 })
-export class SuspensionsModule {}
+export class SuspensionsModule { }

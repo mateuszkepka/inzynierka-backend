@@ -1,24 +1,24 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
+import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ParticipatingTeam, TournamentAdmin } from '.';
+import { Format } from './format.entity';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
 import { Ladder } from './ladder.entity';
 import { Match } from './match.entity';
-import { Format } from './format.entity';
 import { Prize } from './prize.entity';
 import { User } from './user.entity';
-import { ParticipatingTeam, TournamentAdmin } from '.';
-import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
-import { adjustTimeZone } from 'src/utils/date-util';
 
 @Entity()
 export class Tournament {
     @BeforeInsert()
     setDates() {
         this.checkInCloseDate = new Date(this.tournamentStartDate.valueOf());
-        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 1);
         this.checkInOpenDate = new Date(this.tournamentStartDate.valueOf());
-        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 35);
+        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 2);
     }
 
     @Expose()
@@ -46,71 +46,23 @@ export class Tournament {
     numberOfMaps: number;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     registerStartDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true
-    })
+    @AdjustDate()
     registerEndDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     tournamentStartDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true
-    })
+    @AdjustDate()
     checkInOpenDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        },
-        nullable: true
-    })
+    @AdjustDate()
     checkInCloseDate: Date;
 
     @Expose()

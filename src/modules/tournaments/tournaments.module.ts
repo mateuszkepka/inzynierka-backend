@@ -8,8 +8,8 @@ import { PlayersModule } from '../players/players.module';
 import { SuspensionsModule } from '../suspensions/suspensions.module';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
-import { LaddersService } from './ladders.service';
 import { GroupsService } from './groups.service';
+import { LaddersService } from './ladders.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 

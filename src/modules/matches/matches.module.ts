@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { MatchesService } from './matches.service';
-import { MatchesController } from './matches.controller';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GroupStanding, Map, Match, ParticipatingTeam, Performance, Team, Tournament } from 'src/database/entities';
-import { UsersModule } from '../users/users.module';
-import { PlayersModule } from '../players/players.module';
-import { TournamentsModule } from '../tournaments/tournaments.module';
-import { TeamsModule } from '../teams/teams.module';
 import { GamesModule } from '../games/games.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { PlayersModule } from '../players/players.module';
+import { TeamsModule } from '../teams/teams.module';
+import { TournamentsModule } from '../tournaments/tournaments.module';
+import { UsersModule } from '../users/users.module';
+import { MatchesController } from './matches.controller';
+import { MatchesService } from './matches.service';
 
 @Module({
     imports: [
         MulterModule.register({
             dest: './uploads'
-        }), TypeOrmModule.forFeature([
+        }),
+        TypeOrmModule.forFeature([
             ParticipatingTeam,
             GroupStanding,
             Performance,
@@ -33,4 +34,4 @@ import { MulterModule } from '@nestjs/platform-express';
     exports: [MatchesService],
     controllers: [MatchesController],
 })
-export class MatchesModule {}
+export class MatchesModule { }

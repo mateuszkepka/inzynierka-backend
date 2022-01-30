@@ -10,4 +10,4 @@ import { FormatsService } from './formats.service';
     controllers: [FormatsController],
     providers: [FormatsService],
 })
-export class FormatsModule {}
+export class FormatsModule { }
