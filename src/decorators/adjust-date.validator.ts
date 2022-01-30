@@ -20,8 +20,8 @@ export function AdjustDate(options?: ColumnOptions): Function {
                             return adjustTimeZone(value.valueOf(), true);
                         }
                     },
-                    ...options
                 },
+                ...options
             },
         });
     };

@@ -1,5 +1,5 @@
 import { Expose, Transform } from 'class-transformer';
-import { adjustTimeZone } from 'src/utils/date-util';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
@@ -15,29 +15,11 @@ export class Suspension {
     suspensionId: number;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     startDate: Date;
 
     @Expose()
-    @Column({
-        transformer: {
-            to(value) {
-                return adjustTimeZone(value.valueOf());
-            },
-            from(value) {
-                return adjustTimeZone(value.valueOf(), true);
-            }
-        }
-    })
+    @AdjustDate()
     endDate: Date;
 
     @Expose()
