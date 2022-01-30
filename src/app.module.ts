@@ -40,13 +40,13 @@ import { UsersModule } from './modules/users/users.module';
             useFactory: (config: ConfigService) => {
                 return {
                     type: `postgres`,
-                    // ssl: {
-                    //     rejectUnauthorized: false,
-                    // },
-                    // url: process.env.DATABASE_URL,
-                    database: config.get<string>(`DB_NAME`),
-                    username: config.get<string>(`DB_USER`),
-                    password: config.get<string>(`DB_PASSWORD`),
+                    url: process.env.DATABASE_URL,
+                    ssl: {
+                        rejectUnauthorized: false,
+                    },
+                    // database: config.get<string>(`DB_NAME`),
+                    // username: config.get<string>(`DB_USER`),
+                    // password: config.get<string>(`DB_PASSWORD`),
                     synchronize: false,
                     logging: false,
                     entities: [

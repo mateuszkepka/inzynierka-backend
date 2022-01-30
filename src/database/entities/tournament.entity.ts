@@ -16,9 +16,9 @@ export class Tournament {
     @BeforeInsert()
     setDates() {
         this.checkInCloseDate = new Date(this.tournamentStartDate.valueOf());
-        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 1);
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
         this.checkInOpenDate = new Date(this.tournamentStartDate.valueOf());
-        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 2);
+        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 35);
     }
 
     @Expose()

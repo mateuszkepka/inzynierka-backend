@@ -44,20 +44,6 @@ export class TournamentsService {
         private readonly connection: Connection,
     ) { }
 
-    async test() {
-        const tournament = await this.getById(1);
-        const participatingTeams = await this.rostersRepository
-            .createQueryBuilder(`participatingTeam`)
-            .innerJoinAndSelect(`participatingTeam.team`, `team`)
-            .where(`participatingTeam.tournamentId = :tournamentId`, {
-                tournamentId: tournament.tournamentId,
-            })
-            .limit(9)
-            .getMany();
-        // this.groupsService.drawGroups(tournament, participatingTeams, 1);
-        this.laddersService.generateLadder(tournament, participatingTeams, true);
-    }
-
     async getById(tournamentId: number) {
         const tournament = await this.tournamentsRepository.findOne({
             where: { tournamentId: tournamentId },
@@ -97,9 +83,9 @@ export class TournamentsService {
         const tournament = await this.getById(tournamentId);
         const format = tournament.format.name;
         let standings: Group[] | Ladder[];
-        // if (new Date() < tournament.checkInCloseDate) {
-        //     throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
-        // }
+        if (new Date() < tournament.checkInCloseDate) {
+            throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
+        }
         if (
             format === TournamentFormat.SingleRoundRobin ||
             format === TournamentFormat.DoubleRoundRobin
@@ -511,7 +497,7 @@ export class TournamentsService {
 
     private async scheduleTournament(tournament: Tournament) {
         const jobName = `tournament${tournament.tournamentId}`;
-        const time = new Date(tournament.registerEndDate.valueOf());
+        const time = new Date(tournament.checkInCloseDate.valueOf());
         const job = new CronJob(time, async () => {
             const teams = await this.getTeamsByTournament(tournament.tournamentId, ParticipationStatus.CheckedIn);
             const format = tournament.format.name;

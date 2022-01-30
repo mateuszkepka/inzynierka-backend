@@ -28,11 +28,6 @@ import { TournamentsService } from './tournaments.service';
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
-    @Get(`/test`)
-    async test() {
-        return this.tournamentsService.test();
-    }
-
     @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer, Role.Admin)
     async getAvailableAdmins(
@@ -86,7 +81,7 @@ export class TournamentsController {
 
     @Post()
     @Roles(Role.Organizer, Role.Admin)
-    //@UsePipes(DateValidationPipe)
+    @UsePipes(DateValidationPipe)
     async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
     }
