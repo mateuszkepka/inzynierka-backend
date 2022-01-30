@@ -15,42 +15,37 @@ import {
     UseInterceptors,
     UsePipes,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { Public } from 'src/decorators/public.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/dto/roles.enum';
+import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
+import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
 import { MatchQuery } from '../matches/dto/get-matches.dto';
-import { VerifyTeamDto } from './dto/verify-team.dto';
+import { ParticipationStatus } from '../teams/dto/participation-status';
+import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
 import { CreateParticipatingTeamDto } from './dto/create-participating-team.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { ParticipatingTeamQuery } from './dto/get-participating-team.dto';
 import { TournamentQueryDto } from './dto/get-tournaments-dto';
-import { UpdateTournamentDto } from './dto/update-tournament.dto';
-import { TournamentsService } from './tournaments.service';
-import { ParticipationStatus } from '../teams/dto/participation-status';
-import { UserIsCaptainGuard } from '../teams/guards/user-is-captain.guard';
-import { DateValidationPipe } from 'src/pipes/date-validation.pipe';
-import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
-import { MemberIsNotSuspended } from './guards/member-is-not-suspended.guard';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { editFileName, imageFileFilter } from 'src/utils/uploads-util';
+import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { VerifyTeamDto } from './dto/verify-team.dto';
+import { MemberIsNotSuspended } from './guards/member-is-not-suspended.guard';
 import { TournamentIsNotOngoing } from './guards/tournament-is-not-ongoing.guard';
+import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
+import { TournamentsService } from './tournaments.service';
 
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) {}
 
-    @Get(`/test`)
-    async test() {
-        return this.tournamentsService.test();
-    }
-
     @Get(`/:tournamentId/admins/available`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     async getAvailableAdmins(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Req() { user }: RequestWithUser,
@@ -101,8 +96,8 @@ export class TournamentsController {
     }
 
     @Post()
-    @Roles(Role.Organizer)
-    // @UsePipes(DateValidationPipe)
+    @Roles(Role.Organizer, Role.Admin)
+    @UsePipes(DateValidationPipe)
     async create(@Body() body: CreateTournamentDto, @Req() { user }: RequestWithUser) {
         return this.tournamentsService.create(body, user);
     }
@@ -158,7 +153,7 @@ export class TournamentsController {
     }
 
     @Post(`/:tournamentId/admins/:adminId`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     async addAdmin(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`adminId`, ParseIntPipe) adminId: number,
@@ -167,7 +162,7 @@ export class TournamentsController {
     }
 
     @Post(`/:tournamentId/prizes`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async addPrize(@Param(`tournamentId`, ParseIntPipe) id: number, @Body() body: CreatePrizeDto) {
         return this.tournamentsService.addPrize(id, body);
@@ -197,7 +192,7 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId/teams/:teamId`)
-    @Roles(Role.Organizer, Role.TournamentAdmin)
+    @Roles(Role.Organizer, Role.TournamentAdmin, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async verifyTeam(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
@@ -208,7 +203,7 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId/prizes`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async updatePrize(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
@@ -218,7 +213,7 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId`)
-    @Roles(Role.Organizer, Role.TournamentAdmin)
+    @Roles(Role.Organizer, Role.TournamentAdmin, Role.Admin)
     @UsePipes(DateValidationPipe)
     @UseGuards(UserIsTournamentAdmin)
     async update(
@@ -229,14 +224,14 @@ export class TournamentsController {
     }
 
     @Delete(`/:tournamentId`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     @UseGuards(TournamentIsNotOngoing)
     async remove(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
         return this.tournamentsService.remove(tournamentId);
     }
 
     @Delete(`/:tournamentId/admins/:userId`)
-    @Roles(Role.Organizer)
+    @Roles(Role.Organizer, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async removeAdmin(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,

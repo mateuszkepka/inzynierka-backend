@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common"
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { UsersService } from "src/modules/users/users.service";
 import { InvitationsService } from "../invitations.service";
 

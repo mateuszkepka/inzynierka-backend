@@ -6,7 +6,7 @@ import { TournamentFormat } from './dto/tournament-format.enum';
 
 @Injectable()
 export class FormatsService {
-    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) {}
+    constructor(@InjectRepository(Format) private readonly formatsRepository: Repository<Format>) { }
 
     async getById(formatId: number) {
         const format = await this.formatsRepository.findOne({

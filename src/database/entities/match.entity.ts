@@ -1,6 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { MatchStatus } from 'src/modules/matches/interfaces/match-status.enum';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Group, Ladder, Team } from '.';
 import { Map } from './map.entity';
 import { ParticipatingTeam } from './participating-team.entity';
@@ -8,16 +9,21 @@ import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Match {
+    @BeforeInsert()
+    setDates() {
+        this.matchStartDate = new Date();
+    }
+
     @Expose()
     @PrimaryGeneratedColumn()
     matchId: number;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     matchStartDate: Date;
 
     @Expose()
-    @Column({ default: null, nullable: true })
+    @AdjustDate({ nullable: true, default: null })
     matchEndDate: Date;
 
     @Expose()
@@ -93,10 +99,10 @@ export class Match {
     @JoinColumn({ name: `secondTeamId` })
     secondTeam: Team;
 
-    @Column({ nullable: true, default: null })
+    @AdjustDate({ nullable: true, default: null })
     firstCaptainDate: Date;
 
-    @Column({ nullable: true, default: null })
+    @AdjustDate({ nullable: true, default: null })
     secondCaptainDate: Date;
 
     @Expose()

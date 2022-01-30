@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Role } from "src/modules/auth/dto/roles.enum";
 import { TournamentsService } from "../tournaments.service";
 

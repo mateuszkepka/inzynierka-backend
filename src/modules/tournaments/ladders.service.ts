@@ -33,16 +33,13 @@ export class LaddersService {
             numberOfPhases++;
         }
         numberOfPhases -= 1;
-
         const numberOfByes = bracketSize - participatingTeams.length;
-        for (let i = 0; i < numberOfByes; i++) {
-            teams.push(null);
-        }
+
         teams = shuffle(teams);
 
         const upperBracket = await this.laddersRepository.save({
             isLosers: false,
-            tournament: tournament,
+            tournament: tournament
         });
 
         let phasesIfLower = numberOfPhases;
@@ -54,11 +51,13 @@ export class LaddersService {
             tournament,
             upperBracket,
             phasesIfLower,
-            Math.pow(2, numberOfPhases),
+            numberOfByes,
             upperDate
         );
+        const skipPositions = firstUpperRound[1];
+        console.log(skipPositions)
         upperDate = setNextPhaseDate(upperDate, tournament);
-        matches = matches.concat(firstUpperRound);
+        matches = matches.concat(firstUpperRound[0]);
 
         let numberOfUpperMatches = bracketSize / 2;
 
@@ -68,15 +67,28 @@ export class LaddersService {
             if (isLosers) {
                 doubleEliminationRound += 1;
             }
-            const upperRound = this.generateRound(
-                tournament,
-                upperBracket,
-                doubleEliminationRound,
-                numberOfUpperMatches,
-                upperDate
-            );
-            upperDate = setNextPhaseDate(upperDate, tournament);
-            matches = matches.concat(upperRound);
+            if (round === numberOfPhases - 1) {
+                const upperRound = this.generateRound(
+                    tournament,
+                    upperBracket,
+                    doubleEliminationRound,
+                    numberOfUpperMatches,
+                    upperDate,
+                    skipPositions
+                );
+                upperDate = setNextPhaseDate(upperDate, tournament);
+                matches = matches.concat(upperRound);
+            } else {
+                const upperRound = this.generateRound(
+                    tournament,
+                    upperBracket,
+                    doubleEliminationRound,
+                    numberOfUpperMatches,
+                    upperDate
+                );
+                upperDate = setNextPhaseDate(upperDate, tournament);
+                matches = matches.concat(upperRound);
+            }
         }
 
         if (isLosers) {
@@ -128,24 +140,112 @@ export class LaddersService {
         tournament: Tournament,
         ladder: Ladder,
         round: number,
-        numberOfMatches: number,
-        date: Date): Match[] {
+        numberOfByes: number,
+        date: Date): [Match[], number[]] {
         const matches: Match[] = [];
+        const skipPositions: number[] = [];
         let position = 1;
-        for (let i = 0; i < numberOfMatches; i += 2) {
+        let skipNextMatch = false;
+        for (let i = 0; i < numberOfByes; i++) {
+            let nextPosition: number;
+            if (position % 2 === 0) {
+                nextPosition = position / 2;
+            }
+            if (position % 2 !== 0) {
+                nextPosition = (position + 1) / 2;
+            }
+            if (i === numberOfByes - 1 && numberOfByes % 2 !== 0) {
+                let firstRoster = teams.pop();
+                skipNextMatch = true;
+                const match = this.matchesRepository.create({
+                    matchStartDate: new Date(date),
+                    numberOfMaps: tournament.numberOfMaps,
+                    tournament: tournament,
+                    firstRoster: firstRoster,
+                    secondRoster: null,
+                    firstTeam: firstRoster.team,
+                    secondTeam: null,
+                    round: round,
+                    position: position++,
+                    ladder: ladder,
+                    maps: [],
+                });
+                const nextMatch = this.matchesRepository.create({
+                    matchStartDate: new Date(date),
+                    numberOfMaps: tournament.numberOfMaps,
+                    tournament: tournament,
+                    firstRoster: firstRoster,
+                    secondRoster: null,
+                    firstTeam: firstRoster.team,
+                    secondTeam: null,
+                    round: round - 1,
+                    position: nextPosition,
+                    ladder: ladder,
+                    maps: [],
+                });
+                skipPositions.push(nextPosition);
+                matches.push(match, nextMatch);
+            } else if (i % 2 !== 0) {
+                let firstRoster = teams.pop();
+                let secondRoster = teams.pop();
+                const firstMatch = this.matchesRepository.create({
+                    matchStartDate: new Date(date),
+                    numberOfMaps: tournament.numberOfMaps,
+                    tournament: tournament,
+                    firstRoster: firstRoster,
+                    secondRoster: null,
+                    firstTeam: firstRoster.team,
+                    secondTeam: null,
+                    round: round,
+                    position: position++,
+                    ladder: ladder,
+                    maps: [],
+                });
+                const secondMatch = this.matchesRepository.create({
+                    matchStartDate: new Date(date),
+                    numberOfMaps: tournament.numberOfMaps,
+                    tournament: tournament,
+                    firstRoster: null,
+                    secondRoster: secondRoster,
+                    firstTeam: null,
+                    secondTeam: secondRoster.team,
+                    round: round,
+                    position: position++,
+                    ladder: ladder,
+                    maps: [],
+                });
+                if (!skipNextMatch) {
+                    const nextMatch = this.matchesRepository.create({
+                        matchStartDate: new Date(date),
+                        numberOfMaps: tournament.numberOfMaps,
+                        tournament: tournament,
+                        firstRoster: firstRoster,
+                        secondRoster: secondRoster,
+                        firstTeam: firstRoster.team,
+                        secondTeam: secondRoster.team,
+                        round: round - 1,
+                        position: nextPosition,
+                        ladder: ladder,
+                        maps: [],
+                    });
+                    matches.push(nextMatch);
+                    skipPositions.push(nextPosition);
+                }
+                matches.push(firstMatch, secondMatch);
+                console.log(`po `, teams.length)
+            } else {
+                continue;
+            }
+
+        }
+        position = numberOfByes + 1;
+        for (let i = 0; i < teams.length; i += 2) {
             let firstRoster = teams[i];
-            let secondRoster = teams[i + i];
-            let firstTeam = null;
-            let secondTeam = null;
-            if (firstRoster !== null) {
-                firstTeam = firstRoster.team;
-            }
-            if (secondRoster != null) {
-                secondTeam = secondRoster.team;
-            }
+            let secondRoster = teams[i + 1];
+            let firstTeam = firstRoster.team;
+            let secondTeam = secondRoster.team;
             const match = this.matchesRepository.create({
                 matchStartDate: new Date(date),
-                status: MatchStatus.Scheduled,
                 numberOfMaps: tournament.numberOfMaps,
                 tournament: tournament,
                 firstRoster: firstRoster,
@@ -159,7 +259,7 @@ export class LaddersService {
             });
             matches.push(match);
         }
-        return matches;
+        return [matches, skipPositions];
     }
 
     private generateRound(
@@ -168,9 +268,13 @@ export class LaddersService {
         round: number,
         numberOfMatches: number,
         date: Date,
+        skipPositions?: number[]
     ): Match[] {
         const matches: Match[] = [];
         for (let i = 0; i < numberOfMatches; i++) {
+            if (skipPositions && skipPositions.includes(i + 1)) {
+                continue;
+            }
             const match = this.matchesRepository.create({
                 matchStartDate: new Date(date),
                 status: MatchStatus.Scheduled,

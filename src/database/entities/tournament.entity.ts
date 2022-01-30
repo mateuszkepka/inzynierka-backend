@@ -10,6 +10,7 @@ import {
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam, TournamentAdmin } from '.';
 
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { Format } from './format.entity';
 import { Game } from './game.entity';
 import { Group } from './group.entity';
@@ -23,10 +24,10 @@ import { User } from './user.entity';
 export class Tournament {
     @BeforeInsert()
     setDates() {
-        this.checkInCloseDate = new Date(this.tournamentStartDate);
-        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 1);
-        this.checkInOpenDate = new Date(this.checkInCloseDate);
-        this.checkInOpenDate.setMinutes(this.checkInCloseDate.getMinutes() - 3);
+        this.checkInCloseDate = new Date(this.tournamentStartDate.valueOf());
+        this.checkInCloseDate.setMinutes(this.checkInCloseDate.getMinutes() - 5);
+        this.checkInOpenDate = new Date(this.tournamentStartDate.valueOf());
+        this.checkInOpenDate.setMinutes(this.checkInOpenDate.getMinutes() - 35);
     }
 
     @Expose()
@@ -54,23 +55,23 @@ export class Tournament {
     numberOfMaps: number;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     registerStartDate: Date;
 
     @Expose()
-    @Column({ nullable: true })
+    @AdjustDate()
     registerEndDate: Date;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     tournamentStartDate: Date;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     checkInOpenDate: Date;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     checkInCloseDate: Date;
 
     @Expose()

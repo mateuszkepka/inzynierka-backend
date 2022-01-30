@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, Format, Prize, Tournament, User } from 'src/database/entities';
-import { Repository } from 'typeorm';
 import * as faker from 'faker';
-import { getRandom } from 'src/utils/tournaments-util';
+import { Format, Game, Prize, Tournament, User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
 import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
 import { TournamentStatus } from 'src/modules/tournaments/dto/tourrnament.status.enum';
+import { getRandom } from 'src/utils/tournaments-util';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TournamentsSeeder {

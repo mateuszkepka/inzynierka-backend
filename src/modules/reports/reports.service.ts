@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, Report } from 'src/database/entities';
+import { Report, User } from 'src/database/entities';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateReportDto } from './dto/create-report-dto';
@@ -12,7 +12,7 @@ export class ReportsService {
     constructor(
         @InjectRepository(Report) private readonly reportsRepository: Repository<Report>,
         private readonly usersService: UsersService,
-    ) {}
+    ) { }
 
     async getById(reportId: number) {
         const report = await this.reportsRepository.findOne({ where: { reportId: reportId } });
@@ -41,9 +41,6 @@ export class ReportsService {
             queryBuilder.andWhere(`report.status = :status`, { status: status });
         }
         const reports = await queryBuilder.getMany();
-        if (reports.length === 0) {
-            throw new NotFoundException(`No reports with given parameters found`);
-        }
         return reports;
     }
 

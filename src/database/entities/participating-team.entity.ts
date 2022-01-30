@@ -1,6 +1,8 @@
 import { Expose, Transform, Type } from 'class-transformer';
+import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { ParticipationStatus } from 'src/modules/teams/dto/participation-status';
 import { RosterMember } from 'src/modules/tournaments/dto/create-participating-team.dto';
+import { adjustTimeZone } from 'src/utils/date-util';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { GroupStanding, Team, Tournament } from '.';
 
@@ -33,15 +35,43 @@ export class ParticipatingTeam {
     team: Team;
 
     @Expose()
-    @Column()
+    @AdjustDate()
     signDate: Date;
 
     @Expose()
-    @Column({ default: null, nullable: true })
+    @Column({
+        transformer: {
+            to(value) {
+                if (value) {
+                    return adjustTimeZone(value.valueOf());
+                }
+            },
+            from(value) {
+                if (value) {
+                    return adjustTimeZone(value.valueOf(), true);
+                }
+            }
+        },
+        nullable: true,
+        default: true
+    })
     verificationDate: Date;
 
     @Expose()
-    @Column({ default: null, nullable: true })
+    @Column({
+        transformer: {
+            to(value) {
+                return adjustTimeZone(value.valueOf());
+            },
+            from(value) {
+                if (value) {
+                    return adjustTimeZone(value.valueOf(), true);
+                }
+            }
+        },
+        nullable: true,
+        default: true
+    })
     checkInDate: Date;
 
     @Expose()

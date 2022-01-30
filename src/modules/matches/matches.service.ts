@@ -1,16 +1,15 @@
+import vision from '@google-cloud/vision';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroupStanding, Ladder, Map as MatchMap, Match, ParticipatingTeam, Performance, Team, Tournament, User } from 'src/database/entities';
-import { Brackets, Connection, Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { PlayersService } from '../players/players.service';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { CreateStatsDto } from './dto/create-stats.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
-import vision from '@google-cloud/vision';
 import { MatchStatus } from './interfaces/match-status.enum';
-import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
-import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class MatchesService {
@@ -23,11 +22,10 @@ export class MatchesService {
         private readonly tournamentsService: TournamentsService,
         private readonly playersService: PlayersService,
         private readonly connection: Connection,
-        private readonly usersService: UsersService,
     ) { }
 
     async getById(id: number) {
-        const match = await this.matchesRepository
+        let match = await this.matchesRepository
             .createQueryBuilder(`match`)
             .select([
                 `match.matchId`,
@@ -70,35 +68,25 @@ export class MatchesService {
         return match;
     }
 
-    async getWithRelations(matchId: number) {
-        const match = await this.matchesRepository.findOne({
-            relations: [`group`, `tournament`, `firstRoster`, `secondRoster`, `firstTeam`, `secondTeam`, `ladder`, `firstTeam.captain`, `secondTeam.captain`, `firstTeam.captain.user`, `secondTeam.captain.user`, `maps`],
-            where: { matchId: matchId }
-        })
+    async getMatchByPosition(ladderId: number, round: number, position: number) {
+        let match = await this.matchesRepository
+            .createQueryBuilder(`match`)
+            .innerJoin(`match.ladder`, `ladder`)
+            .leftJoinAndSelect(`match.firstTeam`, `firstTeam`)
+            .leftJoinAndSelect(`match.secondTeam`, `secondTeam`)
+            .where(`ladder.ladderId = :ladderId`, { ladderId: ladderId })
+            .andWhere(`match.position = :position`, { position: position })
+            .andWhere(`match.round = :round`, { round: round })
+            .getOne();
         return match;
     }
 
-    async getHeadToHead(firstRoster: ParticipatingTeam, secondRoster: ParticipatingTeam) {
-        const matches = await this.matchesRepository
-            .createQueryBuilder(`match`)
-            .where(
-                new Brackets((qb) => {
-                    qb.where(`match.firstRoster = :firstRoster`, {
-                        firstRoster: firstRoster,
-                    }).andWhere(`match.secondRoster = :secondRoster`, {
-                        secondRoster: secondRoster,
-                    });
-                }),
-            )
-            .orWhere(
-                new Brackets((qb) => {
-                    qb.where(`match.firstRoster = :secondRoster`, {
-                        secondRoster: secondRoster,
-                    }).andWhere(`match.secondRoster = :firstRoster`, { firstRoster: firstRoster });
-                }),
-            )
-            .getMany();
-        return matches;
+    async getWithRelations(matchId: number) {
+        let match = await this.matchesRepository.findOne({
+            relations: [`group`, `tournament`, `firstRoster`, `secondRoster`, `firstTeam`, `secondTeam`, `ladder`, `firstTeam.captain`, `secondTeam.captain`, `firstTeam.captain.user`, `secondTeam.captain.user`, `maps`],
+            where: { matchId: matchId }
+        });
+        return match;
     }
 
     async update(id: number, attrs: Partial<UpdateMatchDto>) {
@@ -362,8 +350,6 @@ export class MatchesService {
                     losersLadder = lowerLadder;
                     losersRound = 1;
                     losersPosition = 1;
-                    tournament.status = TournamentStatus.Finished;
-                    await this.tournamentsRepository.save(tournament);
                 }
             }
 
@@ -429,11 +415,18 @@ export class MatchesService {
             }
             await this.matchesRepository.save(nextWinnersMatch);
         }
+        // checking if there are more scheduled matches
+        const isOnGoing = await this.tournamentsService
+            .getMatchesByTournament(tournament.tournamentId, MatchStatus.Scheduled);
+        if (!isOnGoing) {
+            tournament.status === TournamentStatus.Finished;
+            await this.tournamentsRepository.save(tournament);
+        }
     }
 
     async parseResults(matchId: number, results: Array<Express.Multer.File>, user: User): Promise<{ winner: number, confirmed: boolean }> {
         const match = await this.getWithRelations(matchId);
-        this.validateScreenshots(match, results);
+        //this.validateScreenshots(match, results);
         let senderTeam: Team;
         let otherTeam: Team;
         let firstTeamWins: number = 0;
@@ -601,7 +594,7 @@ export class MatchesService {
             await this.connection.manager.delete(Performance, performanceIds);
             await this.connection.manager.delete(MatchMap, mapIds);
             await this.matchesRepository.save(match);
-            throw new BadRequestException(`Screenshots are not matching your opponent's ones`);;
+            throw new BadRequestException(`Screenshots are not matching your opponent's ones`);
         }
         await this.matchesRepository.save(match);
     }
@@ -647,18 +640,5 @@ export class MatchesService {
         if (notEnoughScreensError) {
             throw new BadRequestException(`Not enough screenshots provided!`)
         }
-    }
-
-    async getMatchByPosition(ladderId: number, round: number, position: number) {
-        const match = await this.matchesRepository
-            .createQueryBuilder(`match`)
-            .innerJoin(`match.ladder`, `ladder`)
-            .leftJoinAndSelect(`match.firstTeam`, `firstTeam`)
-            .leftJoinAndSelect(`match.secondTeam`, `secondTeam`)
-            .where(`ladder.ladderId = :ladderId`, { ladderId: ladderId })
-            .andWhere(`match.position = :position`, { position: position })
-            .andWhere(`match.round = :round`, { round: round })
-            .getOne();
-        return match;
     }
 }

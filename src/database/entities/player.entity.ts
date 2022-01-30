@@ -1,9 +1,9 @@
+import { Expose, Transform } from 'class-transformer';
+import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Game, Invitation, Performance } from '.';
-import { Expose, Transform } from 'class-transformer';
 import { Team } from './team.entity';
 import { User } from './user.entity';
-import { RegionsLoL } from 'src/modules/games/interfaces/regions';
 
 @Entity()
 export class Player {
@@ -31,14 +31,7 @@ export class Player {
     })
     region: RegionsLoL;
 
-    @Expose({ name: `userId` })
-    @Transform(({ value }) => {
-        if (value !== undefined) {
-            return value.userId;
-        } else {
-            return;
-        }
-    }, { toPlainOnly: true })
+    @Expose()
     @ManyToOne(() => User, (user) => user.accounts, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `userId` })
     user: User;

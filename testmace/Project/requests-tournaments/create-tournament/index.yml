@@ -15,16 +15,16 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "test3",
+        "name": "BigTest13",
         "format": "Single Elimination Ladder",
-        "numberOfPlayers": 5,
-        "numberOfTeams": 16,
+        "numberOfPlayers": 2,
+        "numberOfTeams": 8,
         "numberOfMaps": 3,
         "endingHour": 21,
         "endingMinutes": 0,
-        "registerStartDate": "2022-02-02T22:01:00+0000",
-        "registerEndDate": "2022-02-02T22:05:00+0000",
-        "tournamentStartDate": "2022-02-02T23:05:00+0000",
+        "registerStartDate": "2022-01-29T03:23:00Z",
+        "registerEndDate": "2022-01-29T03:24:00Z",
+        "tournamentStartDate": "2022-01-29T03:31:00Z",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

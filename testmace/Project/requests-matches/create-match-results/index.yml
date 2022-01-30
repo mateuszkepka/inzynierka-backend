@@ -17,7 +17,7 @@ requestData:
     textBody: ''
     formData:
       - isChecked: true
-        value: 'C:\Users\Adam\Desktop\team2\team2_lose.png'
+        value: 'C:\Users\Adam\Desktop\tests.png'
         name: 'image[]'
         type: File
       - isChecked: true

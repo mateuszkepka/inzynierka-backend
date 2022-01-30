@@ -1,34 +1,28 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match, Player, Team, Tournament, User } from 'src/database/entities';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 // import * as argon2 from 'argon2';
 import * as bcrypt from 'bcrypt';
-import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
-import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
+import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RolesDto } from './dto/roles.dto';
-import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
+import { Repository } from 'typeorm';
+import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
+import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersQuery } from './dto/get-users-filtered.dto';
+import { GetUsersTournamentsQuery } from './dto/get-users-tournaments.dto';
+import { RolesDto } from './dto/roles.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
         @InjectRepository(User) private readonly usersRepository: Repository<User>,
         @InjectRepository(Player) private readonly playersRepository: Repository<Player>,
         @InjectRepository(Team) private readonly teamsRepository: Repository<Team>,
         @InjectRepository(Match) private readonly matchesRepository: Repository<Match>,
-    ) {}
+    ) { }
 
     async getAll() {
         const users = await this.usersRepository.find();
@@ -64,9 +58,6 @@ export class UsersService {
         const user = await this.usersRepository.findOne({
             where: { username: username },
         });
-        if (!user) {
-            throw new NotFoundException(`User with this username does not exist`);
-        }
         return user;
     }
 
@@ -230,7 +221,7 @@ export class UsersService {
         let tournaments = [];
         try {
             tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) {}
+        } catch (ignore) { }
         if (tournaments.length !== 0) {
             throw new ForbiddenException(
                 `You can not delete your account when you have ongoing tournaments`,

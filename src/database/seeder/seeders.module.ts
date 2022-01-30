@@ -1,10 +1,10 @@
-import * as entities from 'src/database/entities';
-import * as seeders from './tables-seeders'
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TournamentsModule } from 'src/modules/tournaments/tournaments.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as entities from 'src/database/entities';
 import { MatchesModule } from 'src/modules/matches/matches.module';
+import { TournamentsModule } from 'src/modules/tournaments/tournaments.module';
+import * as seeders from './tables-seeders';
 
 @Module({
     imports: [
@@ -61,4 +61,4 @@ import { MatchesModule } from 'src/modules/matches/matches.module';
         seeders.TournamentAdminSeeder,
     ],
 })
-export class SeedersModule {}
+export class SeedersModule { }

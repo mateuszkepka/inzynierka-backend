@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Match, ParticipatingTeam, Tournament } from 'src/database/entities';
+import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
 import { GroupsService } from 'src/modules/tournaments/groups.service';
 import { LaddersService } from 'src/modules/tournaments/ladders.service';
-import { TournamentFormat } from 'src/modules/formats/dto/tournament-format.enum';
-import { Match, ParticipatingTeam, Tournament } from 'src/database/entities';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()

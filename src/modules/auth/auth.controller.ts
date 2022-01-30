@@ -1,17 +1,17 @@
 import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { Public } from 'src/decorators/public.decorator';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import RequestWithUser from './interfaces/request-with-user.interface';
 import JwtRefreshGuard from './guards/jwt-refresh-auth.guard';
-import { Public } from 'src/decorators/public.decorator';
+import RequestWithUser from './interfaces/request-with-user.interface';
 
 @Controller(`auth`)
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private readonly usersService: UsersService,
-    ) {}
+    ) { }
 
     @Post(`register`)
     @Public()

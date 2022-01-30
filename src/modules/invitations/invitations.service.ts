@@ -89,40 +89,38 @@ export class InvitationsService {
 
     async remove(id: number, user: User) {
         const invitation = await this.getById(id);
-        // TEAMS OF THE USER WHO SENDS REQUEST
+        // teams of the user who sends request
         let teams = [];
         try {
             teams = await this.usersService.getTeamsByUser(user.userId);
         } catch (ignore) {
             throw new ForbiddenException(`You are not a team member`);
         }
-        // THE TEAM WHICH INVITATION IS ABOUT
+        // the team which invitation is about
         const teamOnInvitation = await this.teamsService.getById(invitation.team.teamId);
         if (!teams.some((team) => team.teamId === teamOnInvitation.teamId)) {
             throw new ForbiddenException(`You are not a team member`);
         }
-        // ACCOUNTS OF THE USER WHO SENDS REQUEST
+        // accounts of the user who sends request
         const accounts = await this.usersService.getAccounts(user.userId);
-        // A PLAYER TO BE DELETED FROM THE TEAM
+        // a player to be deleted from the team
         const playerOnInvitation = await this.playersService.getById(invitation.player.playerId);
-        // CHECKING IF THE USER IS THE TEAM'S CAPTAIN
+        // checking if the user is the team's captain
         if (accounts.some((account) => account.playerId === teamOnInvitation.captain.playerId)) {
-            // INVITATION IS NOT ACCEPTED = THE PLAYER IS NOT A TEAM MEMBER
             if (invitation.status === InvitationStatus.Refused) {
                 throw new BadRequestException(`The player is not a team member`);
             }
-            // A CAPTAIN CANNOT KICK HIMSELF
+            // a captain cannot kick himself
             if (accounts.some((account) => account.playerId === playerOnInvitation.playerId)) {
                 throw new ForbiddenException(`You can not kick yourself from the team`);
             }
-            // THE CAPTAIN KICKS A TEAM MEMBER
             return this.invitationsRepository.remove(invitation);
         }
-        // A USER IS NOT A CAPTAIN AND IS TRYING TO KICK ANOTHER MEMBER
+        // a user is not a captain and is trying to kick somebody else than himself
         if (playerOnInvitation.user.userId !== user.userId) {
             throw new ForbiddenException(`Only captain's can kick players`);
         }
-        // PLAYER LEAVING THE TEAM
+        // player leaving the team
         return this.invitationsRepository.remove(invitation);
     }
 }

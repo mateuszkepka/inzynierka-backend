@@ -1,9 +1,9 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common"
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { User } from "src/database/entities";
+import { Role } from "src/modules/auth/dto/roles.enum";
 import { SuspensionStatus } from "src/modules/suspensions/dto/suspension-status.enum";
 import { SuspensionsService } from "src/modules/suspensions/suspensions.service";
 import { TeamsService } from "src/modules/teams/teams.service";
-import { Role } from "src/modules/auth/dto/roles.enum";
 
 @Injectable()
 export class MemberIsNotSuspended implements CanActivate {

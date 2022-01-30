@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as faker from 'faker';
 import { Prize } from 'src/database/entities';
 import { Repository } from 'typeorm';
-import * as faker from 'faker';
 
 @Injectable()
 export class PrizesSeeder {

@@ -1,15 +1,4 @@
-import {
-    IsDateString,
-    IsEnum,
-    IsIn,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    Max,
-    Min,
-    ValidateIf,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min, ValidateIf } from 'class-validator';
 import { IsGreaterThan } from 'src/decorators/is-greater-than.validator';
 import { TournamentFormat } from '../../formats/dto/tournament-format.enum';
 
