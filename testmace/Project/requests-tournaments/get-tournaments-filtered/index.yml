@@ -10,9 +10,9 @@ requestData:
   headers: []
   disabledInheritedHeaders: []
   params:
-    - name: status
+    - isChecked: true
+      name: status
       value: upcoming
-      isChecked: true
   body:
     type: Json
     jsonBody: ''

@@ -1,20 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-    Req,
-    Res,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-    UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Public } from 'src/decorators/public.decorator';
@@ -42,7 +26,7 @@ import { TournamentsService } from './tournaments.service';
 @Controller(`tournaments`)
 @Roles(Role.Player)
 export class TournamentsController {
-    constructor(private readonly tournamentsService: TournamentsService) {}
+    constructor(private readonly tournamentsService: TournamentsService) { }
 
     @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer, Role.Admin)
@@ -192,7 +176,6 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId/teams/:teamId`)
-    @Roles(Role.Organizer, Role.TournamentAdmin, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async verifyTeam(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
@@ -203,7 +186,6 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId/prizes`)
-    @Roles(Role.Organizer, Role.Admin)
     @UseGuards(UserIsTournamentAdmin)
     async updatePrize(
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
@@ -213,7 +195,6 @@ export class TournamentsController {
     }
 
     @Patch(`/:tournamentId`)
-    @Roles(Role.Organizer, Role.TournamentAdmin, Role.Admin)
     @UsePipes(DateValidationPipe)
     @UseGuards(UserIsTournamentAdmin)
     async update(
@@ -224,7 +205,7 @@ export class TournamentsController {
     }
 
     @Delete(`/:tournamentId`)
-    @Roles(Role.Organizer, Role.Admin)
+    @Roles(Role.Admin)
     @UseGuards(TournamentIsNotOngoing)
     async remove(@Param(`tournamentId`, ParseIntPipe) tournamentId: number) {
         return this.tournamentsService.remove(tournamentId);

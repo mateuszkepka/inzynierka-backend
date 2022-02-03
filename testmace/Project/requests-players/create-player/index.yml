@@ -14,7 +14,7 @@ requestData:
     type: Json
     jsonBody: |-
       {
-        "summonerName": "TestKick2",
+        "summonerName": "TestOrganizer",
         "gameId": 1,
         "region": "EUNE"
       }

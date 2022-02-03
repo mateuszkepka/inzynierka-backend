@@ -16,7 +16,7 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) {}
+    ) { }
 
     async register(registrationData: RegisterDto) {
         // const hashedPassword = await argon2.hash(registrationData.password, {
@@ -27,14 +27,12 @@ export class AuthService {
         const emailCheck = await this.usersRepository.findOne({
             where: { email: registrationData.email },
         });
-
         if (emailCheck) {
             exceptions.push(`This email is already taken!`);
         }
         const usernameCheck = await this.usersRepository.findOne({
             where: { username: registrationData.username },
         });
-
         if (usernameCheck) {
             exceptions.push(`This username is already taken!`);
         }
@@ -44,7 +42,6 @@ export class AuthService {
                 studentId: registrationData.studentId,
             },
         });
-
         if (universityCheck) {
             exceptions.push(`This student id on your university is already taken!`);
         }

@@ -1,26 +1,8 @@
-import {
-    BadRequestException,
-    ForbiddenException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
-import {
-    Format,
-    Group,
-    GroupStanding,
-    Ladder,
-    Match,
-    ParticipatingTeam,
-    Player,
-    Prize,
-    Team,
-    Tournament,
-    TournamentAdmin,
-    User,
-} from 'src/database/entities';
+import { Format, Group, GroupStanding, Ladder, Match, ParticipatingTeam, Player, Prize, Team, Tournament, TournamentAdmin, User } from 'src/database/entities';
 import { Brackets, Connection, Repository } from 'typeorm';
 import { TournamentFormat } from '../formats/dto/tournament-format.enum';
 import { FormatsService } from '../formats/formats.service';
@@ -43,14 +25,10 @@ import { LaddersService } from './ladders.service';
 @Injectable()
 export class TournamentsService {
     constructor(
-        @InjectRepository(Tournament)
-        private readonly tournamentsRepository: Repository<Tournament>,
-        @InjectRepository(ParticipatingTeam)
-        private readonly rostersRepository: Repository<ParticipatingTeam>,
-        @InjectRepository(GroupStanding)
-        private readonly groupStandingsRepository: Repository<GroupStanding>,
-        @InjectRepository(TournamentAdmin)
-        private readonly tournamentAdminsRepository: Repository<TournamentAdmin>,
+        @InjectRepository(Tournament) private readonly tournamentsRepository: Repository<Tournament>,
+        @InjectRepository(ParticipatingTeam) private readonly rostersRepository: Repository<ParticipatingTeam>,
+        @InjectRepository(GroupStanding) private readonly groupStandingsRepository: Repository<GroupStanding>,
+        @InjectRepository(TournamentAdmin) private readonly tournamentAdminsRepository: Repository<TournamentAdmin>,
         @InjectRepository(Ladder) private readonly laddersRepository: Repository<Ladder>,
         @InjectRepository(Group) private readonly groupsRepository: Repository<Group>,
         @InjectRepository(Prize) private readonly prizeRepository: Repository<Prize>,
@@ -65,7 +43,7 @@ export class TournamentsService {
         private readonly teamsService: TeamsService,
         private readonly gamesService: GamesService,
         private readonly connection: Connection,
-    ) {}
+    ) { }
 
     async getById(tournamentId: number) {
         const tournament = await this.tournamentsRepository.findOne({
@@ -371,6 +349,11 @@ export class TournamentsService {
             status: TournamentStatus.Upcoming,
         });
         await this.tournamentsRepository.save(tournament);
+        const admin = this.tournamentAdminsRepository.create({
+            tournament: tournament,
+            user: user
+        });
+        await this.tournamentAdminsRepository.save(admin);
         await this.scheduleTournament(tournament);
         return tournament;
     }

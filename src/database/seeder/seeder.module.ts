@@ -1,11 +1,9 @@
-import * as entities from '../entities';
-
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as entities from '../entities';
 import { Seeder } from './seeder';
 import { SeedersModule } from './seeders.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
     imports: [
@@ -55,4 +53,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ],
     providers: [Seeder],
 })
-export class SeederModule {}
+export class SeederModule { }

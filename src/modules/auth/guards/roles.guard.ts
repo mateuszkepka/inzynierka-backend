@@ -7,7 +7,6 @@ import { Role } from 'src/modules/auth/dto/roles.enum';
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(private reflector: Reflector) { }
-
     canActivate(context: ExecutionContext): boolean {
         if (shouldBypassAuth(context, this.reflector)) {
             return true;

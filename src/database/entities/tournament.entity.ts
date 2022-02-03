@@ -1,15 +1,6 @@
-import {
-    BeforeInsert,
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { ParticipatingTeam, TournamentAdmin } from '.';
-
 import { AdjustDate } from 'src/decorators/adjust-date.validator';
 import { Format } from './format.entity';
 import { Game } from './game.entity';
@@ -109,16 +100,13 @@ export class Tournament {
     game: Game;
 
     @Expose({ name: `organizerId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.userId;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.userId;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => User, (user) => user.organizedTournaments, { onDelete: `NO ACTION` })
     @JoinColumn({ name: `organizerId` })
     organizer: User;
@@ -136,16 +124,13 @@ export class Tournament {
     tournamentAdmins: TournamentAdmin[];
 
     @Expose({ name: `formatId` })
-    @Transform(
-        ({ value }) => {
-            if (value !== undefined) {
-                return value.name;
-            } else {
-                return;
-            }
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value !== undefined) {
+            return value.name;
+        } else {
+            return;
+        }
+    }, { toPlainOnly: true })
     @ManyToOne(() => Format, { eager: true, nullable: true })
     @JoinColumn({ name: `formatId` })
     format: Format;

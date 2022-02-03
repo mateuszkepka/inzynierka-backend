@@ -6,7 +6,6 @@ children:
   - register
   - authenticate
   - refresh-token
-  - log-in-admin Copy
 variablesArray: []
 type: Folder
 authData:
