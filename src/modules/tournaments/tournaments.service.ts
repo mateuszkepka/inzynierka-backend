@@ -230,8 +230,8 @@ export class TournamentsService {
     async getAdmins(tournamentId: number) {
         const admins = await this.userRepository
             .createQueryBuilder(`user`)
-            .innerJoin(`user.tournamentAdmins`, `admins`)
-            .innerJoin(`admins.tournament`, `tournament`)
+            .innerJoin(`user.tournamentAdmins`, `admin`)
+            .innerJoin(`admin.tournament`, `tournament`)
             .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournamentId })
             .getMany();
         if (admins.length === 0) {

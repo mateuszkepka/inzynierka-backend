@@ -24,7 +24,7 @@ import { UserIsTournamentAdmin } from './guards/user-is-tournament-admin.guard';
 import { TournamentsService } from './tournaments.service';
 
 @Controller(`tournaments`)
-@Roles(Role.Player)
+@Roles(Role.User)
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
 
