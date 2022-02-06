@@ -15,16 +15,16 @@ requestData:
     jsonBody: |-
       {
         "gameId": 1,
-        "name": "d2222",
+        "name": "testv4",
         "format": "Single Elimination Ladder",
-        "numberOfPlayers": 2,
-        "numberOfTeams": 8,
-        "numberOfMaps": 3,
-        "endingHour": 21,
+        "numberOfPlayers": 1,
+        "numberOfTeams": 4,
+        "numberOfMaps": 1,
+        "endingHour": 23,
         "endingMinutes": 0,
-        "registerStartDate": "2023-01-29T03:23:00Z",
-        "registerEndDate": "2023-01-29T03:24:00Z",
-        "tournamentStartDate": "2023-01-29T09:31:00Z",
+        "registerStartDate": "2022-02-06T03:00:00Z",
+        "registerEndDate": "2022-02-06T03:07:00Z",
+        "tournamentStartDate": "2022-02-06T04:04:00Z",
         "description": "Quibusdam magni ipsaet ui. Voluptates par"
       }
     xmlBody: ''

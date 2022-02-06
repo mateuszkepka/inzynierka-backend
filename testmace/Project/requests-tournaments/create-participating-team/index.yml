@@ -6,7 +6,7 @@ assignVariables: []
 requestData:
   request:
     method: POST
-    url: '${$env.url}/tournaments/11/teams/1'
+    url: '${$env.url}/tournaments/26/teams/110'
   headers: []
   disabledInheritedHeaders: []
   params: []
@@ -16,8 +16,8 @@ requestData:
       {
         "roster": [
           {
-            "username": "admin",
-            "playerId": 1
+            "username": "testxd",
+            "playerId": 397
           }
         ]
       }

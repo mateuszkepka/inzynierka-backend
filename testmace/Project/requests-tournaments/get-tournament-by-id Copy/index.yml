@@ -5,17 +5,14 @@ type: RequestStep
 assignVariables: []
 requestData:
   request:
-    method: PATCH
-    url: '${$env.url}/tournaments/25/teams/110'
+    method: GET
+    url: '${$env.url}/tournaments/1/test'
   headers: []
   disabledInheritedHeaders: []
   params: []
   body:
     type: Json
-    jsonBody: |-
-      {
-        "status": "verified"
-      }
+    jsonBody: ''
     xmlBody: ''
     textBody: ''
     formData: []
@@ -25,4 +22,4 @@ requestData:
   followRedirect: Inherit
 authData:
   type: inherit
-name: update-participating-team
+name: get-tournament-by-id Copy

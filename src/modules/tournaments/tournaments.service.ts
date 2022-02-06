@@ -82,15 +82,18 @@ export class TournamentsService {
 
     async getStandingsByTournament(tournamentId: number) {
         const tournament = await this.getById(tournamentId);
+        if (tournament.numberOfTeams < 2 && new Date() > tournament.checkInCloseDate) {
+            throw new NotFoundException(`Not enough teams were signed for this tournament to be played`);
+        }
         const format = tournament.format.name;
         let standings: Group[] | Ladder[];
-        if (new Date() > tournament.checkInCloseDate) {
-            throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
-        }
         if (
             format === TournamentFormat.SingleRoundRobin ||
             format === TournamentFormat.DoubleRoundRobin
         ) {
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Groups for this tournament aren't drawn yet`);
+            }
             standings = await this.groupsRepository
                 .createQueryBuilder(`group`)
                 .addSelect([`team.teamId`, `team.teamName`])
@@ -103,15 +106,13 @@ export class TournamentsService {
                 .getMany();
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Ladder for this tournament aren't drawn yet`);
+            }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
-                .addSelect([
-                    `firstTeam.teamId`,
-                    `firstTeam.teamName`,
-                    `secondTeam.teamId`,
-                    `secondTeam.teamName`,
-                ])
+                .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
                 .leftJoin(`ladder.tournament`, `tournament`)
                 .leftJoinAndSelect(`ladder.matches`, `match`)
                 .leftJoin(`match.firstTeam`, `firstTeam`)
@@ -122,15 +123,13 @@ export class TournamentsService {
                 .getMany();
         }
         if (format === TournamentFormat.DoubleEliminationLadder) {
+            if (new Date() < tournament.checkInCloseDate) {
+                throw new NotFoundException(`Ladders for this tournament aren't drawn yet`);
+            }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
                 .addSelect([`match.matchId`, `match.status`, `match.winner`])
-                .addSelect([
-                    `firstTeam.teamId`,
-                    `firstTeam.teamName`,
-                    `secondTeam.teamId`,
-                    `secondTeam.teamName`,
-                ])
+                .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
                 .leftJoin(`ladder.tournament`, `tournament`)
                 .leftJoinAndSelect(`ladder.matches`, `match`)
                 .leftJoin(`match.firstTeam`, `firstTeam`)
@@ -164,16 +163,11 @@ export class TournamentsService {
             .createQueryBuilder(`match`)
             .addSelect([`firstRoster.team`, `secondRoster.team`])
             .addSelect([`firstRoster.participatingTeamId`, `secondRoster.participatingTeamId`])
-            .addSelect([
-                `firstTeam.teamId`,
-                `firstTeam.teamName`,
-                `secondTeam.teamId`,
-                `secondTeam.teamName`,
-            ])
-            .innerJoin(`match.firstRoster`, `firstRoster`)
-            .innerJoin(`match.secondRoster`, `secondRoster`)
-            .innerJoin(`firstRoster.team`, `firstTeam`)
-            .innerJoin(`secondRoster.team`, `secondTeam`)
+            .addSelect([`firstTeam.teamId`, `firstTeam.teamName`, `secondTeam.teamId`, `secondTeam.teamName`])
+            .leftJoin(`match.firstRoster`, `firstRoster`)
+            .leftJoin(`match.secondRoster`, `secondRoster`)
+            .leftJoin(`firstRoster.team`, `firstTeam`)
+            .leftJoin(`secondRoster.team`, `secondTeam`)
             .where(`match.tournamentId = :tournamentId`, { tournamentId: tournamentId });
         if (status === MatchStatus.Scheduled) {
             qb.andWhere(
@@ -197,7 +191,6 @@ export class TournamentsService {
             qb.andWhere(`match.status = :status`, { status: status });
         }
         qb.orderBy(`match.matchId`);
-        console.log(qb.getQuery());
         return qb.getMany();
     }
 

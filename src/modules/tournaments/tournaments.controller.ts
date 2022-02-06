@@ -27,7 +27,7 @@ import { TournamentsService } from './tournaments.service';
 @Roles(Role.User)
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
-
+    
     @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer, Role.Admin)
     async getAvailableAdmins(

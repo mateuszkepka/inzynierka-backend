@@ -32,7 +32,6 @@ export class LaddersService {
             bracketSize = Math.pow(2, numberOfPhases);
             numberOfPhases++;
         }
-        numberOfPhases -= 1;
         const numberOfByes = bracketSize - participatingTeams.length;
 
         teams = shuffle(teams);
@@ -43,8 +42,11 @@ export class LaddersService {
         });
 
         let phasesIfLower = numberOfPhases;
-        if (isLosers) {
-            phasesIfLower += 1;
+        if (!isLosers) {
+            phasesIfLower -= 1;
+        }
+        if (phasesIfLower === 0) {
+            phasesIfLower = 1;
         }
         const firstUpperRound = this.generateFirstRound(
             teams,
@@ -55,11 +57,15 @@ export class LaddersService {
             upperDate
         );
         const skipPositions = firstUpperRound[1];
-        console.log(skipPositions)
         upperDate = setNextPhaseDate(upperDate, tournament);
         matches = matches.concat(firstUpperRound[0]);
 
         let numberOfUpperMatches = bracketSize / 2;
+
+        if (numberOfPhases === 1) {
+            await this.matchesRepository.save(matches);
+            return;
+        }
 
         for (let round = numberOfPhases - 1; round > 0; round--) {
             numberOfUpperMatches = numberOfUpperMatches / 2;
@@ -232,7 +238,6 @@ export class LaddersService {
                     skipPositions.push(nextPosition);
                 }
                 matches.push(firstMatch, secondMatch);
-                console.log(`po `, teams.length)
             } else {
                 continue;
             }
