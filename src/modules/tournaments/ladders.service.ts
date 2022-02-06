@@ -29,10 +29,16 @@ export class LaddersService {
         let bracketSize = 2;
         let numberOfPhases = 1;
         while (bracketSize < participatingTeams.length) {
-            bracketSize = Math.pow(2, numberOfPhases);
             numberOfPhases++;
+            bracketSize = Math.pow(2, numberOfPhases);
         }
         const numberOfByes = bracketSize - participatingTeams.length;
+
+        let numberOfLowerPhases = 0;
+        if (isLosers) {
+            numberOfLowerPhases = 2 * numberOfPhases - 2;
+            numberOfPhases += 1;
+        }
 
         teams = shuffle(teams);
 
@@ -40,59 +46,47 @@ export class LaddersService {
             isLosers: false,
             tournament: tournament
         });
-
-        let phasesIfLower = numberOfPhases;
-        if (!isLosers) {
-            phasesIfLower -= 1;
-        }
-        if (phasesIfLower === 0) {
-            phasesIfLower = 1;
-        }
+        
         const firstUpperRound = this.generateFirstRound(
             teams,
             tournament,
             upperBracket,
-            phasesIfLower,
+            numberOfPhases,
             numberOfByes,
             upperDate
         );
         const skipPositions = firstUpperRound[1];
-        upperDate = setNextPhaseDate(upperDate, tournament);
+        upperDate = setNextPhaseDate(new Date(upperDate), tournament);
         matches = matches.concat(firstUpperRound[0]);
-
-        let numberOfUpperMatches = bracketSize / 2;
 
         if (numberOfPhases === 1) {
             await this.matchesRepository.save(matches);
             return;
         }
 
+        let numberOfUpperMatches = bracketSize / 2;
         for (let round = numberOfPhases - 1; round > 0; round--) {
-            numberOfUpperMatches = numberOfUpperMatches / 2;
-            let doubleEliminationRound = round;
-            if (isLosers) {
-                doubleEliminationRound += 1;
-            }
+            numberOfUpperMatches = Math.ceil(numberOfUpperMatches / 2);
             if (round === numberOfPhases - 1) {
                 const upperRound = this.generateRound(
                     tournament,
                     upperBracket,
-                    doubleEliminationRound,
+                    round,
                     numberOfUpperMatches,
                     upperDate,
                     skipPositions
                 );
-                upperDate = setNextPhaseDate(upperDate, tournament);
+                upperDate = setNextPhaseDate(new Date(upperDate), tournament);
                 matches = matches.concat(upperRound);
             } else {
                 const upperRound = this.generateRound(
                     tournament,
                     upperBracket,
-                    doubleEliminationRound,
+                    round,
                     numberOfUpperMatches,
                     upperDate
                 );
-                upperDate = setNextPhaseDate(upperDate, tournament);
+                upperDate = setNextPhaseDate(new Date(upperDate), tournament);
                 matches = matches.concat(upperRound);
             }
         }
@@ -105,8 +99,8 @@ export class LaddersService {
 
             let numberOfLowerMatches = bracketSize / 2;
 
-            for (let round = numberOfPhases * 2 - 2; round > 0; round -= 2) {
-                numberOfLowerMatches = numberOfLowerMatches / 2;
+            for (let round = numberOfLowerPhases; round > 0; round -= 2) {
+                numberOfLowerMatches = Math.ceil(numberOfLowerMatches / 2);
                 const lowerFullRound = this.generateRound(
                     tournament,
                     lowerBracket,
@@ -114,7 +108,7 @@ export class LaddersService {
                     numberOfLowerMatches,
                     lowerDate
                 );
-                lowerDate = setNextPhaseDate(lowerDate, tournament);
+                lowerDate = setNextPhaseDate(new Date(lowerDate), tournament);
                 const lowerHalfRound = this.generateRound(
                     tournament,
                     lowerBracket,
@@ -122,21 +116,9 @@ export class LaddersService {
                     numberOfLowerMatches,
                     lowerDate
                 );
-                lowerDate = setNextPhaseDate(lowerDate, tournament);
+                lowerDate = setNextPhaseDate(new Date(lowerDate), tournament);
                 matches = matches.concat(lowerFullRound, lowerHalfRound);
             }
-
-            const grandFinalMatch = this.matchesRepository.create({
-                matchStartDate: new Date(upperDate),
-                status: MatchStatus.Scheduled,
-                numberOfMaps: tournament.numberOfMaps,
-                tournament: tournament,
-                round: 1,
-                position: 1,
-                ladder: upperBracket,
-                maps: [],
-            });
-            matches.push(grandFinalMatch);
         }
         await this.matchesRepository.save(matches);
     }
@@ -150,6 +132,7 @@ export class LaddersService {
         date: Date): [Match[], number[]] {
         const matches: Match[] = [];
         const skipPositions: number[] = [];
+        const nextDate = setNextPhaseDate(new Date(date), tournament);
         let position = 1;
         let skipNextMatch = false;
         for (let i = 0; i < numberOfByes; i++) {
@@ -164,7 +147,8 @@ export class LaddersService {
                 let firstRoster = teams.pop();
                 skipNextMatch = true;
                 const match = this.matchesRepository.create({
-                    matchStartDate: new Date(date),
+                    matchStartDate: date,
+                    matchEndDate: date,
                     numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     firstRoster: firstRoster,
@@ -177,7 +161,7 @@ export class LaddersService {
                     maps: [],
                 });
                 const nextMatch = this.matchesRepository.create({
-                    matchStartDate: new Date(date),
+                    matchStartDate: nextDate,
                     numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     firstRoster: firstRoster,
@@ -195,7 +179,7 @@ export class LaddersService {
                 let firstRoster = teams.pop();
                 let secondRoster = teams.pop();
                 const firstMatch = this.matchesRepository.create({
-                    matchStartDate: new Date(date),
+                    matchStartDate: date,
                     numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     firstRoster: firstRoster,
@@ -208,7 +192,7 @@ export class LaddersService {
                     maps: [],
                 });
                 const secondMatch = this.matchesRepository.create({
-                    matchStartDate: new Date(date),
+                    matchStartDate: date,
                     numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     firstRoster: null,
@@ -222,7 +206,7 @@ export class LaddersService {
                 });
                 if (!skipNextMatch) {
                     const nextMatch = this.matchesRepository.create({
-                        matchStartDate: new Date(date),
+                        matchStartDate: nextDate,
                         numberOfMaps: tournament.numberOfMaps,
                         tournament: tournament,
                         firstRoster: firstRoster,
@@ -250,7 +234,7 @@ export class LaddersService {
             let firstTeam = firstRoster.team;
             let secondTeam = secondRoster.team;
             const match = this.matchesRepository.create({
-                matchStartDate: new Date(date),
+                matchStartDate: date,
                 numberOfMaps: tournament.numberOfMaps,
                 tournament: tournament,
                 firstRoster: firstRoster,
@@ -281,7 +265,7 @@ export class LaddersService {
                 continue;
             }
             const match = this.matchesRepository.create({
-                matchStartDate: new Date(date),
+                matchStartDate: date,
                 status: MatchStatus.Scheduled,
                 numberOfMaps: tournament.numberOfMaps,
                 tournament: tournament,

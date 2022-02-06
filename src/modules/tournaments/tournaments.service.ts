@@ -206,9 +206,8 @@ export class TournamentsService {
                     .from(User, `user`)
                     .innerJoin(`user.tournamentAdmins`, `admin`)
                     .innerJoin(`admin.tournament`, `tournament`)
-                    .where(`tournament.tournamentId = :tournamentId`, {
-                        tournamentId: tournament.tournamentId,
-                    })
+                    .where(`tournament.tournamentId = :tournamentId`, { tournamentId: tournament.tournamentId })
+                    .andWhere(`tournament.status = :status`, { status: TournamentStatus.Upcoming })
                     .getQuery();
                 return `user.userId NOT IN ` + subQuery;
             })
@@ -393,11 +392,9 @@ export class TournamentsService {
                 throw new BadRequestException(exceptions);
             }
         }
-        const ifParticipating = await this.rostersRepository.findOne({
-            where: { tournament: tournament, team: team },
-        });
+        const ifParticipating = await this.rostersRepository.findOne({ where: { tournament: tournament, team: team } });
         if (ifParticipating) {
-            throw new NotFoundException(`Your team is already signed up for this tournament`);
+            throw new NotFoundException(`Your team is already signed for this tournament`);
         }
         const participatingTeam = this.rostersRepository.create({
             tournament: tournament,
@@ -544,6 +541,9 @@ export class TournamentsService {
                 await this.laddersService.generateLadder(tournament, teams, false);
             }
             if (format === TournamentFormat.DoubleEliminationLadder) {
+                if (teams.length < 3) {
+                    return;
+                }
                 await this.laddersService.generateLadder(tournament, teams, true);
             }
             tournament.status = TournamentStatus.Ongoing;

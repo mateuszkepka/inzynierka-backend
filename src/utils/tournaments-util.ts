@@ -22,10 +22,11 @@ export function shuffle(array: any[]): any[] {
 }
 
 export function setNextPhaseDate(date: Date, tournament: Tournament): Date {
+    console.log(`przychodzi `, date)
     const startDate = new Date(tournament.tournamentStartDate);
     const endDate = new Date(tournament.tournamentStartDate);
     if (date.getDate() > endDate.getDate()) {
-        endDate.setDate(date.getDate());
+        endDate.setDate(date.getTime());
     }
     endDate.setHours(tournament.endingHour);
     endDate.setMinutes(tournament.endingMinutes);
@@ -33,12 +34,13 @@ export function setNextPhaseDate(date: Date, tournament: Tournament): Date {
     if (((date > endDate || date.getTime() === endDate.getTime()) &&
         date.getDate() === endDate.getDate()) || (date < startDate)) {
         newDay = true;
-        startDate.setDate(date.getDate());
         startDate.setDate(startDate.getDate() + 1);
         date = new Date(startDate);
     }
+    console.log(`w trakcie `, date)
     if (date < endDate && !newDay) {
         date.setHours(date.getHours() + tournament.numberOfMaps)
     }
+    console.log(`returning `, date)
     return date;
 }

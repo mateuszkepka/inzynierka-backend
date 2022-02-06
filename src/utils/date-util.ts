@@ -1,4 +1,4 @@
-export function adjustTimeZone(dateInMilis: number, response?: boolean) {
+export function adjustTimeZone(dateInMilis: number, response?: boolean): Date {
     const date = new Date(dateInMilis);
     let offset = date.getTimezoneOffset() * 60 * 1000;
     if (response) {

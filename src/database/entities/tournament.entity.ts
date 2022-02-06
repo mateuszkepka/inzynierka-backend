@@ -86,15 +86,12 @@ export class Tournament {
     description: string;
 
     @Expose({ name: `gameId` })
-    @Transform(
-        ({ value }) => {
-            if (value === undefined) {
-                return;
-            }
-            return value.gameId;
-        },
-        { toPlainOnly: true },
-    )
+    @Transform(({ value }) => {
+        if (value === undefined) {
+            return;
+        }
+        return value.gameId;
+    }, { toPlainOnly: true })
     @ManyToOne(() => Game)
     @JoinColumn({ name: `gameId` })
     game: Game;

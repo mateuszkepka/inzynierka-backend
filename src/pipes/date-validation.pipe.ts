@@ -14,9 +14,6 @@ export class DateValidationPipe implements PipeTransform {
             const startDate = new Date(tournamentDto.tournamentStartDate);
             const breakDate = new Date(registerEndDate);
             breakDate.setMinutes(breakDate.getMinutes() + 40);
-            if (registerStartDate < new Date()) {
-                throw new BadRequestException(`Registration start date cannot be in the past`);
-            }
             if (registerStartDate > registerEndDate) {
                 throw new BadRequestException(`Registration end date must be after it's beginning`);
             }

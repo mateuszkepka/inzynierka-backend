@@ -90,7 +90,7 @@ export class GroupsService {
                     secondTeam: secondTeam,
                     maps: [],
                 });
-                hour = setNextPhaseDate(hour, tournament);
+                hour = setNextPhaseDate(new Date(hour), tournament);
                 matches.push(match);
             }
             indexes.push(indexes.shift());

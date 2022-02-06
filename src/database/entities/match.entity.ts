@@ -9,10 +9,6 @@ import { Tournament } from './tournament.entity';
 
 @Entity()
 export class Match {
-    @BeforeInsert()
-    setDates() {
-        this.matchStartDate = new Date();
-    }
 
     @Expose()
     @PrimaryGeneratedColumn()
