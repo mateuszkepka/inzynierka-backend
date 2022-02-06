@@ -6,6 +6,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/dto/roles.enum';
 import { editMapName, imageFileFilter } from 'src/utils/uploads-util';
 import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { UserIsTournamentAdmin } from '../tournaments/guards/user-is-tournament-admin.guard';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchResultsGuard } from './guards/match-results.guard';
 import { MatchesService } from './matches.service';
@@ -36,9 +37,19 @@ export class MatchesController {
     async sendResults(
         @UploadedFiles() results: Array<Express.Multer.File>,
         @Param(`matchId`, ParseIntPipe) matchId: number,
-        @Req() { user }: RequestWithUser,
+        @Req() { user }: RequestWithUser
     ) {
-        return this.matchesService.resolveMatch(matchId, results, user);
+        return this.matchesService.resolveAutomatically(matchId, results, user);
+    }
+
+    @Post(`/:matchId/resolve/:winner`)
+    @UseGuards(UserIsTournamentAdmin)
+    @Roles(Role.Admin, Role.Organizer, Role.TournamentAdmin)
+    async resolveManually(
+        @Param(`matchId`, ParseIntPipe) matchId: number,
+        @Param(`winner`, ParseIntPipe) winner: number
+    ) {
+        return this.matchesService.resolveManually(matchId, winner);
     }
 
     @Patch(`/:matchId`)

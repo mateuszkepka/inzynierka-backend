@@ -159,6 +159,8 @@ export class LaddersService {
                     position: position++,
                     ladder: ladder,
                     maps: [],
+                    winner: 1,
+                    status: MatchStatus.Finished,
                 });
                 const nextMatch = this.matchesRepository.create({
                     matchStartDate: nextDate,
@@ -190,6 +192,8 @@ export class LaddersService {
                     position: position++,
                     ladder: ladder,
                     maps: [],
+                    winner: 1,
+                    status: MatchStatus.Finished,
                 });
                 const secondMatch = this.matchesRepository.create({
                     matchStartDate: date,
@@ -203,6 +207,8 @@ export class LaddersService {
                     position: position++,
                     ladder: ladder,
                     maps: [],
+                    winner: 2,
+                    status: MatchStatus.Finished,
                 });
                 if (!skipNextMatch) {
                     const nextMatch = this.matchesRepository.create({

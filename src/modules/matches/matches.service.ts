@@ -113,7 +113,12 @@ export class MatchesService {
         return this.matchesRepository.save(match);
     }
 
-    async resolveMatch(matchId: number, files: Array<Express.Multer.File>, user: User) {
+    async resolveManually(matchId: number, winner: number) {
+        const match = await this.getWithRelations(matchId);
+        await this.resolveMatch(match, winner);
+    }
+
+    async resolveAutomatically(matchId: number, files: Array<Express.Multer.File>, user: User) {
         const { winner, confirmed } = await this.parseResults(matchId, files, user);
         const match = await this.getWithRelations(matchId);
         if (!confirmed) {
@@ -125,6 +130,10 @@ export class MatchesService {
         } else {
             throw new InternalServerErrorException(`Something went wrong`);
         }
+        await this.resolveMatch(match, winner);
+    }
+
+    async resolveMatch(match: Match, winner: number) {
         match.winner = winner;
         await this.matchesRepository.save(match);
         const tournament = await this.tournamentsService.getById(match.tournament.tournamentId);

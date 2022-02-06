@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Match, Player, Team, Tournament, User } from 'src/database/entities';
 import { Role } from 'src/modules/auth/dto/roles.enum';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { InvitationStatus } from '../invitations/interfaces/invitation-status.enum';
 import { MatchStatus } from '../matches/interfaces/match-status.enum';
 import { TournamentStatus } from '../tournaments/dto/tourrnament.status.enum';
@@ -121,7 +121,27 @@ export class UsersService {
             .innerJoin(`secondPlayer.user`, `secondUser`)
             .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId });
         if (status && status !== null) {
-            queryBuilder.andWhere(`match.status = :status`, { status: status });
+            if (status === MatchStatus.Scheduled) {
+                queryBuilder.andWhere(
+                    new Brackets((subQuery) => {
+                        subQuery
+                            .orWhere(`match.status = :status`, {
+                                status: MatchStatus.Scheduled,
+                            })
+                            .orWhere(`match.status = :status1`, {
+                                status1: MatchStatus.Resolving,
+                            })
+                            .orWhere(`match.status = :status2`, {
+                                status2: MatchStatus.Unresolved,
+                            })
+                            .orWhere(`match.status = :status3`, {
+                                status3: MatchStatus.Postponed,
+                            });
+                    }),
+                );
+            } else {
+                queryBuilder.andWhere(`match.status = :status`, { status: status });
+            }
         }
         const matches = await queryBuilder.getMany();
         if (matches.length === 0) {
