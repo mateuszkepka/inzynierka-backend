@@ -530,6 +530,9 @@ export class TournamentsService {
                 tournament.tournamentId,
                 ParticipationStatus.CheckedIn,
             );
+            if (teams.length < 2) {
+                return;
+            }
             const format = tournament.format.name;
             if (format === TournamentFormat.SingleRoundRobin) {
                 await this.groupsService.drawGroups(tournament, teams, 1);
