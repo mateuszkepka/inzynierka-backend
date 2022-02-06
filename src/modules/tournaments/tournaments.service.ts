@@ -82,7 +82,8 @@ export class TournamentsService {
 
     async getStandingsByTournament(tournamentId: number) {
         const tournament = await this.getById(tournamentId);
-        if (tournament.numberOfTeams < 2 && new Date() > tournament.checkInCloseDate) {
+        const checkedTeams = await this.getTeamsByTournament(tournamentId, ParticipationStatus.CheckedIn);
+        if (checkedTeams.length < 2 && new Date() > tournament.checkInCloseDate) {
             throw new NotFoundException(`Not enough teams were signed for this tournament to be played`);
         }
         const format = tournament.format.name;
