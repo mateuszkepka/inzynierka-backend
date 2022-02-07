@@ -148,7 +148,6 @@ export class LaddersService {
                 skipNextMatch = true;
                 const match = this.matchesRepository.create({
                     matchStartDate: date,
-                    matchEndDate: date,
                     numberOfMaps: tournament.numberOfMaps,
                     tournament: tournament,
                     firstRoster: firstRoster,

@@ -24,7 +24,7 @@ export class TournamentsSeeder {
         const createdTournaments = [];
         const organizers = users.filter((user) => user.roles.includes(Role.Organizer));
         for (let i = 0; i < numberOfRows; i++) {
-            const numberOfPlayers = getRandom([0.15, 0.15, 0.05, 0.05, 0.6], [1, 2, 3, 4, 5]);
+            const numberOfPlayers = getRandom([0.25, 0.15, 0.6], [1, 2, 5]);
             const numberOfTeams = getRandom([0.3, 0.2, 0.2, 0.3], [8, 16, 32, 64]);
             const format = formats[Math.floor(Math.random() * formats.length)];
             let numberOfGroups = null;
@@ -47,9 +47,7 @@ export class TournamentsSeeder {
             registerEndRandom.setSeconds(0);
             registerEndRandom.setMilliseconds(0);
             const registerEndDate = new Date(registerEndRandom);
-            const tournamentStartDate = new Date(
-                registerEndRandom.setHours(registerEndRandom.getHours() + Math.random() * 4 + 1),
-            );
+            const tournamentStartDate = new Date(registerEndRandom.setHours(registerEndRandom.getHours() + Math.random() * 4 + 1));
             const endingHour = getRandom([0.5, 0.5], [22, 23]);
             const endingMinutes = getRandom([0.5, 0.5], [0, 30]);
             const tournament = this.tournamentsRepository.create({
