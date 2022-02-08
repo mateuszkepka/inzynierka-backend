@@ -22,8 +22,7 @@ export class MemberIsNotSuspended implements CanActivate {
         const bannedUsers: User[] = []
         members.forEach(async (member) => {
             const suspensions = await this.suspensionsService
-                .getFiltered(member.user.userId, SuspensionStatus.Active)
-                .catch();
+                .getFiltered(member.user.userId, SuspensionStatus.Active);
             if (suspensions.length !== 0) {
                 bannedUsers.push(suspensions[0].user)
             }

@@ -24,10 +24,10 @@ export class MatchResultsGuard implements CanActivate {
         }
         const user = request.user;
         const match = await this.matchesService.getWithRelations(matchId);
-        if (match.firstTeam.captain.user.userId === user.userId && match.firstCaptainDate === null) {
+        if (match.firstTeam.captain.user.userId === user.userId && match.firstCaptainDate == null) {
             return true;
         }
-        if (match.secondTeam.captain.user.userId === user.userId && match.secondCaptainDate === null) {
+        if (match.secondTeam.captain.user.userId === user.userId && match.secondCaptainDate == null) {
             return true;
         }
         return false;

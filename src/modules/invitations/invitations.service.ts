@@ -90,10 +90,8 @@ export class InvitationsService {
     async remove(id: number, user: User) {
         const invitation = await this.getById(id);
         // teams of the user who sends request
-        let teams = [];
-        try {
-            teams = await this.usersService.getTeamsByUser(user.userId);
-        } catch (ignore) {
+        const teams = await this.usersService.getTeamsByUser(user.userId);
+        if (teams.length === 0) {
             throw new ForbiddenException(`You are not a team member`);
         }
         // the team which invitation is about

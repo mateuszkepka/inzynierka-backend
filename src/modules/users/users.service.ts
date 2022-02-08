@@ -119,35 +119,27 @@ export class UsersService {
             .innerJoin(`secondInvitation.player`, `secondPlayer`)
             .innerJoin(`firstPlayer.user`, `firstUser`)
             .innerJoin(`secondPlayer.user`, `secondUser`)
-            .where(`firstUser.userId = :userId OR secondUser.userId = :userId`, { userId: userId });
-        if (status && status !== null) {
-            if (status === MatchStatus.Scheduled) {
-                queryBuilder.andWhere(
-                    new Brackets((subQuery) => {
-                        subQuery
-                            .orWhere(`match.status = :status`, {
-                                status: MatchStatus.Scheduled,
-                            })
-                            .orWhere(`match.status = :status1`, {
-                                status1: MatchStatus.Resolving,
-                            })
-                            .orWhere(`match.status = :status2`, {
-                                status2: MatchStatus.Unresolved,
-                            })
-                            .orWhere(`match.status = :status3`, {
-                                status3: MatchStatus.Postponed,
-                            });
-                    }),
-                );
-            } else {
-                queryBuilder.andWhere(`match.status = :status`, { status: status });
-            }
+        queryBuilder.andWhere(
+            new Brackets((subQuery) => {
+                subQuery
+                    .where(`firstUser.userId = :userId`)
+                    .orWhere(`secondUser.userId = :userId`, { userId: userId });
+            }),
+        );
+        if (status === MatchStatus.Scheduled) {
+            queryBuilder.andWhere(
+                new Brackets((subQuery) => {
+                    subQuery
+                        .where(`match.status = :status1`, { status1: MatchStatus.Scheduled })
+                        .orWhere(`match.status = :status2`, { status2: MatchStatus.Resolving })
+                        .orWhere(`match.status = :status3`, { status3: MatchStatus.Unresolved })
+                        .orWhere(`match.status = :status4`, { status4: MatchStatus.Postponed });
+                }),
+            );
+        } else {
+            queryBuilder.andWhere(`match.status = :status5`, { status5: status });
         }
-        const matches = await queryBuilder.getMany();
-        if (matches.length === 0) {
-            throw new NotFoundException(`No matches found`);
-        }
-        return matches;
+        return queryBuilder.getMany();
     }
 
     async getTeamsByUser(userId: number) {
@@ -161,9 +153,6 @@ export class UsersService {
             .where(`user.userId = :userId`, { userId: userId })
             .andWhere(`invitation.status = :status`, { status: InvitationStatus.Accepted })
             .getMany();
-        if (teams.length === 0) {
-            throw new NotFoundException(`This player is not a member of any team`);
-        }
         return teams;
     }
 
@@ -194,11 +183,7 @@ export class UsersService {
         if (status) {
             queryBuilder.andWhere(`tournament.status = :status`, { status: status });
         }
-        const tournaments = await queryBuilder.getMany();
-        if (tournaments.length === 0) {
-            throw new NotFoundException(`No tournaments with given parameters found`);
-        }
-        return tournaments;
+        return queryBuilder.getMany();
     }
 
     async create(body: CreateUserDto) {
@@ -238,14 +223,9 @@ export class UsersService {
         const queryParams = new GetUsersTournamentsQuery();
         queryParams.status = TournamentStatus.Ongoing;
         queryParams.role = Role.Organizer;
-        let tournaments = [];
-        try {
-            tournaments = await this.getTournamentsByUser(userId, queryParams);
-        } catch (ignore) { }
+        const tournaments = await this.getTournamentsByUser(userId, queryParams);
         if (tournaments.length !== 0) {
-            throw new ForbiddenException(
-                `You can not delete your account when you have ongoing tournaments`,
-            );
+            throw new ForbiddenException(`You can not delete your account when you have ongoing tournaments`);
         }
         return this.usersRepository.remove(user);
     }

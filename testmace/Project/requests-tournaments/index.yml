@@ -20,7 +20,6 @@ children:
   - update-tournament-prize
   - update-participating-team
   - remove-tournament-admin
-  - get-tournament-by-id Copy
 variablesArray: []
 type: Folder
 authData:

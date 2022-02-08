@@ -12,6 +12,12 @@ export class DateValidationPipe implements PipeTransform {
             const registerStartDate = new Date(tournamentDto.registerStartDate);
             const registerEndDate = new Date(tournamentDto.registerEndDate);
             const startDate = new Date(tournamentDto.tournamentStartDate);
+            const endDate = new Date(tournamentDto.tournamentStartDate);
+            endDate.setHours(tournamentDto.endingHour);
+            endDate.setMinutes(tournamentDto.endingMinutes);
+            if (Math.abs(startDate.getTime() - endDate.getTime()) < 3600000 * tournamentDto.numberOfMaps) {
+                throw new BadRequestException(`Difference between start and end of the tournament must be greater than ${tournamentDto.numberOfMaps} hours`);
+            }
             const breakDate = new Date(registerEndDate);
             breakDate.setMinutes(breakDate.getMinutes() + 40);
             if (registerStartDate > registerEndDate) {

@@ -108,7 +108,7 @@ export class TournamentsService {
         }
         if (format === TournamentFormat.SingleEliminationLadder) {
             if (new Date() < tournament.checkInCloseDate) {
-                throw new NotFoundException(`Ladder for this tournament aren't drawn yet`);
+                throw new NotFoundException(`Ladder for this tournament isn't drawn yet`);
             }
             standings = await this.laddersRepository
                 .createQueryBuilder(`ladder`)
@@ -191,7 +191,7 @@ export class TournamentsService {
         } else {
             qb.andWhere(`match.status = :status`, { status: status });
         }
-        qb.orderBy(`match.matchId`);
+        qb.orderBy(`match.matchStartDate`, `ASC`);
         return qb.getMany();
     }
 
@@ -450,6 +450,12 @@ export class TournamentsService {
         const admin = await this.tournamentAdminsRepository.findOne({
             where: { tournament: tournament, user: user },
         });
+        const adminCount = await this.tournamentAdminsRepository.count({
+            where: { tournament: tournament, user: user }
+        });
+        if (adminCount < 2) {
+            throw new BadRequestException(`Every tournament has to have at least one administrator`);
+        }
         return this.tournamentAdminsRepository.remove(admin);
     }
 

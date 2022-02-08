@@ -44,7 +44,7 @@ export class MatchesController {
 
     @Post(`/:matchId/resolve/:winner`)
     @UseGuards(UserIsTournamentAdmin)
-    @Roles(Role.Admin, Role.Organizer, Role.TournamentAdmin)
+    @Roles(Role.Admin, Role.Organizer)
     async resolveManually(
         @Param(`matchId`, ParseIntPipe) matchId: number,
         @Param(`winner`, ParseIntPipe) winner: number

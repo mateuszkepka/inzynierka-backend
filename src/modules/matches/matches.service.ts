@@ -120,6 +120,7 @@ export class MatchesService {
 
     async resolveAutomatically(matchId: number, files: Array<Express.Multer.File>, user: User) {
         const { winner, confirmed } = await this.parseResults(matchId, files, user);
+        console.log(`wygral team `, winner);
         const match = await this.getWithRelations(matchId);
         if (!confirmed) {
             match.status = MatchStatus.Resolving;
@@ -185,6 +186,8 @@ export class MatchesService {
                 winningRoster = match.secondRoster;
                 winningTeam = match.secondTeam;
             }
+            console.log(`Mecz id: ${match.matchId} r:${match.round} p:${match.position}\n`)
+            console.log(`Wygrał ${winningTeam.teamName} id ${winningTeam.teamId}`);
             const ladder = await this.tournamentsService.getLadder(tournament, false);
 
             // setting next round for the winner
@@ -209,6 +212,9 @@ export class MatchesService {
                     nextMatch.secondTeam = winningTeam;
                     nextMatch.secondRoster = winningRoster;
                 }
+                console.log(`Winners next round ${nextRound}`);
+                console.log(`Winner next pos ${nextPosition}`);
+                console.log(`Next winners match ${nextMatch.matchId}\n`);
                 await this.matchesRepository.save(nextMatch);
             }
         }
@@ -425,27 +431,30 @@ export class MatchesService {
             await this.matchesRepository.save(nextWinnersMatch);
         }
         // checking if there are more scheduled matches
-        const isOnGoing = await this.tournamentsService
+        const isOngoing = await this.tournamentsService
             .getMatchesByTournament(tournament.tournamentId, MatchStatus.Scheduled);
-        if (!isOnGoing) {
-            tournament.status === TournamentStatus.Finished;
+        if (isOngoing.length === 0) {
+            tournament.status = TournamentStatus.Finished;
             await this.tournamentsRepository.save(tournament);
         }
     }
 
     async parseResults(matchId: number, results: Array<Express.Multer.File>, user: User): Promise<{ winner: number, confirmed: boolean }> {
         const match = await this.getWithRelations(matchId);
-        //this.validateScreenshots(match, results);
+        this.validateScreenshots(match, results);
         let senderTeam: Team;
         let otherTeam: Team;
-        let firstTeamWins: number = 0;
-        let secondTeamWins: number = 0;
+        let senderWins: number = 0;
+        let otherWins: number = 0;
+        let flag: boolean;
         if (user.userId === match.firstTeam.captain.user.userId) {
+            flag = true;
             senderTeam = match.firstTeam;
             otherTeam = match.secondTeam;
             match.firstCaptainDate = new Date();
         }
         if (user.userId === match.secondTeam.captain.user.userId) {
+            flag = false;
             senderTeam = match.secondTeam;
             otherTeam = match.firstTeam;
             match.secondCaptainDate = new Date();
@@ -462,10 +471,10 @@ export class MatchesService {
             const mapResult = array[0].toLowerCase();
             if (mapResult === `victory` || mapResult === `zwycięstwo`) {
                 mapWinner = senderTeam.teamId;
-                firstTeamWins++;
+                senderWins++;
             } else if (mapResult === 'defeat' || mapResult === `przegrana`) {
                 mapWinner = otherTeam.teamId;
-                secondTeamWins++;
+                otherWins++;
             } else {
                 throw new BadRequestException(`Screenshot number ${i + 1} is inappropriate`);
             }
@@ -484,11 +493,12 @@ export class MatchesService {
                     if (array[j].match(regex)) {
                         let statsArray = array[j + 1].split(/\D/);
                         statsArray = statsArray.filter(s => /\S/.test(s));
+                        console.log(statsArray)
                         if (!isNaN(parseInt(statsArray[0]))
                             && !isNaN(parseInt(statsArray[1]))
                             && !isNaN(parseInt(statsArray[2]))
                             && !isNaN(parseInt(array[j + 2]))
-                            && !isNaN(parseInt(array[j + 3]))) {
+                            && !isNaN(parseInt(array[j + 3].replace(/,/g, '')))) {
                             pushStats = true;
                         }
                         if (pushStats) {
@@ -499,7 +509,7 @@ export class MatchesService {
                                 deaths: parseInt(statsArray[1]),
                                 assists: parseInt(statsArray[2]),
                                 creepScore: parseInt(array[j + 2]),
-                                gold: parseInt(array[j + 3]),
+                                gold: parseInt(array[j + 3].replace(/,/g, '')),
                             });
                         }
                     }
@@ -537,11 +547,11 @@ export class MatchesService {
             confirmed = false;
         }
         let winner: number;
-        if (firstTeamWins > secondTeamWins) {
-            winner = 1;
+        if (senderWins > otherWins) {
+            winner = flag ? 1 : 2;
         }
-        else if (secondTeamWins > firstTeamWins) {
-            winner = 2;
+        else if (otherWins > senderWins) {
+            winner = flag ? 2 : 1;
         } else {
             winner = 0;
         }

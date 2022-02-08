@@ -95,9 +95,11 @@ export class Match {
     @JoinColumn({ name: `secondTeamId` })
     secondTeam: Team;
 
+    @Expose()
     @AdjustDate({ nullable: true, default: null })
     firstCaptainDate: Date;
 
+    @Expose()
     @AdjustDate({ nullable: true, default: null })
     secondCaptainDate: Date;
 

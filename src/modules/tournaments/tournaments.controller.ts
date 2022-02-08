@@ -27,7 +27,7 @@ import { TournamentsService } from './tournaments.service';
 @Roles(Role.User)
 export class TournamentsController {
     constructor(private readonly tournamentsService: TournamentsService) { }
-    
+
     @Get(`/:tournamentId/admins/available`)
     @Roles(Role.Organizer, Role.Admin)
     async getAvailableAdmins(
@@ -168,11 +168,7 @@ export class TournamentsController {
         @Param(`tournamentId`, ParseIntPipe) tournamentId: number,
         @Param(`teamId`, ParseIntPipe) teamId: number,
     ) {
-        return this.tournamentsService.changeStatus(
-            tournamentId,
-            teamId,
-            ParticipationStatus.CheckedIn,
-        );
+        return this.tournamentsService.changeStatus(tournamentId, teamId, ParticipationStatus.CheckedIn);
     }
 
     @Patch(`/:tournamentId/teams/:teamId`)
