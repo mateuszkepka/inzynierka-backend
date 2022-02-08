@@ -24,20 +24,20 @@ export function shuffle(array: any[]): any[] {
 export function setNextPhaseDate(date: Date, tournament: Tournament): Date {
     const startDate = new Date(tournament.tournamentStartDate);
     const endDate = new Date(tournament.tournamentStartDate);
-    if (date.getDate() > endDate.getDate()) {
-        endDate.setDate(date.getTime());
+    if (date.getUTCDate() > endDate.getUTCDate()) {
+        endDate.setUTCDate(date.getTime());
     }
-    endDate.setHours(tournament.endingHour);
-    endDate.setMinutes(tournament.endingMinutes);
+    endDate.setUTCHours(tournament.endingHour);
+    endDate.setUTCMinutes(tournament.endingMinutes);
     let newDay = false;
     if (((date > endDate || date.getTime() === endDate.getTime()) &&
-        date.getDate() === endDate.getDate()) || (date < startDate)) {
+        date.getUTCDate() === endDate.getUTCDate()) || (date < startDate)) {
         newDay = true;
-        startDate.setDate(startDate.getDate() + 1);
+        startDate.setUTCDate(startDate.getUTCDate() + 1);
         date = new Date(startDate);
     }
     if (date < endDate && !newDay) {
-        date.setHours(date.getHours() + tournament.numberOfMaps)
+        date.setUTCHours(date.getUTCHours() + tournament.numberOfMaps)
     }
     return date;
 }
